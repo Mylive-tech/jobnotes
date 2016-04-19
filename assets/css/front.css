@@ -1,0 +1,232 @@
+
+
+@media (max-width: 767px){
+	.staff_section h4{
+		font-size: 14px;
+	}
+
+	.yellowbg h2.label-staff, .yellowbg h2.label-staff-detail{
+		font-size: 12px !important;
+	}
+
+	.property_reports li span{
+		width: auto !important;
+	}
+}
+
+a.text_overimg:hover {
+ color: beige;
+ text-decoration: underline;
+}
+
+.warning {
+	color: #ff0000;
+}
+.jobnote_forms fieldset {
+	margin-bottom: 20px;
+	border-bottom: 1px solid #0085be;
+	padding-bottom: 20px;
+}
+.topsearchbox {
+	margin-top: 9px;
+}
+.centered {
+	text-align: center;
+}
+::-webkit-input-placeholder {
+/* WebKit browsers */
+	opacity: 1 !important;
+}
+.yellowbg {
+	background: #fff685;
+	padding: 17px 12px;
+	min-height: 190px;
+}
+.yellowbg h2.label-staff-detail {
+	font-size: 1.1em !important;
+}
+.yellowbg h2.label-staff {
+	font-size: 1.1em !important;
+}
+.bluebg {
+	background: #73649d;
+	padding: 17px 12px;
+	min-height: 190px;
+	color: #fff;
+}
+.bluebg h4 {
+	text-transform: uppercase;
+}
+div.attachphotos:hover .fa-camera
+{
+  color:#c43030; cursor:pointer;
+}
+
+.propertystatus {
+	background: #dbdfe2;
+	vertical-align: middle;
+}
+.propertystatus div.startbutton {
+	height: 100px;
+	padding-top: 25px !important;
+	vertical-align: middle;
+	background: #c4c8cb;
+}
+.propertystatus div.startbutton button {
+	background: #c43030;
+	margin-top: 10px;
+	color: #fff;
+	min-width: 70%;
+	text-transfor: uppercase;
+}
+.propertystatus div.attachphotos {
+	padding-top: 20px !important;
+  position:relative;
+}
+.propertygallery {
+	height: auto;
+	background: #000000;
+	vertical-align: middle;
+	float: left;
+}
+ul.content-slider {
+	list-style: none outside none;
+}
+.propertygallery img {
+	height: 70px;
+	margin: 15px;
+}
+.attachphotos i.fa-camera {
+	font-size: 48px;
+}
+.vcenter {
+	display: inline-block;
+	vertical-align: middle;
+	float: none;
+}
+.property_reports {
+	list-style: none outside none;
+	padding: 0px;
+	margin: 0px;
+}
+.property_reports li {
+	margin-bottom: 10px;
+	width: 100%;
+}
+.property_reports li span {
+	float: right;
+	height: 40px;
+	margin-right: 40px;
+	background-color: #fff;
+	width: 150px;
+	padding: 0px 5px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	text-align: center;
+}
+.property_reports li a {
+	padding-left: 20px;
+	text-transform: uppercase;
+	color: #fff;
+	line-height: 60px;
+	vertical-align: middle;
+}
+.property_reports li:nth-child(1) {
+	background-color: #276884;
+}
+.property_reports li:nth-child(2) {
+	background-color: #6a406b;
+}
+.property_reports li:nth-child(3) {
+	background-color: #4f5b4f;
+}
+.property_reports li:nth-child(4) {
+	background-color: #63464a;
+}
+.property_reports li:nth-child(5) {
+	background-color: #655a44;
+}
+.property_reports li:nth-child(6) {
+	background-color: #555555;
+}
+.property_reports li:nth-child(7) {
+	background-color: #276884;
+}
+.property_reports li:nth-child(8) {
+	background-color: #6a406b;
+}
+.property_reports li:nth-child(9) {
+	background-color: #4f5b4f;
+}
+.property_reports li:nth-child(10) {
+	background-color: #63464a;
+}
+.property_reports li:nth-child(11) {
+	background-color: #655a44;
+}
+.property_reports li:nth-child(12) {
+	background-color: #555555;
+}
+.jobnote_forms fieldset legend {
+	margin-bottom: 20px;
+	border: 1px solid #ddd;
+}
+.jobnote_forms input[type="text"] {
+	/*background-color: #fcfcfc;
+	background-repeat: repeat-x;
+    */
+	border: 1px solid #CCCCCC;
+	width: 55% !important;
+    /*
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#f6f6f6), to(#ffffff))  !important;
+	background: -webkit-linear-gradient(top, #ffffff, #f6f6f6) !important;
+	background: -moz-linear-gradient(top, #ffffff, #f6f6f6)  !important;
+	background: -ms-linear-gradient(top, #ffffff, #f6f6f6)  !important;
+	background: -o-linear-gradient(top, #ffffff, #f6f6f6) !important;
+    */
+}
+.jobnote_forms input.bluebutton {
+/* Safari 4-5, Chrome 1-9 */
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#296599), to(#3a83c7))  !important;
+/* Safari 5.1, Chrome 10+ */
+	background: -webkit-linear-gradient(top, #3a83c7, #296599) !important;
+/* Firefox 3.6+ */
+	background: -moz-linear-gradient(top, #3a83c7, #296599)  !important;
+/* IE 10 */
+	background: -ms-linear-gradient(top, #3a83c7, #296599)  !important;
+/* Opera 11.10+ */
+	background: -o-linear-gradient(top, #3a83c7, #296599) !important;
+	color: #ffffff;
+	text-transform: uppercase;
+	padding: 10px 20px;
+	border-radius: 5px;
+	border: 1px solid #3a83c7;
+	font-size: 16px !important;
+}
+.staff_section h4 {
+	color: #0982d5;
+	padding-left: 20px;
+	border-bottom: 1px solid #0085be;
+	padding-bottom: 10px;
+	margin-bottom: 20px;
+	padding-top: 10px;
+}
+.jobnote_forms fieldset legend {
+	font-size: 16px;
+	border: 0px;
+	font-weight: bold;
+	margin-bottom: 10px;
+	text-transform: uppercase;
+	color: #797d7e !important;
+}
+.jobnote_forms label {
+	width: 100%;
+	float: left;
+	font-weight: bold;
+	color: #757678 !important;
+}
+
+@media screen and (max-width: 1024px) {
+height:100px;
+overflow:hidden;
+}

@@ -1,0 +1,1 @@
+{"dbname":"jobnotes_snownotes","dbhost":"localhost","dbport":"3306","username":"jobnotes_snownot","passsword":"Manish@123","prefix":"sn_"}

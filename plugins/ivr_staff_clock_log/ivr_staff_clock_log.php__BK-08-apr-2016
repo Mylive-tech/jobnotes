@@ -1,0 +1,67 @@
+<?php
+/*
+Plugin Name: IVR Log for Logged In Staff
+Description:  This plug-in will show the graphical comparison of IVR Staff logged-in
+Author: CT
+Version: 1.0
+License: GPLv2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+*/
+class ivr_staff_clock_log
+{
+  private $objDBCon, $objFunction, $staff_obj, $staff_contractor, $staff_regular;
+  private $staff_contractor_login, $staff_regular_login;
+  
+  function __construct($objFunctions)
+  {
+    $this->objDBCon = new Database();	
+    $this->objFunction = $objFunctions;	
+    $this->staff_regular =  $this->staff_contractor = $this->staff_contractor_login = $this->staff_regular_login = array();
+    $this->staff_obj = file_get_contents('http://www.ivrhq.me/applications/10042/api/select.php?account_key=3KoD1T56&table=staff_activity');
+    $staff_array = array_reverse(json_decode($this->staff_obj, true));	$new_sa = array(); $b = '';	foreach($staff_array as $sa)	{		if(!isset($new_sa[$sa['staff_id']])){			$new_sa[$sa['staff_id']] = $sa;
+			/*if($sa['clock_action_description'] == 'clock in')
+			{
+				$b .= $sa['staff_id'].',';
+			}*/		}	}   //echo $b.'<pre>'; print_r($new_sa); echo '</pre>';  //echo 'dddd'; print_r(array_unique(array_reverse($staff_array)));    foreach($new_sa as $key => $val) {            if($val['clock_action_description'] == 'clock in') {           //if($val['clock_action_description'] == 'clock in')              $this->staff_regular_login[$val['staff_id']]= 1;       }       elseif($val['clock_action_description'] == 'clock out') {           //if($val['clock_action_description'] == 'clock in')               $this->staff_contractor_login[$val['staff_id']]= 1;              //$this->staff_contractor_login++;       }      }
+    $this->ivr_staff_clock_log_init();
+  }
+  
+  function ivr_staff_clock_log_init()
+  {  
+    $widgetContent='
+                <div class="widget-header">
+                  <i class="icon-reorder"></i>&nbsp;&nbsp;<h4>IVR - Clocked in / out</span></h4>
+                    <div class="toolbar no-padding">
+    									<div class="btn-group">
+    										<span class="btn btn-xs widget-collapse"><i class="icon-angle-down"></i></span>
+    									</div>
+    								</div>
+                 </div>
+     <div class="inside_widget widget-content no-padding">             
+          <div class="col-md-12 nopadding">
+              <div id="visualization_clock" style="width: 100%; height: 230px; overflow:hidden;"></div>
+          </div>
+      </div>
+<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+        
+        <script type="text/javascript">
+            google.load(\'visualization\', \'1\', {packages: [\'corechart\']});
+        </script>
+ 
+        <script type="text/javascript">
+            function drawVisualization() {
+                var data = google.visualization.arrayToDataTable([
+                    [\'Clock In\', \'Number\'],';
+                        $widgetContent.='[\'Clocked in '.count($this->staff_regular_login).'\', '.count($this->staff_regular_login).'],';
+                        $widgetContent.='[\'Clocked out '.count($this->staff_contractor_login).'\', '.count($this->staff_contractor_login).'],';
+  $widgetContent.=']);
+                new google.visualization.PieChart(document.getElementById(\'visualization_clock\')).
+                draw(data, {title:"Clocked In Vs Clocked Out", is3D: true});
+            }  
+            google.setOnLoadCallback(drawVisualization);
+        </script>             
+             ';                
+    $this->objFunction->widgetContentArray[] = $widgetContent;            
+  }
+}
+?>

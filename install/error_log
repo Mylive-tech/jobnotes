@@ -1,0 +1,10 @@
+[21-Aug-2015 19:30:42 UTC] PHP Fatal error:  Call to a member function fetch_object() on a non-object in /home/jobnotes/snownotes/assests/classes/database.php on line 112
+[21-Aug-2015 19:31:42 UTC] PHP Fatal error:  Call to a member function fetch_object() on a non-object in /home/jobnotes/snownotes/assests/classes/database.php on line 112
+[21-Aug-2015 19:33:03 UTC] PHP Fatal error:  Call to a member function fetch_object() on a non-object in /home/jobnotes/snownotes/assests/classes/database.php on line 112
+[21-Aug-2015 19:34:16 UTC] PHP Warning:  mysqli_free_result() expects parameter 1 to be mysqli_result, null given in /home/jobnotes/snownotes/assests/classes/database.php on line 119
+[21-Aug-2015 19:34:16 UTC] PHP Warning:  Invalid argument supplied for foreach() in /home/jobnotes/snownotes/assests/classes/functions.php on line 168
+[21-Aug-2015 19:34:16 UTC] PHP Warning:  Invalid argument supplied for foreach() in /home/jobnotes/snownotes/assests/classes/functions.php on line 180
+[21-Aug-2015 19:34:16 UTC] PHP Warning:  explode(): Empty delimiter in /home/jobnotes/snownotes/includes/sef.php on line 11
+[21-Aug-2015 19:34:17 UTC] PHP Warning:  mysqli_free_result() expects parameter 1 to be mysqli_result, null given in /home/jobnotes/snownotes/assests/classes/database.php on line 119
+[21-Aug-2015 19:34:17 UTC] PHP Warning:  Invalid argument supplied for foreach() in /home/jobnotes/snownotes/assests/classes/functions.php on line 168
+[21-Aug-2015 19:34:17 UTC] PHP Warning:  Invalid argument supplied for foreach() in /home/jobnotes/snownotes/assests/classes/functions.php on line 180
