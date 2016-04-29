@@ -74,7 +74,7 @@ class REPORT extends REPORT_HTML_CONTENT
 	
 	public function driver_report()
 			{
-				$strSql = "SELECT s.id,s.username,s.f_name,s.l_name,js.* FROM " . TBL_STAFF . " s inner join " . TBL_JOBSTATUS . " js on s.id=js.started_by and s.id=js.closed_by where s.user_type >1  and s.site_id='" . $_SESSION['site_id'] . "'";
+				$strSql = "SELECT s.id,s.username,s.f_name,s.l_name, max(js.start_date),js.start_date, js.closing_date FROM " . TBL_STAFF . " s inner join " . TBL_JOBSTATUS . " js on s.id=js.started_by and s.id=js.closed_by  where s.user_type >1  and s.site_id='" . $_SESSION['site_id'] . "' group by js.started_by";
 				$this->objSet = $this->objDatabase->dbQuery($strSql);
 				parent::admin_driver_report($this->objSet);
 	}

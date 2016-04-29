@@ -375,8 +375,10 @@ $(document).ready(function() {
                                 <td align="center"><?php echo $objRow->f_name;?></td>              
                                 <td align="center"><?php echo $objRow->l_name;?></td>              
                                 <td align="center">
-                                <?php
-                                echo $objRow->start_date . '-' . $objRow->closing_date;
+                                <?php $diff = date_diff($objRow->closing_date,$objRow->start_date);
+								//echo $diff->format("%R%a days");
+                                $diff1 = strtotime($objRow->closing_date) - strtotime($objRow->start_date);
+								echo round($diff1/3600, 2);
                                 //echo strftime('%b, %d %Y', $log['time_stamp']);?> <?php //echo ucfirst($log['clock_action_description']);?>
                                 </td>                             
                                 <td align="center"><a href="<?php echo ISP :: AdminUrl('index.php?dir=staff&task=edit-staff&id='.$objRow->id);?>">View</a></td>
