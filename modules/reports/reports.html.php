@@ -375,8 +375,7 @@ $(document).ready(function() {
                                 <td align="center"><?php echo $objRow->f_name;?></td>              
                                 <td align="center"><?php echo $objRow->l_name;?></td>              
                                 <td align="center">
-                                <?php $diff = date_diff($objRow->closing_date,$objRow->start_date);
-								//echo $diff->format("%R%a days");
+                                <?php 
                                 $diff1 = strtotime($objRow->closing_date) - strtotime($objRow->start_date);
 								echo round($diff1/3600, 2);
                                 //echo strftime('%b, %d %Y', $log['time_stamp']);?> <?php //echo ucfirst($log['clock_action_description']);?>
