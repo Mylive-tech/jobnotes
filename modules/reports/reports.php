@@ -65,6 +65,20 @@ class REPORT extends REPORT_HTML_CONTENT
     parent:: reportListing($rs);
   } 
   
+  public function report_ivr_log()
+			{
+				$strSql = "SELECT s.*,st.label as userRole FROM " . TBL_STAFF . " s inner join " . TBL_STAFFTYPE . " st on s.user_type=st.id where s.user_type >1  and s.site_id='" . $_SESSION['site_id'] . "'";
+				$this->objSet = $this->objDatabase->dbQuery($strSql);
+				parent::admin_report_ivr_log($this->objSet);
+	}
+	
+	public function driver_report()
+			{
+				$strSql = "SELECT s.id,s.username,s.f_name,s.l_name,js.* FROM " . TBL_STAFF . " s inner join " . TBL_JOBSTATUS . " js on s.id=js.started_by and s.id=js.closed_by where s.user_type >1  and s.site_id='" . $_SESSION['site_id'] . "'";
+				$this->objSet = $this->objDatabase->dbQuery($strSql);
+				parent::admin_driver_report($this->objSet);
+	}
+			
   public function showForm()
   {
     $rs = $this->objDatabase->fetchRows("select * from ".TBL_REPORTS." where status='1' and report_id='".$this->intId."'");
@@ -637,6 +651,14 @@ switch($strTask)
    
    case 'listing':
       $objContent->reportListing();
+   break;
+   
+   case 'report_ivr_log':
+	  $objContent->report_ivr_log();
+	break;
+	
+	case 'driver_report':
+      $objContent->driver_report();
    break;
 
    case 'save-form':

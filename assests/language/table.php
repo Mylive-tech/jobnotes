@@ -19,6 +19,7 @@
   define('TBL_SITES' ,      		        $configArray->prefix.'sites');
   define('TBL_MODULES' ,      		      $configArray->prefix.'modules');
   define('TBL_JOBSTATUS' ,      		      $configArray->prefix.'jobstatus');
+  define('TBL_PROPERTY_NOTES' ,      		      $configArray->prefix.'property_notes');
   
    
   

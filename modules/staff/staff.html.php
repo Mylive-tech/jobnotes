@@ -71,10 +71,6 @@ if($this->objFunction->checkPermission('Import Staff', 'staff'))
             <a href="<?php echo ISP :: AdminUrl('staff/staff_ivr_log_today/');?>">
               <h4 class="text-left heding_6">Today IVR Log</h4></a>
             </li> 
-            <li>
-            <a href="<?php echo ISP :: AdminUrl('staff/staff_ivr_log/');?>">
-              <h4 class="text-left heding_6">IVR Log</h4></a>
-            </li> 
 <?php
  }
 ?>
@@ -259,11 +255,7 @@ if($this->objFunction->checkPermission('Import Staff', 'staff'))
             <li>
             <a href="<?php echo ISP :: AdminUrl('staff/staff_ivr_log_today/');?>">
               <h4 class="text-left heding_6">Today IVR Log</h4></a>
-            </li> 
-            <li>
-            <a href="<?php echo ISP :: AdminUrl('staff/staff_ivr_log/');?>">
-              <h4 class="text-left heding_6">IVR Log</h4></a>
-            </li> 
+            </li>  
 <?php
  }
 ?>
@@ -465,11 +457,7 @@ if($this->objFunction->checkPermission('Import Staff', 'staff'))
             <li>
             <a href="<?php echo ISP :: AdminUrl('staff/staff_ivr_log_today/');?>">
               <h4 class="text-left heding_6">Today IVR Log</h4></a>
-            </li> 
-            <li>
-            <a href="<?php echo ISP :: AdminUrl('staff/staff_ivr_log/');?>">
-              <h4 class="text-left heding_6">IVR Log</h4></a>
-            </li> 
+            </li>  
 <?php
  }
 ?>
@@ -613,9 +601,6 @@ $(document).ready(function() {
         <li class="current">			
           <a href="<?php echo ISP::AdminUrl('staff/staff_ivr_log_today/');?>" title="">Today IVR Log</a>		
         </li>	
-        <li class="current">			
-          <a href="#" title="">Staff IVR Log</a>		
-        </li>	
       </ul>
     </div>   				
     <!--=== Normal ===--> 				
@@ -658,10 +643,6 @@ if($this->objFunction->checkPermission('Import Staff', 'staff'))
              <li>			
           		<a href="<?php echo ISP :: AdminUrl('staff/staff_ivr_log_today/');?>"><h4 class="text-left heding_6">Today IVR Log</h4></a>		
         	</li>	
-            <li class="active">
-            <a href="#">
-              <h4 class="text-left heding_6">IVR Log</h4></a>
-            </li> 
 <?php
  }
 ?>
@@ -768,11 +749,7 @@ $(document).ready(function() {
         <li>			
         <i class="current"></i>			
         <a href="#">Staff Management</a>		
-        </li>	
-        <li>	
-         <i class="current"></i>			
-          <a href="#" title="">Today IVR Log</a>		
-        </li>	
+        </li>		
         <li>
         <i class="current"></i>				
           <a href="<?php echo ISP::AdminUrl('staff/staff_ivr_log/');?>" title="">Staff IVR Log</a>		
@@ -819,10 +796,6 @@ if($this->objFunction->checkPermission('Import Staff', 'staff'))
             <li class="active">
             <a href="#">
               <h4 class="text-left heding_6">Today IVR Log</h4></a>
-            </li> 
-            <li>
-            <a href="<?php echo ISP :: AdminUrl('staff/staff_ivr_log/');?>">
-              <h4 class="text-left heding_6">IVR Log</h4></a>
             </li> 
 <?php
  }

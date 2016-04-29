@@ -102,6 +102,10 @@ protected function reportListing($objRs)
 			<i class="current"></i>
 			<a href="#">Reports Manager</a>
 		</li>
+     <li>
+			<i class="current"></i>
+			<a href="#">Custom Reports</a>
+		</li>
 		
 	</ul>
 </div>  
@@ -193,7 +197,213 @@ protected function reportListing($objRs)
 </form>
 <?php   
    }
+protected function admin_report_ivr_log($objRs) {
+?>
+<script type="text/javascript">
+$(document).ready(function() {
+    $('.datatable').dataTable( {} );
+} ); 
+</script>         
+<div id="content">			
+  <div class="container">               
+    <div class="crumbs">
+        <ul id="breadcrumbs" class="breadcrumb">
+            <li>
+                <i class="icon-home"></i>
+                <a href="<?php echo ISP::AdminUrl('dashboard/admin_dashboard/');?>">Dashboard</a>
+            </li>
+            <li>
+                <i class="current"></i>
+                <a href="#">Reporting</a>
+            </li>
+            <li>
+                <i class="current"></i>
+                <a href="#">Reports Manager</a>
+            </li>
+        
+        </ul>
+    </div>  				
+    <!--=== Normal ===--> 				
+    <div class="row">		
+      <div class="col-md-12">
+        <div class="tabbable tabbable-custom">						
+          <div class="widget box box-vas">							 							
+            <div class="widget-content widget-content-vls">                
+              <form method="post" name="frmListing">             
+                   
+                <table class="table table-striped table-bordered table-hover table-checkable table-responsive datatable" id="dataTables-example">                    
+                  <thead class="cf">											
+                    <tr>                          
+                        <th data-class="expand">Username/IVR Staff ID</th>												  
+                        <th data-hide="phone">First Name</th>                          
+                        <th data-hide="phone">Last Name</th>
+                        <th data-hide="phone">Last Action</th>
+                        <th>View Full Log</th>
+                        <th data-hide="phone">Export to CSV</th>
+                    </tr>									
+                  </thead>									
+                  <tbody>                                                                                                    					                         
+<?php 
+			
+			if($objRs): // Check for the resource exists or not
+                $intI=1;
+                $staff_log = $this->objFunction->getAllStaffLastLog();
+            //print_r($staff_log);    
+			while($objRow = $objRs->fetch_object())  // Fetch the result in the object array
+			{
+			    $strStatus = ($objRow->status)?'0':'1';
+				
+				if($intI++%2==0)  // Condition for alternate rows color
+				   $strCss='evenTr';
+				else
+				   $strCss='oddTr';
 
+                //$array_log = $this->objFunction->getStaffIvrLog($objRow->username, 1);
+                $lastUser = '';
+                if ($staff_log[$objRow->username] <> '' ) { 
+                $rowCount=0;
+                    //foreach ($array_log as $log) {
+                        //if($lastUser <> $objRow->username) {
+                            $lastUser = $objRow->username;
+                            $rowCount++;
+                        ?>
+                                  
+                            <tr> 
+                                <td align="center"><?php echo $objRow->username;?></td>             
+                                <td align="center"><?php echo $objRow->f_name;?></td>              
+                                <td align="center"><?php echo $objRow->l_name;?></td>              
+                                <td align="center">
+                                <?php
+                                echo $staff_log[$objRow->username];
+                                //echo strftime('%b, %d %Y', $log['time_stamp']);?> <?php //echo ucfirst($log['clock_action_description']);?>
+                                </td>                             
+                                <td align="center"><a href="<?php echo ISP :: AdminUrl('index.php?dir=staff&task=edit-staff&id='.$objRow->id);?>">View</a></td>
+                                <td align="center"><a href="<?php echo ISP :: AdminUrl('index.php?dir=staff&task=import_ivr_log&user='.$objRow->username);?>">Export</a></td>
+                            </tr> 
+<?php               
+                        //}
+                    //}
+                }                     
+			}
+?>           
+                    </tr>          
+<?php
+			 else:
+			       echo '<tr><td  class="errNoRecord">No Record Found!</td></tr>';
+			 endif;  
+?>          
+                  </tbody>        
+                </table>       	  
+              </form>			
+            </div>    
+          </div>
+        </div>
+      </div>
+    </div>				
+    <!-- /Normal -->			
+  </div>
+ </div>			
+<?php    
+} 
+protected function admin_driver_report($objRs) {
+?>
+<script type="text/javascript">
+$(document).ready(function() {
+    $('.datatable').dataTable( {} );
+} ); 
+</script>         
+<div id="content">			
+  <div class="container">               
+    <div class="crumbs">
+        <ul id="breadcrumbs" class="breadcrumb">
+            <li>
+                <i class="icon-home"></i>
+                <a href="<?php echo ISP::AdminUrl('dashboard/admin_dashboard/');?>">Dashboard</a>
+            </li>
+            <li>
+                <i class="current"></i>
+                <a href="#">Reporting</a>
+            </li>
+            <li>
+                <i class="current"></i>
+                <a href="#">Reports Manager</a>
+            </li>
+            <li>
+                <i class="current"></i>
+                <a href="#">Driver Reports</a>
+            </li>
+        
+        </ul>
+    </div>  				
+    <!--=== Normal ===--> 				
+    <div class="row">		
+      <div class="col-md-12">
+        <div class="tabbable tabbable-custom">						
+          <div class="widget box box-vas">							 							
+            <div class="widget-content widget-content-vls">                
+              <form method="post" name="frmListing">             
+                   
+                <table class="table table-striped table-bordered table-hover table-checkable table-responsive datatable" id="dataTables-example">                    
+                  <thead class="cf">											
+                    <tr>                          
+                        <th data-class="expand">Username/Staff ID</th>												  
+                        <th data-hide="phone">First Name</th>                          
+                        <th data-hide="phone">Last Name</th>
+                        <th data-hide="phone">Hours Worked</th>
+                        <th>View Log</th>
+                        <!--<th data-hide="phone">Export to CSV</th>-->
+                    </tr>									
+                  </thead>									
+                  <tbody>                                                                                                    					                         
+<?php
+			if($objRs): // Check for the resource exists or not
+                $intI=1;
+                $staff_log = $this->objFunction->getAllStaffLastLog();
+            //print_r($staff_log);    
+			while($objRow = $objRs->fetch_object())  // Fetch the result in the object array
+			{
+			    $strStatus = ($objRow->status)?'0':'1';
+				
+				if($intI++%2==0)  // Condition for alternate rows color
+				   $strCss='evenTr';
+				else
+				   $strCss='oddTr';
+                        ?>
+                                  
+                            <tr> 
+                                <td align="center"><?php echo $objRow->username;?></td>             
+                                <td align="center"><?php echo $objRow->f_name;?></td>              
+                                <td align="center"><?php echo $objRow->l_name;?></td>              
+                                <td align="center">
+                                <?php
+                                echo $objRow->start_date . '-' . $objRow->closing_date;
+                                //echo strftime('%b, %d %Y', $log['time_stamp']);?> <?php //echo ucfirst($log['clock_action_description']);?>
+                                </td>                             
+                                <td align="center"><a href="<?php echo ISP :: AdminUrl('index.php?dir=staff&task=edit-staff&id='.$objRow->id);?>">View</a></td>
+                            </tr> 
+<?php               
+                                    
+			}
+?>           
+                    </tr>          
+<?php
+			 else:
+			       echo '<tr><td  class="errNoRecord">No Record Found!</td></tr>';
+			 endif;  
+?>          
+                  </tbody>        
+                </table>       	  
+              </form>			
+            </div>    
+          </div>
+        </div>
+      </div>
+    </div>				
+    <!-- /Normal -->			
+  </div>
+ </div>			
+<?php    
+}
    protected function reportForm($recordSet, $form_id)
    {
 ?>

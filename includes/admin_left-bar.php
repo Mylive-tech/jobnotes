@@ -94,6 +94,7 @@ if($currentPageUrl== ISP::AdminUrl('reports/listing/'))  {
 
   $formCurrent ='current';
 
+	$FormListingOpen='open';
   $manageFormListing='active';
 
 }if($currentPageUrl== ISP::AdminUrl('reports/export-reports/'))  {  $formCurrent ='current';  $reportsExports = 'active';}
@@ -183,9 +184,32 @@ if($currentPageUrl== ISP::AdminUrl('staff/staff_ivr_log/'))
 
     $confCurrent ='current';
 
-    $staffOpen='open';
+    $staffOpen='open'; 
 
     $staff='active';
+
+ }
+ if($currentPageUrl== ISP::AdminUrl('reports/report_ivr_log/'))  
+
+ {  
+
+    $formCurrent ='current';
+	
+	$FormListingOpen ='open';
+
+    $manageIvrListing='active';
+
+ }
+ 
+ if($currentPageUrl== ISP::AdminUrl('reports/driver_report/'))  
+
+ {  
+
+    $formCurrent ='current';
+	
+	$FormListingOpen ='open';
+
+    $managedriverListing='active';
 
  }
 
@@ -425,13 +449,33 @@ if($currentPageUrl== ISP::AdminUrl('staff/staff_ivr_log/'))
 
 							<li>
 
-								<a href="<?php echo ISP :: AdminUrl('reports/listing/');?>" class="<?php echo $manageFormListing;?>">
+								<a href="javascript:void(0);">
 
-								<i class="icon-angle-right"></i>
-
-								Reports Manager
-
-								</a>
+                                    <i class="icon-edit"></i>
+    
+                                    	Reports Manager
+    
+                                    </a>
+                                <ul class="sub-menu" <?php if($FormListingOpen == 'open') echo 'style="display:block;"';?>>
+                                	<li>
+                                        <a href="<?php echo ISP :: AdminUrl('reports/listing/');?>"  class="<?php echo $manageFormListing;?>">
+                                        <i class="icon-angle-right"></i>
+                                        Custom Reports
+                                 		</a>
+                                    </li>
+                                    <li>
+                                        <a href="<?php echo ISP :: AdminUrl('reports/report_ivr_log/');?>" class="<?php echo $manageIvrListing;?>">
+                                        <i class="icon-angle-right"></i>
+                                        IVR Log
+                                 		</a>
+                                    </li>
+                                    <li>
+                                        <a href="<?php echo ISP :: AdminUrl('reports/driver_report/');?>" class="<?php echo $managedriverListing;?>">
+                                        <i class="icon-angle-right"></i>
+                                        Driver Reports
+                                 		</a>
+                                    </li>
+                                </ul>
 
 							</li>                                                        <li>								<a href="<?php echo ISP :: AdminUrl('reports/export-reports/');?>" class="<?php echo $reportsExports;?>">								<i class="icon-angle-right"></i>								Export Reports								</a>							</li>
 
