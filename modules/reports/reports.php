@@ -78,6 +78,14 @@ class REPORT extends REPORT_HTML_CONTENT
 				$this->objSet = $this->objDatabase->dbQuery($strSql);
 				parent::admin_driver_report($this->objSet);
 	}
+	
+	public function driver_report_log()
+			{
+				//$strSql = "SELECT s.id,s.username,s.f_name,s.l_name, max(js.start_date),js.start_date, js.closing_date FROM " . TBL_STAFF . " s inner join " . TBL_JOBSTATUS . " js on s.id=js.started_by and s.id=js.closed_by  where s.user_type >1  and s.site_id='" . $_SESSION['site_id'] . "' group by js.started_by";
+				$strSql = "SELECT * from " .TBL_JOBSTATUS. " where started_by=".$_GET['driver_id']." and closed_by=".$_GET['driver_id'];
+				$this->objSet = $this->objDatabase->dbQuery($strSql);
+				parent::admin_driver_report_log($this->objSet);
+	}
 			
   public function showForm()
   {
@@ -659,6 +667,10 @@ switch($strTask)
 	
 	case 'driver_report':
       $objContent->driver_report();
+   break;
+   
+   case 'driver_report_log':
+      $objContent->driver_report_log();
    break;
 
    case 'save-form':

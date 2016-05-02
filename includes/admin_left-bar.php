@@ -212,6 +212,18 @@ if($currentPageUrl== ISP::AdminUrl('staff/staff_ivr_log/'))
     $managedriverListing='active';
 
  }
+ 
+ if($currentPageUrl== ISP::AdminUrl('reports/driver_report_log/') || !empty($_GET['driver_id']) )
+
+ {  
+
+    $formCurrent ='current';
+	
+	$FormListingOpen ='open';
+
+    $managedriverListing='active';
+
+ }
 
  
 

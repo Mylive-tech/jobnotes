@@ -67,10 +67,6 @@ if($this->objFunction->checkPermission('Import Staff', 'staff'))
  if($this->objFunction->checkPermission('Import Staff', 'staff'))
 {
             ?> 
-            <li>
-            <a href="<?php echo ISP :: AdminUrl('staff/staff_ivr_log_today/');?>">
-              <h4 class="text-left heding_6">Today IVR Log</h4></a>
-            </li> 
 <?php
  }
 ?>
@@ -251,11 +247,7 @@ if($this->objFunction->checkPermission('Import Staff', 'staff'))
  }
 if($this->objFunction->checkPermission('Import Staff', 'staff'))
 {
-            ?> 
-            <li>
-            <a href="<?php echo ISP :: AdminUrl('staff/staff_ivr_log_today/');?>">
-              <h4 class="text-left heding_6">Today IVR Log</h4></a>
-            </li>  
+            ?>  
 <?php
  }
 ?>
@@ -453,11 +445,7 @@ if($this->objFunction->checkPermission('Import Staff', 'staff'))
  }
 if($this->objFunction->checkPermission('Import Staff', 'staff'))
 {
-            ?> 
-            <li>
-            <a href="<?php echo ISP :: AdminUrl('staff/staff_ivr_log_today/');?>">
-              <h4 class="text-left heding_6">Today IVR Log</h4></a>
-            </li>  
+            ?>   
 <?php
  }
 ?>
@@ -640,9 +628,6 @@ if($this->objFunction->checkPermission('Import Staff', 'staff'))
 if($this->objFunction->checkPermission('Import Staff', 'staff'))
 {
             ?> 
-             <li>			
-          		<a href="<?php echo ISP :: AdminUrl('staff/staff_ivr_log_today/');?>"><h4 class="text-left heding_6">Today IVR Log</h4></a>		
-        	</li>	
 <?php
  }
 ?>
@@ -793,10 +778,6 @@ if($this->objFunction->checkPermission('Import Staff', 'staff'))
 if($this->objFunction->checkPermission('Import Staff', 'staff'))
 {
             ?> 
-            <li class="active">
-            <a href="#">
-              <h4 class="text-left heding_6">Today IVR Log</h4></a>
-            </li> 
 <?php
  }
 ?>
