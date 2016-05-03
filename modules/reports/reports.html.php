@@ -9,7 +9,8 @@ class REPORT_HTML_CONTENT
      
 public function __construct($objfunc) //define Constructor
    {
-     $this->objFunction = $objfunc;	     	
+     //$this->objDatabase 	= new Database();
+	 $this->objFunction = $objfunc; 	     	
    }
 
 
@@ -307,8 +308,14 @@ $(document).ready(function() {
 } 
 protected function admin_driver_report($objRs) {
 ?>
+<link rel="stylesheet" type="text/css" href="<?php echo SITE_URL;?>assets/css/dp/jquery.datetimepicker.css"/>
+<!--<script src="<?php echo SITE_URL;?>assets/js/dp/jquery.js"></script>-->
+<script src="<?php echo SITE_URL;?>assets/js/dp/jquery.datetimepicker.full.js"></script>
+
 <script type="text/javascript">
+
 $(document).ready(function() {
+	$('.datetimepicker').datetimepicker();
     $('.datatable').dataTable( {} );
 } ); 
 </script>         
@@ -338,6 +345,12 @@ $(document).ready(function() {
     <!--=== Normal ===--> 				
     <div class="row">		
       <div class="col-md-12">
+      <form action="" method="get">
+      <label> Date:  </label>
+      	<input type="text" class="datetimepicker" id="datetimepicker_from" name="date_from" placeholder="From" value="<?php if(isset($_GET['date_from'])) echo $_GET['date_from'];?>" />
+		<input type="text" class="datetimepicker" id="datetimepicker_to" name="date_to" placeholder="To" value="<?php if(isset($_GET['date_to'])) echo $_GET['date_to'];?>" />
+        <input type="submit" name="s" id="s" value="Search" />
+      </form>
         <div class="tabbable tabbable-custom">						
           <div class="widget box box-vas">							 							
             <div class="widget-content widget-content-vls">                
@@ -478,7 +491,7 @@ $(document).ready(function() {
                                   
                             <tr> 
                                 <td align="center"><?php echo $i;?></td>             
-                                <td align="center"><?php echo $objRow->job_id;?></td>              
+                                <td align="center"><?php echo $objRow->job_listing . '--' .$objRow->job_id ;?></td>              
                                 <td align="center"><?php echo $objRow->start_date;?></td>              
                                  <td align="center"><?php echo $objRow->closing_date;?></td>              
                                 <td align="center">

@@ -74,15 +74,25 @@ class REPORT extends REPORT_HTML_CONTENT
 	
 	public function driver_report()
 			{
-				$strSql = "SELECT s.id,s.username,s.f_name,s.l_name, max(js.start_date),js.start_date, js.closing_date FROM " . TBL_STAFF . " s inner join " . TBL_JOBSTATUS . " js on s.id=js.started_by and s.id=js.closed_by  where s.user_type >1  and s.site_id='" . $_SESSION['site_id'] . "' group by js.started_by";
+				if(isset($_GET['s']))
+				{
+					$strSql = "SELECT s.id,s.username,s.f_name,s.l_name,js.start_date, js.closing_date FROM " . TBL_STAFF . " s inner join " . TBL_JOBSTATUS . " js on s.id=js.started_by and s.id=js.closed_by  where s.user_type >1  and s.site_id='" . $_SESSION['site_id'] . "' and UNIX_TIMESTAMP(js.start_date) >= UNIX_TIMESTAMP('".$_GET['date_from']."') and UNIX_TIMESTAMP(js.closing_date) <= UNIX_TIMESTAMP('".$_GET['date_to']."') "; 
+				}
+				else
+				{
+					$ys_date = date('Y-m-d',strtotime("-1 days"));
+					$cur_date = date('Y-m-d'); 
+					//$strSql = "SELECT s.id,s.username,s.f_name,s.l_name, max(js.start_date),js.start_date, js.closing_date FROM " . TBL_STAFF . " s inner join " . TBL_JOBSTATUS . " js on s.id=js.started_by and s.id=js.closed_by  where s.user_type >1  and s.site_id='" . $_SESSION['site_id'] . "' and UNIX_TIMESTAMP(DATE(js.start_date)) >= UNIX_TIMESTAMP('".$ys_date."') and UNIX_TIMESTAMP(DATE(js.start_date)) <= UNIX_TIMESTAMP('".$cur_date."') group by js.started_by";
+					$strSql = "SELECT s.id,s.username,s.f_name,s.l_name, max(js.start_date),js.start_date, js.closing_date FROM " . TBL_STAFF . " s inner join " . TBL_JOBSTATUS . " js on s.id=js.started_by and s.id=js.closed_by  where s.user_type >1  and s.site_id='" . $_SESSION['site_id'] . "' group by js.started_by";
+				}
 				$this->objSet = $this->objDatabase->dbQuery($strSql);
 				parent::admin_driver_report($this->objSet);
 	}
 	
 	public function driver_report_log()
 			{
-				//$strSql = "SELECT s.id,s.username,s.f_name,s.l_name, max(js.start_date),js.start_date, js.closing_date FROM " . TBL_STAFF . " s inner join " . TBL_JOBSTATUS . " js on s.id=js.started_by and s.id=js.closed_by  where s.user_type >1  and s.site_id='" . $_SESSION['site_id'] . "' group by js.started_by";
-				$strSql = "SELECT * from " .TBL_JOBSTATUS. " where started_by=".$_GET['driver_id']." and closed_by=".$_GET['driver_id'];
+				$strSql = "SELECT jl.job_listing, js.* FROM " . TBL_JOBLOCATION . " jl inner join " . TBL_JOBSTATUS . " js on jl.id=js.job_id where js.started_by=".$_GET['driver_id']." and js.closed_by=".$_GET['driver_id'];
+				//$strSql = "SELECT * from " .TBL_JOBSTATUS. " where started_by=".$_GET['driver_id']." and closed_by=".$_GET['driver_id'];
 				$this->objSet = $this->objDatabase->dbQuery($strSql);
 				parent::admin_driver_report_log($this->objSet);
 	}

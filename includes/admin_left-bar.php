@@ -201,7 +201,7 @@ if($currentPageUrl== ISP::AdminUrl('staff/staff_ivr_log/'))
 
  }
  
- if($currentPageUrl== ISP::AdminUrl('reports/driver_report/'))  
+ if($currentPageUrl== ISP::AdminUrl('reports/driver_report/') || !empty($_GET['date_from']))  
 
  {  
 
