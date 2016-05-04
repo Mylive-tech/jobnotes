@@ -236,9 +236,10 @@ $(document).ready(function() {
                   <thead class="cf">											
                     <tr>                          
                         <th data-class="expand">Username/IVR Staff ID</th>												  
-                        <th data-hide="phone">First Name</th>                          
-                        <th data-hide="phone">Last Name</th>
-                        <th data-hide="phone">Last Action</th>
+                        <th data-hide="phone">Name</th>                          
+                        <th data-hide="phone">Date</th>
+                        <th data-hide="phone">Time</th>
+                        <th data-hide="phone">Clock Action</th>
                         <th>View Full Log</th>
                         <th data-hide="phone">Export to CSV</th>
                     </tr>									
@@ -249,9 +250,10 @@ $(document).ready(function() {
 			if($objRs): // Check for the resource exists or not
                 $intI=1;
                 $staff_log = $this->objFunction->getAllStaffLastLog();
-            //print_r($staff_log);    
+            //echo 'ddd'; print_r($staff_log);    
 			while($objRow = $objRs->fetch_object())  // Fetch the result in the object array
 			{
+				
 			    $strStatus = ($objRow->status)?'0':'1';
 				
 				if($intI++%2==0)  // Condition for alternate rows color
@@ -267,15 +269,17 @@ $(document).ready(function() {
                         //if($lastUser <> $objRow->username) {
                             $lastUser = $objRow->username;
                             $rowCount++;
+							$ivrdatetimestatus = explode(',', $staff_log[$objRow->username])
                         ?>
                                   
                             <tr> 
                                 <td align="center"><?php echo $objRow->username;?></td>             
-                                <td align="center"><?php echo $objRow->f_name;?></td>              
-                                <td align="center"><?php echo $objRow->l_name;?></td>              
+                                 <td align="center"><?php echo $objRow->f_name.' '.$objRow->l_name;?></td>              
+                                <td align="center"><?php echo $ivrdatetimestatus[0];?></td>
+                                <td align="center"><?php echo $ivrdatetimestatus[1];?></td>
                                 <td align="center">
                                 <?php
-                                echo $staff_log[$objRow->username];
+                                echo $ivrdatetimestatus[2];
                                 //echo strftime('%b, %d %Y', $log['time_stamp']);?> <?php //echo ucfirst($log['clock_action_description']);?>
                                 </td>                             
                                 <td align="center"><a href="<?php echo ISP :: AdminUrl('index.php?dir=staff&task=edit-staff&id='.$objRow->id);?>">View</a></td>
@@ -345,12 +349,12 @@ $(document).ready(function() {
     <!--=== Normal ===--> 				
     <div class="row">		
       <div class="col-md-12">
-      <form action="" method="get">
+      <p><form action="" method="get">
       <label> Date:  </label>
       	<input type="text" class="datetimepicker" id="datetimepicker_from" name="date_from" placeholder="From" value="<?php if(isset($_GET['date_from'])) echo $_GET['date_from'];?>" />
 		<input type="text" class="datetimepicker" id="datetimepicker_to" name="date_to" placeholder="To" value="<?php if(isset($_GET['date_to'])) echo $_GET['date_to'];?>" />
         <input type="submit" name="s" id="s" value="Search" />
-      </form>
+      </form></p>
         <div class="tabbable tabbable-custom">						
           <div class="widget box box-vas">							 							
             <div class="widget-content widget-content-vls">                
@@ -389,7 +393,7 @@ $(document).ready(function() {
                                 <td align="center"><?php echo $objRow->l_name;?></td>              
                                 <td align="center">
                                 <?php 
-                                $diff1 = strtotime($objRow->closing_date) - strtotime($objRow->start_date);
+                                 $diff1 = strtotime($objRow->c_date) - strtotime($objRow->s_date);
 								echo round($diff1/3600, 2);
                                 //echo strftime('%b, %d %Y', $log['time_stamp']);?> <?php //echo ucfirst($log['clock_action_description']);?>
                                 </td>                             

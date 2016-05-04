@@ -1581,7 +1581,8 @@ public function getFormSubmissionValues($submission_id)
         $staff_array = json_decode($json_output, true);
         $staff_data = array();
         foreach($staff_array as $key => $val) {
-                $staff_data[$val['staff_id']] = strftime('%b, %d %Y', $val['time_stamp']).' '.$val['clock_action_description'];
+                //$staff_data[$val['staff_id']] = strftime('%b, %d %Y', $val['time_stamp']).' '.$val['clock_action_description'];
+				$staff_data[$val['staff_id']] = $val['date'].','.$val['time_24_hour_clock'].','.$val['clock_action_description'];
         }        
         return $staff_data;
     }
