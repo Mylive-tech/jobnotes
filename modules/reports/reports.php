@@ -76,14 +76,14 @@ class REPORT extends REPORT_HTML_CONTENT
 			{
 				if(isset($_GET['s']))
 				{
-					$strSql = "SELECT s.id,s.username,s.f_name,s.l_name,js.start_date, js.closing_date FROM " . TBL_STAFF . " s inner join " . TBL_JOBSTATUS . " js on s.id=js.started_by and s.id=js.closed_by  where s.user_type >1  and s.site_id='" . $_SESSION['site_id'] . "' and UNIX_TIMESTAMP(js.start_date) >= UNIX_TIMESTAMP('".$_GET['date_from']."') and UNIX_TIMESTAMP(js.closing_date) <= UNIX_TIMESTAMP('".$_GET['date_to']."') "; 
+					$strSql = "SELECT s.id,s.username,s.f_name,s.l_name,js.start_date as s_date, js.closing_date as c_date FROM " . TBL_STAFF . " s inner join " . TBL_JOBSTATUS . " js on s.id=js.started_by and s.id=js.closed_by  where s.user_type >1  and s.site_id='" . $_SESSION['site_id'] . "' and UNIX_TIMESTAMP(js.start_date) >= UNIX_TIMESTAMP('".$_GET['date_from']."') and UNIX_TIMESTAMP(js.closing_date) <= UNIX_TIMESTAMP('".$_GET['date_to']."') "; 
 				}
 				else
 				{
 					$ys_date = date('Y-m-d',strtotime("-1 days"));
 					$cur_date = date('Y-m-d'); 
 					//$strSql = "SELECT s.id,s.username,s.f_name,s.l_name, max(js.start_date),js.start_date, js.closing_date FROM " . TBL_STAFF . " s inner join " . TBL_JOBSTATUS . " js on s.id=js.started_by and s.id=js.closed_by  where s.user_type >1  and s.site_id='" . $_SESSION['site_id'] . "' and UNIX_TIMESTAMP(DATE(js.start_date)) >= UNIX_TIMESTAMP('".$ys_date."') and UNIX_TIMESTAMP(DATE(js.start_date)) <= UNIX_TIMESTAMP('".$cur_date."') group by js.started_by";
-					$strSql = "SELECT s.id,s.username,s.f_name,s.l_name, max(js.start_date),js.start_date, js.closing_date FROM " . TBL_STAFF . " s inner join " . TBL_JOBSTATUS . " js on s.id=js.started_by and s.id=js.closed_by  where s.user_type >1  and s.site_id='" . $_SESSION['site_id'] . "' group by js.started_by";
+					$strSql = "SELECT s.id,s.username,s.f_name,s.l_name, max(js.start_date) as s_date, max(js.closing_date) as c_date FROM " . TBL_STAFF . " s inner join " . TBL_JOBSTATUS . " js on s.id=js.started_by and s.id=js.closed_by  where s.user_type >1  and s.site_id='" . $_SESSION['site_id'] . "' group by js.started_by";
 				}
 				$this->objSet = $this->objDatabase->dbQuery($strSql);
 				parent::admin_driver_report($this->objSet);

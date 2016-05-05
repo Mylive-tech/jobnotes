@@ -385,6 +385,19 @@ $(document).ready(function() {
 				   $strCss='evenTr';
 				else
 				   $strCss='oddTr';
+				if(isset($_GET['s']))
+				{
+					$startdate = date("Y-m-d", strtotime($objRow->s_date));
+					$ys_date = date($startdate,strtotime("-1 days"));
+					$cur_date = $startdate;
+				}
+				else
+				{
+					$startdate = date("Y-m-d", strtotime($objRow->s_date));
+					$ys_date = date('Y-m-d',strtotime("-1 days"));
+					$cur_date = date('Y-m-d');
+				}
+				if(strtotime($startdate) >= strtotime($ys_date) && strtotime($startdate) <= strtotime($cur_date)):
                         ?>
                                   
                             <tr> 
@@ -392,7 +405,7 @@ $(document).ready(function() {
                                 <td align="center"><?php echo $objRow->f_name;?></td>              
                                 <td align="center"><?php echo $objRow->l_name;?></td>              
                                 <td align="center">
-                                <?php 
+                                <?php  
                                  $diff1 = strtotime($objRow->c_date) - strtotime($objRow->s_date);
 								echo round($diff1/3600, 2);
                                 //echo strftime('%b, %d %Y', $log['time_stamp']);?> <?php //echo ucfirst($log['clock_action_description']);?>
@@ -400,7 +413,7 @@ $(document).ready(function() {
                                 <td align="center"><a href="<?php echo ISP :: AdminUrl('reports/driver_report_log/?driver_id='.$objRow->id);?>">View</a><!--a href="<?php //echo ISP :: AdminUrl('index.php?dir=staff&task=edit-staff&id='.$objRow->id);?>">View</a--></td>
                             </tr> 
 <?php               
-                                    
+            endif;                       
 			}
 ?>           
                     </tr>          
@@ -495,7 +508,7 @@ $(document).ready(function() {
                                   
                             <tr> 
                                 <td align="center"><?php echo $i;?></td>             
-                                <td align="center"><?php echo $objRow->job_listing . '--' .$objRow->job_id ;?></td>              
+                                <td align="center"><?php echo $objRow->job_listing;?></td>              
                                 <td align="center"><?php echo $objRow->start_date;?></td>              
                                  <td align="center"><?php echo $objRow->closing_date;?></td>              
                                 <td align="center">
