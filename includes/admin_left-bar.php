@@ -189,7 +189,7 @@ if($currentPageUrl== ISP::AdminUrl('staff/staff_ivr_log/'))
     $staff='active';
 
  }
- if($currentPageUrl== ISP::AdminUrl('reports/report_ivr_log/'))  
+ if($currentPageUrl== ISP::AdminUrl('reports/report_ivr_log/') || !empty($_GET['staffid']))  
 
  {  
 

@@ -1596,6 +1596,18 @@ public function getFormSubmissionValues($submission_id)
 		return $staffTypes;
 
     }
+	/*User details using username*/
+	public function getUserDetailsUsingUsername($staffid) {
+		$res = $this->objDBCon->dbQuery("select * from ".TBL_STAFF." where username =".$staffid );
+		return $res;
+
+    }
+	/*User Role based on user type*/
+	public function UserRoleUsingUserType($user_type)
+	{	
+		$res = $this->objDBCon->dbQuery("select label from ".TBL_STAFFTYPE." where id = ".$user_type);
+		return $res->fetch_object();
+	}
 }
 ?>
 

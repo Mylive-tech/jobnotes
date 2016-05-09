@@ -200,8 +200,11 @@ protected function reportListing($objRs)
    }
 protected function admin_report_ivr_log($objRs) {
 ?>
+<link rel="stylesheet" type="text/css" href="<?php echo SITE_URL;?>assets/css/dp/jquery.datetimepicker.css"/>
+<script src="<?php echo SITE_URL;?>assets/js/dp/jquery.datetimepicker.full.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
+	$('.datetimepicker').datetimepicker();
     $('.datatable').dataTable( {} );
 } ); 
 </script>         
@@ -229,9 +232,84 @@ $(document).ready(function() {
       <div class="col-md-12">
         <div class="tabbable tabbable-custom">						
           <div class="widget box box-vas">							 							
-            <div class="widget-content widget-content-vls">                
-              <form method="post" name="frmListing">             
-                   
+            <div class="widget-content widget-content-vls">                             
+               <?php 
+			   	if(isset($_GET['staffid']))
+				{
+					$user_details = $this->objFunction->getUserDetailsUsingUsername($_GET['staffid']);
+					while($objRow = $user_details->fetch_object()) {
+						$user_role = $this->objFunction->UserRoleUsingUserType($objRow->user_type);
+						//print_r($user_role);
+						echo '<p>Username/IVR staffId: '.$objRow->username.'</p>';
+						echo '<p>Name: '.$objRow->f_name.' '.$objRow->l_name.'</p>';
+						echo '<p>Email: '.$objRow->email.'</p>';
+						echo '<p>Phone: '.$objRow->phone.'</p>';
+						echo '<p>Role: '.$user_role->label.'</p>';
+					}
+					
+					$array_log = $this->objFunction->getStaffIvrLog($_GET['staffid']);
+					//print_r($array_log);
+					?>
+                    <p>
+                    <form action="" method="get">
+                        <label> Date:  </label>
+                        <input type="text" class="datetimepicker" id="datetimepicker_from" name="ivr_date_from" placeholder="From" value="<?php if(isset($_GET['ivr_date_from'])) echo $_GET['ivr_date_from'];?>" />
+                        <input type="text" class="datetimepicker" id="datetimepicker_to" name="ivr_date_to" placeholder="To" value="<?php if(isset($_GET['ivr_date_to'])) echo $_GET['ivr_date_to'];?>" />
+                        <input type="hidden" name="staffid" id="staffid" value="<?php echo $_GET['staffid'];?>" />
+                        <input type="submit" name="s" id="s" value="Search" />
+                    </form>
+                    </p>
+                    <table class="table table-striped table-bordered table-hover table-checkable table-responsive datatable" id="dataTables-example">                    
+                  <thead class="cf">											
+                    <tr>                          
+                        <th data-class="expand">S NO</th>												  
+                        <th data-hide="phone">Date</th>                          
+                        <th data-hide="phone">Time</th>
+                        <th data-hide="phone">Status</th>
+                    </tr>									
+                  </thead>									
+                  <tbody>
+                  	<?php
+					$intI = 1; $rowCount=0;
+					foreach ($array_log as $log) 
+					{
+						//$rowCount++;
+						if($intI++%2==0)  // Condition for alternate rows color
+							$strCss='evenTr';
+						else
+							$strCss='oddTr';
+						if(isset($_GET['s'])):
+							if($log['time_stamp'] >= strtotime($_GET['ivr_date_from']) && $log['time_stamp'] <= strtotime($_GET['ivr_date_to'])):
+							$rowCount++;
+						?>
+                          <tr> 
+                            <td align="center"><?php echo $rowCount;?></td>             
+                            <td align="center"><?php echo $log['date'];?></td>
+                            <td align="center"><?php echo $log['time_12_hour_clock'];?></td>
+                            <td align="center"><?php echo ucfirst($log['clock_action_description']);?></td>
+                          </tr>
+                        <?php 
+							endif;
+						else:
+							$rowCount++;
+						?>
+                          <tr> 
+                            <td align="center"><?php echo $rowCount;?></td>             
+                            <td align="center"><?php echo $log['date'];?></td>
+                            <td align="center"><?php echo $log['time_12_hour_clock'];?></td>
+                            <td align="center"><?php echo ucfirst($log['clock_action_description']);?></td>
+                          </tr>
+                        <?php
+						endif;
+						
+						
+					}
+				    ?>
+                  </tbody>
+                  </table>
+                <?php }
+				else { ?> 
+                 <form method="post" name="frmListing"> 
                 <table class="table table-striped table-bordered table-hover table-checkable table-responsive datatable" id="dataTables-example">                    
                   <thead class="cf">											
                     <tr>                          
@@ -281,8 +359,9 @@ $(document).ready(function() {
                                 <?php
                                 echo $ivrdatetimestatus[2];
                                 //echo strftime('%b, %d %Y', $log['time_stamp']);?> <?php //echo ucfirst($log['clock_action_description']);?>
-                                </td>                             
-                                <td align="center"><a href="<?php echo ISP :: AdminUrl('index.php?dir=staff&task=edit-staff&id='.$objRow->id);?>">View</a></td>
+                                </td> 
+                                <!-- <td align="center"><a href="<?php echo ISP :: AdminUrl('index.php?dir=staff&task=edit-staff&id='.$objRow->id);?>">View</a></td>-->
+                                <td align="center"><a href="<?php echo ISP::AdminUrl('reports/report_ivr_log/?staffid='.$objRow->username);?>">View</a></td>
                                 <td align="center"><a href="<?php echo ISP :: AdminUrl('index.php?dir=staff&task=import_ivr_log&user='.$objRow->username);?>">Export</a></td>
                             </tr> 
 <?php               
@@ -298,8 +377,10 @@ $(document).ready(function() {
 			 endif;  
 ?>          
                   </tbody>        
-                </table>       	  
-              </form>			
+                </table> 
+                </form> 
+              <?php } ?>      	  
+             			
             </div>    
           </div>
         </div>
