@@ -240,11 +240,18 @@ $(document).ready(function() {
 					while($objRow = $user_details->fetch_object()) {
 						$user_role = $this->objFunction->UserRoleUsingUserType($objRow->user_type);
 						//print_r($user_role);
-						echo '<p>Username/IVR staffId: '.$objRow->username.'</p>';
-						echo '<p>Name: '.$objRow->f_name.' '.$objRow->l_name.'</p>';
-						echo '<p>Email: '.$objRow->email.'</p>';
-						echo '<p>Phone: '.$objRow->phone.'</p>';
-						echo '<p>Role: '.$user_role->label.'</p>';
+						echo '<table width="100%">
+						<tr>
+							<td width="25%">Username/IVR staffId: '.$objRow->username.'</td>
+							<td width="25%">Name: '.$objRow->f_name.' '.$objRow->l_name.'</td>
+							<td width="50%">Email: '.$objRow->email.'</td>
+						</tr>
+						<tr>
+							<td width="25%">Phone: '.$objRow->phone.'</td>
+							<td width="25%">Role: '.$user_role->label.'</td>
+							<td width="50%">&nbsp;</td>
+						</tr>
+						</table>';
 					}
 					
 					$array_log = $this->objFunction->getStaffIvrLog($_GET['staffid']);
