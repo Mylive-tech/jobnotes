@@ -249,11 +249,13 @@ class staff extends STAFF_HTML_CONTENT
 			public function savePermissions()
 			{
 				$this->objDatabase->dbQuery('TRUNCATE TABLE ' . TBL_USERPERMISSION);
+				//print_r($_POST); die;
 				foreach($_POST as $key => $value) {
 					if (strstr($key, "permission_")) {
 						$keyArray = explode("_", $key);
 						$role_id = $keyArray[1];
 						$permission_id = $keyArray[2];
+						//echo "insert into " . TBL_USERPERMISSION . " (role_id, role_permission_id) values ('" . $role_id . "', '" . $permission_id . "')"; die;
 						$this->objDatabase->dbQuery("insert into " . TBL_USERPERMISSION . " (role_id, role_permission_id) values ('" . $role_id . "', '" . $permission_id . "')");
 
 						// echo "<br />insert into ".TBL_USERPERMISSION." (role_id, role_permission_id) values ('".$role_id."', '".$permission_id."')";

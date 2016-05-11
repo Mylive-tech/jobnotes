@@ -1287,8 +1287,7 @@ function loadUsers(roleId)
 				 if($roleId<>1)
 					{   
                                 ?>             <td>
-                      <input type="checkbox" value="1" name="permission_<?php echo $roleId;?>_
-                      <?php echo $objPermission->id;?>" 
+                      <input type="checkbox" value="1" name="permission_<?php echo $roleId;?>_<?php echo $objPermission->id;?>" 
                       <?php echo $this->objFunction->check_role_permission($roleId, $objPermission->id);?>></td>            
 <?php
 					}

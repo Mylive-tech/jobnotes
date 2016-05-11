@@ -13,7 +13,7 @@
 	define('TBL_REPORTS_SUBMISSION',      $configArray->prefix.'report_submission ');
 	define('TBL_STAFFTYPE',      			    $configArray->prefix.'staff_type');
 	define('TBL_ROLEPERMISSION', 			    $configArray->prefix.'role_permission');
-	define('TBL_USERPERMISSION', 			    $configArray->prefix.'staff_permissions');
+	define('TBL_USERPERMISSION', 			    $configArray->prefix.'user_permissions');
  	define('TBL_JOBLOCATION' ,         		$configArray->prefix.'joblocation');
 	define('TBL_CONFIGURATION' ,      		$configArray->prefix.'configuration');
   define('TBL_SITES' ,      		        $configArray->prefix.'sites');
