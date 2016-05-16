@@ -516,7 +516,8 @@ $(document).ready(function() {
             <div class="col-md-12 text-right" style="padding-bottom:10px">
             
               <span>										                 
-                <a href="javascript: void(0);" onclick="exportTableToCSV.apply(this, [$('#dataTables-example'), 'export-history-<?php echo $objRow->job_listing;?>.csv']);" class="btn btn-info">Export</a>									               
+                <a href="javascript: void(0);" onclick="exportTableToCSV.apply(this, [$('#dataTables-example'), 'export-history-<?php echo $objRow->job_listing;?>.xls']);" class="btn btn-info">Export</a>	
+                <!--<a href="<?php echo ISP :: AdminUrl('property/direct/');?>" class="btn btn-info">Export</a>-->								               
               </span> 
             </div>                                                 
               <table class="table table-striped table-bordered table-hover table-checkable table-responsive datatable1">                                                     

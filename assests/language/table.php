@@ -20,6 +20,7 @@
   define('TBL_MODULES' ,      		      $configArray->prefix.'modules');
   define('TBL_JOBSTATUS' ,      		      $configArray->prefix.'jobstatus');
   define('TBL_PROPERTY_NOTES' ,      		      $configArray->prefix.'property_notes');
+  define('TBL_STAFF_UPLOADED_PROPERTY_IMAGES' ,   $configArray->prefix.'staff_uploaded_property_images');
   
    
   

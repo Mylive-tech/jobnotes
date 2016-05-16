@@ -1608,6 +1608,23 @@ public function getFormSubmissionValues($submission_id)
 		$res = $this->objDBCon->dbQuery("select label from ".TBL_STAFFTYPE." where id = ".$user_type);
 		return $res->fetch_object();
 	}
+	
+	public function saveExcelToLocalFile($objWriter) {
+	
+		$rand = rand(1234, 9898);
+		$presentDate = date('YmdHis');
+		$fileName = "report_" . $rand . "_" . $presentDate . ".xlsx";
+		
+		// make sure you have permission to write to directory
+		$filePath = SITEPATH . 'reports/' . $fileName;
+		$objWriter->save($filePath);
+		$data = array(
+			'filename' => $fileName,
+			'filePath' => $filePath
+		);
+		return $data;
+	
+	}
 }
 ?>
 
