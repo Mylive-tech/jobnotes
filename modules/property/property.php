@@ -341,27 +341,38 @@ class JOBLOCATION extends JOBLOCATION_HTML_CONTENT
    
    
    public function report_details() {
-		$imagePath = $_SERVER['DOCUMENT_ROOT'] . 'jobnotes/assets/img/';
+	   
+	   $strSql = "SELECT * FROM ".TBL_JOBSTATUS." js inner join ".TBL_JOBLOCATION." jl on js.job_id=jl.id where js.job_id=".$_GET['jid']." order by js.id desc";
+		$this->objSet = $this->objDatabase->dbQuery($strSql);
+		$reportdetails = $this->objSet;
+		/*$imagePath = $_SERVER['DOCUMENT_ROOT'].'jobnotes/assets/img/images/';
 		$reportdetails = array(
 			array('BrandIcon' => $imagePath . "facebook.png",'Comapany' => "facebook",'Rank' => "2",'Link' => "http://www.facebook.com"),
 			array('BrandIcon' => $imagePath . "googleplus.png",'Comapany' => "googleplus",'Rank' => "1",'Link' => "http://www.googleplus.com"),
 			array('BrandIcon' => $imagePath . "twitter.png",'Comapany' => "twitter",'Rank' => "3",'Link' => "http://www.twitter.com"),
 			array('BrandIcon' => $imagePath . "linkedin.png",'Comapany' => "linkedin",'Rank' => "8",'Link' => "http://www.linkedin.com"),
-		);
+		);*/
 		return $reportdetails;
 
 	}
    public function direct()
    {
-	//echo 'dddd'; 
-	//$this->objFunction->my_constants();
-	//$this->objFunction->xlscreation_direct();
-	$reportdetails = $this->report_details();
-	
-	//print_r($reportdetails); 
-	
+	   
+	$jobdata = $this->report_details();		
+	//print_r($reportdetails->fetch_object()); 
+	$reportdetails = array();
+	while($objRow = $jobdata->fetch_object())  // Fetch the result in the object array
+	{
+		$rowD = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow->started_by)); 
+		$reportdetails[] = array('Job Started On' => $objRow->start_date, 'Job Started By'=> $rowD[0]->f_name.' '.$rowD[0]->l_name, 'Completed On' => $objRow->closing_date, 'Completed By' => $rowD[0]->f_name.' '.$rowD[0]->l_name);
+		//$rowD = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow->started_by)); 
+		//$aa['Job Started By'] = $rowD[0]->f_name.' '.$rowD[0]->l_name;
+		//$aa['Completed On'] = $objRow->closing_date;
+		//$rowD = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow1->closed_by)); 
+		//$aa['Completed By'] = $rowD[0]->f_name.' '.$rowD[0]->l_name;
+ 	} //print_r($aa);
+	//die;
 	require_once 'PHPExcel/Classes/PHPExcel.php';
-
  	$objPHPExcel = new PHPExcel(); 
 	$objPHPExcel->getProperties()
 			->setCreator("user")
@@ -380,10 +391,10 @@ class JOBLOCATION extends JOBLOCATION_HTML_CONTENT
 
 	// Sheet cells
 	$cell_definition = array(
-		'A' => 'BrandIcon',
-		'B' => 'Comapany',
-		'C' => 'Rank',
-		'D' => 'Link'
+		'A' => 'Job Started On',
+		'B' => 'Job Started By',
+		'C' => 'Completed On',
+		'D' => 'Completed By'
 	);
 	
 
@@ -391,6 +402,7 @@ class JOBLOCATION extends JOBLOCATION_HTML_CONTENT
 	foreach( $cell_definition as $column => $value )
 	{
 		$objPHPExcel->getActiveSheet()->getColumnDimension("{$column}")->setAutoSize(true);
+		//$objPHPExcel->getActiveSheet()->getColumnDimension("{$column}")->setBold(true);
 		$objPHPExcel->getActiveSheet()->setCellValue( "{$column}1", $value ); 
 	}
 
@@ -399,7 +411,7 @@ class JOBLOCATION extends JOBLOCATION_HTML_CONTENT
 		$cell = $rowCount + 2;
 		foreach( $cell_definition as $column => $value ) {
 
-			$objPHPExcel->getActiveSheet()->getRowDimension($rowCount + 2)->setRowHeight(35); 
+			//$objPHPExcel->getActiveSheet()->getRowDimension($rowCount + 2)->setRowHeight(35); 
 			
 			switch ($value) {
 				case 'BrandIcon':
@@ -441,13 +453,14 @@ class JOBLOCATION extends JOBLOCATION_HTML_CONTENT
 	$presentDate = date('YmdHis');
 	$fileName = "report_" . $rand . "_" . $presentDate . ".xlsx";
 
-	header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+	header('Content-Type: application/vnd.ms-excel');
 	header('Content-Disposition: attachment;filename="'.$fileName.'"');
 	header('Cache-Control: max-age=0');
 
 	$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+	ob_clean();
 	$objWriter->save('php://output');
-    die();//die;
+    die();
    }
    
    public function removePhoto() {
