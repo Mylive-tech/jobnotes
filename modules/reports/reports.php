@@ -134,10 +134,7 @@ class REPORT extends REPORT_HTML_CONTENT
    }
    public function direct($pids)
    { 
-   if(!empty($pids))
-	{
-		$row=1;
-		require_once 'PHPExcel/Classes/PHPExcel.php';
+   		require_once 'PHPExcel/Classes/PHPExcel.php';
 		$objPHPExcel = new PHPExcel(); 
 		$objPHPExcel->getProperties()
 					->setCreator("user")
@@ -148,9 +145,16 @@ class REPORT extends REPORT_HTML_CONTENT
 					->setKeywords("office 2007 openxml php")
 					->setCategory("Test result file");
 			//print_r($pids); die;
+		foreach(range('A','Z') as $columnID) {
+			$objPHPExcel->getActiveSheet()->getColumnDimension($columnID)
+				->setAutoSize(true);
+		}
+   if(!empty($pids))
+	{
+		$row=1;
 		foreach($pids as $pid)
 		{
-			$row = $row+2;
+			if($row != 1){$row = $row+2;}
 			$jobdata = $this->report_details($pid);
 			
 			// Set the active Excel worksheet to sheet 0
@@ -238,7 +242,7 @@ class REPORT extends REPORT_HTML_CONTENT
 							$img = explode(',', $value);
 							foreach($img as $pimg)
 							{
-								$objPHPExcel->getActiveSheet()->getColumnDimension($imgcell)->setWidth(40);
+								//$objPHPExcel->getActiveSheet()->getColumnDimension($imgcell)->setWidth(40);
 								$objDrawing = new PHPExcel_Worksheet_Drawing();
 								$objDrawing->setName('Customer Signature');
 								$objDrawing->setDescription('Customer Signature');
@@ -257,7 +261,7 @@ class REPORT extends REPORT_HTML_CONTENT
 						else
 						{
 							$imgcell = 'D';
-							$objPHPExcel->getActiveSheet()->getColumnDimension($imgcell)->setWidth(40);
+							//$objPHPExcel->getActiveSheet()->getColumnDimension($imgcell)->setWidth(40);
 							$image = $value;
 							$objDrawing = new PHPExcel_Worksheet_Drawing();
 							$objDrawing->setName('Customer Signature');
@@ -292,17 +296,6 @@ class REPORT extends REPORT_HTML_CONTENT
    else
    {
 	$jobdata = $this->report_details($_GET['jid']);
-	require_once 'PHPExcel/Classes/PHPExcel.php';
- 	$objPHPExcel = new PHPExcel(); 
-	$objPHPExcel->getProperties()
-			->setCreator("user")
-    		->setLastModifiedBy("user")
-			->setTitle("Office 2007 XLSX Test Document")
-			->setSubject("Office 2007 XLSX Test Document")
-			->setDescription("Test document for Office 2007 XLSX, generated using PHP classes.")
-			->setKeywords("office 2007 openxml php")
-			->setCategory("Test result file");
-
 	// Set the active Excel worksheet to sheet 0
 	$objPHPExcel->setActiveSheetIndex(0); 
 	// Initialise the Excel row number
@@ -389,7 +382,7 @@ class REPORT extends REPORT_HTML_CONTENT
 					$img = explode(',', $value);
 					foreach($img as $pimg)
 					{
-						$objPHPExcel->getActiveSheet()->getColumnDimension($imgcell)->setWidth(40);
+						//$objPHPExcel->getActiveSheet()->getColumnDimension($imgcell)->setWidth(40);
 						$objDrawing = new PHPExcel_Worksheet_Drawing();
 						$objDrawing->setName('Customer Signature');
 						$objDrawing->setDescription('Customer Signature');
@@ -408,7 +401,7 @@ class REPORT extends REPORT_HTML_CONTENT
 				else
 				{
 					$imgcell = 'D';
-					$objPHPExcel->getActiveSheet()->getColumnDimension($imgcell)->setWidth(40);
+					//$objPHPExcel->getActiveSheet()->getColumnDimension($imgcell)->setWidth(40);
 					$image = $value;
 					$objDrawing = new PHPExcel_Worksheet_Drawing();
 					$objDrawing->setName('Customer Signature');
