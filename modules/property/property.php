@@ -345,33 +345,33 @@ class JOBLOCATION extends JOBLOCATION_HTML_CONTENT
 	   $strSql = "SELECT * FROM ".TBL_JOBSTATUS." js inner join ".TBL_JOBLOCATION." jl on js.job_id=jl.id where js.job_id=".$_GET['jid']." order by js.id desc";
 		$this->objSet = $this->objDatabase->dbQuery($strSql);
 		$reportdetails = $this->objSet;
-		/*$imagePath = $_SERVER['DOCUMENT_ROOT'].'jobnotes/assets/img/images/';
-		$reportdetails = array(
-			array('BrandIcon' => $imagePath . "facebook.png",'Comapany' => "facebook",'Rank' => "2",'Link' => "http://www.facebook.com"),
-			array('BrandIcon' => $imagePath . "googleplus.png",'Comapany' => "googleplus",'Rank' => "1",'Link' => "http://www.googleplus.com"),
-			array('BrandIcon' => $imagePath . "twitter.png",'Comapany' => "twitter",'Rank' => "3",'Link' => "http://www.twitter.com"),
-			array('BrandIcon' => $imagePath . "linkedin.png",'Comapany' => "linkedin",'Rank' => "8",'Link' => "http://www.linkedin.com"),
-		);*/
 		return $reportdetails;
 
 	}
-   public function direct()
+   public function staffuploads()
    {
-	   
-	$jobdata = $this->report_details();		
-	//print_r($reportdetails->fetch_object()); 
-	$reportdetails = array();
-	while($objRow = $jobdata->fetch_object())  // Fetch the result in the object array
-	{
-		$rowD = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow->started_by)); 
-		$reportdetails[] = array('Job Started On' => $objRow->start_date, 'Job Started By'=> $rowD[0]->f_name.' '.$rowD[0]->l_name, 'Completed On' => $objRow->closing_date, 'Completed By' => $rowD[0]->f_name.' '.$rowD[0]->l_name);
-		//$rowD = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow->started_by)); 
-		//$aa['Job Started By'] = $rowD[0]->f_name.' '.$rowD[0]->l_name;
-		//$aa['Completed On'] = $objRow->closing_date;
-		//$rowD = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow1->closed_by)); 
-		//$aa['Completed By'] = $rowD[0]->f_name.' '.$rowD[0]->l_name;
- 	} //print_r($aa);
-	//die;
+	   	$strSql = "SELECT staff_id, date, images FROM ".TBL_STAFF_UPLOADED_PROPERTY_IMAGES." where prop_id=".$_GET['jid'];
+		$this->objSet = $this->objDatabase->dbQuery($strSql);
+		$staffuploadsdetails = $this->objSet;
+		return $staffuploadsdetails;
+   }
+   public function staffname($staffid)
+   {
+	   $strSql = "SELECT * FROM ".TBL_STAFF." where id=".$staffid;
+	   $this->objSet = $this->objDatabase->fetchRows($strSql);
+		$staffdetails = $this->objSet;
+		return $staffdetails;
+   }
+   public function propname($propid)
+   {
+	   $strSql = "SELECT * FROM ".TBL_JOBLOCATION." where id=".$propid;
+	   $this->objSet = $this->objDatabase->fetchRows($strSql);
+		$propdetails = $this->objSet;
+		return $propdetails;
+   }
+   public function direct()
+   {   
+	$jobdata = $this->report_details();
 	require_once 'PHPExcel/Classes/PHPExcel.php';
  	$objPHPExcel = new PHPExcel(); 
 	$objPHPExcel->getProperties()
@@ -385,69 +385,138 @@ class JOBLOCATION extends JOBLOCATION_HTML_CONTENT
 
 	// Set the active Excel worksheet to sheet 0
 	$objPHPExcel->setActiveSheetIndex(0); 
-
 	// Initialise the Excel row number
 	$rowCount = 0; 
-
-	// Sheet cells
-	$cell_definition = array(
-		'A' => 'Job Started On',
-		'B' => 'Job Started By',
-		'C' => 'Completed On',
-		'D' => 'Completed By'
-	);
+	$row=1;
+	$propname = $this->propname($_GET['jid']);
+	$objPHPExcel->getActiveSheet()->getRowDimension($row)->setRowHeight(25);
+	$objPHPExcel->getActiveSheet()->setCellValue('A1', $propname->job_listing);
 	
-
-	// Build headers
-	foreach( $cell_definition as $column => $value )
-	{
-		$objPHPExcel->getActiveSheet()->getColumnDimension("{$column}")->setAutoSize(true);
-		//$objPHPExcel->getActiveSheet()->getColumnDimension("{$column}")->setBold(true);
-		$objPHPExcel->getActiveSheet()->setCellValue( "{$column}1", $value ); 
-	}
-
+	$objPHPExcel->getActiveSheet()->mergeCells('A1:E1');
+	$objPHPExcel->getActiveSheet()
+    ->getStyle('A1:E1')
+    ->getAlignment()
+    ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+	$objPHPExcel->getActiveSheet()->getStyle('A1')->getFont()->setBold(true)->setSize(16);
+	
+	$row = $row+2;
+	$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $row, 'S NO');
+	$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $row, 'Job Started On');
+	$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $row, 'Job Started By');
+	$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $row, 'Completed On');
+	$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(4, $row, 'Completed By');
+	
+	$objPHPExcel->getActiveSheet()->getStyle('A'.$row)->getFont()->setBold(true)->setSize(12);
+	$objPHPExcel->getActiveSheet()->getStyle('B'.$row)->getFont()->setBold(true)->setSize(12);
+	$objPHPExcel->getActiveSheet()->getStyle('C'.$row)->getFont()->setBold(true)->setSize(12);
+	$objPHPExcel->getActiveSheet()->getStyle('D'.$row)->getFont()->setBold(true)->setSize(12);
+	$objPHPExcel->getActiveSheet()->getStyle('E'.$row)->getFont()->setBold(true)->setSize(12);
 	// Build cells
-	while( $rowCount < count($reportdetails) ){ 
-		$cell = $rowCount + 2;
-		foreach( $cell_definition as $column => $value ) {
-
-			//$objPHPExcel->getActiveSheet()->getRowDimension($rowCount + 2)->setRowHeight(35); 
-			
-			switch ($value) {
-				case 'BrandIcon':
-					if (file_exists($reportdetails[$rowCount][$value])) {
-				        $objDrawing = new PHPExcel_Worksheet_Drawing();
-				        $objDrawing->setName('Customer Signature');
-				        $objDrawing->setDescription('Customer Signature');
-				        //Path to signature .jpg file
-				        $signature = $reportdetails[$rowCount][$value];    
-				        $objDrawing->setPath($signature);
-				        $objDrawing->setOffsetX(25);                     //setOffsetX works properly
-				        $objDrawing->setOffsetY(10);                     //setOffsetY works properly
-				        $objDrawing->setCoordinates($column.$cell);             //set image to cell 
-				        $objDrawing->setWidth(32);  
-				        $objDrawing->setHeight(32);                     //signature height  
-				        $objDrawing->setWorksheet($objPHPExcel->getActiveSheet());  //save 
-				    } else {
-				    	$objPHPExcel->getActiveSheet()->setCellValue($column.$cell, "Image not found" ); 
-				    }
-				    break;
-				case 'Link':
-					//set the value of the cell
-					$objPHPExcel->getActiveSheet()->SetCellValue($column.$cell, $reportdetails[$rowCount][$value]);
-					//change the data type of the cell
-					$objPHPExcel->getActiveSheet()->getCell($column.$cell)->setDataType(PHPExcel_Cell_DataType::TYPE_STRING2);
-					///now set the link
-					$objPHPExcel->getActiveSheet()->getCell($column.$cell)->getHyperlink()->setUrl(strip_tags($reportdetails[$rowCount][$value]));
-					break;
-
-				default:
-					$objPHPExcel->getActiveSheet()->setCellValue($column.$cell, $reportdetails[$rowCount][$value] ); 
-					break;
+	$row++;
+	$count =1;
+	while( $objRow = $jobdata->fetch_object() )
+	{ 
+		$col=0;
+		$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $count);$col++; 
+		$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $objRow->starting_date);$col++;
+		$rowD = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow->started_by));
+		$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $rowD[0]->f_name.' '.$rowD[0]->l_name);$col++;
+		$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $objRow->closing_date);$col++;
+		$rowD = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow->closed_by));
+		$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $rowD[0]->f_name.' '.$rowD[0]->l_name);$row++; $count++;
+		 
+	}
+	
+	$staffuploadsdata = $this->staffuploads();
+	$row = $row + 3	;
+	$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $row, 'StaffName');
+	$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $row, 'Date');
+	$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $row, 'Images');
+	
+	$objPHPExcel->getActiveSheet()
+    ->getStyle('B'.$row)
+    ->getAlignment()
+    ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+	$objPHPExcel->getActiveSheet()
+    ->getStyle('C'.$row)
+    ->getAlignment()
+    ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+	$objPHPExcel->getActiveSheet()
+    ->getStyle('D'.$row)
+    ->getAlignment()
+    ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+	$objPHPExcel->getActiveSheet()->getStyle('B'.$row)->getFont()->setBold(true)->setSize(12);
+	$objPHPExcel->getActiveSheet()->getStyle('C'.$row)->getFont()->setBold(true)->setSize(12);
+	$objPHPExcel->getActiveSheet()->getStyle('D'.$row)->getFont()->setBold(true)->setSize(12);
+	
+	$row++;
+	$supload = array();
+	while($objRow = $staffuploadsdata->fetch_object())  // Fetch the result in the object array
+	{	
+		$supload[] = get_object_vars($objRow);	
+	}
+	foreach($supload as $objRow1)
+	{
+		$col = 1;
+		foreach($objRow1 as $key=>$value) {
+			if($key == 'images')
+			{
+				$objPHPExcel->getActiveSheet()->getRowDimension($row)->setRowHeight(35);
+				$col = $row;
+				if (strpos($value, ',') !== false)
+				{
+					$imgcell = 'D';
+					$img = explode(',', $value);
+					foreach($img as $pimg)
+					{
+						$objPHPExcel->getActiveSheet()->getColumnDimension($imgcell)->setWidth(20);
+						$objDrawing = new PHPExcel_Worksheet_Drawing();
+						$objDrawing->setName('Customer Signature');
+						$objDrawing->setDescription('Customer Signature');
+						//Path to signature .jpg file
+						$signature = $_SERVER['DOCUMENT_ROOT'].'/upload/'.$pimg;     
+						$objDrawing->setPath($signature);
+						$objDrawing->setOffsetX(25);                     //setOffsetX works properly
+						$objDrawing->setOffsetY(10);                     //setOffsetY works properly
+						$objDrawing->setCoordinates($imgcell.$col);             //set image to cell 
+						$objDrawing->setWidth(32);  
+						$objDrawing->setHeight(32);                     //signature height  
+						$objDrawing->setWorksheet($objPHPExcel->getActiveSheet());
+						++$imgcell;
+					}
+				}
+				else
+				{
+					$imgcell = 'D';
+					$objPHPExcel->getActiveSheet()->getColumnDimension($imgcell)->setWidth(20);
+					$image = $value;
+					$objDrawing = new PHPExcel_Worksheet_Drawing();
+					$objDrawing->setName('Customer Signature');
+					$objDrawing->setDescription('Customer Signature');
+					//Path to signature .jpg file
+					$signature = $_SERVER['DOCUMENT_ROOT'].'/upload/'.$image;     
+					$objDrawing->setPath($signature);
+					$objDrawing->setOffsetX(25);                     //setOffsetX works properly
+					$objDrawing->setOffsetY(10);                     //setOffsetY works properly
+					$objDrawing->setCoordinates($imgcell.$col);             //set image to cell 
+					$objDrawing->setWidth(32);  
+					$objDrawing->setHeight(32);                     //signature height  
+					$objDrawing->setWorksheet($objPHPExcel->getActiveSheet());
+				}
+				
 			}
-			
+			elseif($key == 'staff_id')
+			{
+				$staffname = $this->staffname($value);
+				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $staffname->f_name.' '.$staffname->l_name);
+			}
+			else
+			{
+				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $value);
+			}
+			$col++;
 		}
-	    $rowCount++; 
+		$row++;
 	}
 	$rand = rand(1234, 9898);
 	$presentDate = date('YmdHis');

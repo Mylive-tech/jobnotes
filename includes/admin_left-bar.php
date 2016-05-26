@@ -225,7 +225,17 @@ if($currentPageUrl== ISP::AdminUrl('staff/staff_ivr_log/'))
 
  }
 
- 
+ if($currentPageUrl== ISP::AdminUrl('reports/property_report/') )  
+
+ {  
+
+    $formCurrent ='current';
+	
+	$FormListingOpen ='open';
+
+    $managepropertyListing='active';
+
+ }
 
  if($currentPageUrl== ISP::AdminUrl('staff/user-permissions/'))  
 
@@ -485,6 +495,12 @@ if($currentPageUrl== ISP::AdminUrl('staff/staff_ivr_log/'))
                                         <a href="<?php echo ISP :: AdminUrl('reports/driver_report/');?>" class="<?php echo $managedriverListing;?>">
                                         <i class="icon-angle-right"></i>
                                         Driver Reports
+                                 		</a>
+                                    </li>
+                                    <li>
+                                        <a href="<?php echo ISP :: AdminUrl('reports/property_report/');?>" class="<?php echo $managepropertyListing;?>">
+                                        <i class="icon-angle-right"></i>
+                                        Properties Reports
                                  		</a>
                                     </li>
                                 </ul>

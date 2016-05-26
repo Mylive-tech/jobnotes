@@ -629,6 +629,161 @@ $(document).ready(function() {
  </div>			
 <?php    
 }
+protected function admin_property_report($objRs)
+   {
+   ?> 
+<script type="text/javascript">
+$(document).ready(function() {
+    $('.datatable').dataTable( {} );
+} );
+</script>      
+<div id="content">			   
+  <div class="container">	
+  <div class="crumbs">
+	<ul id="breadcrumbs" class="breadcrumb">
+            <li>
+                <i class="icon-home"></i>
+                <a href="<?php echo ISP::AdminUrl('dashboard/admin_dashboard/');?>">Dashboard</a>
+            </li>
+            <li>
+                <i class="current"></i>
+                <a href="#">Reporting</a>
+            </li>
+            <li>
+                <i class="current"></i>
+                <a href="#">Reports Manager</a>
+            </li>
+            <li>
+                <i class="current"></i>
+                <a href="#">Properties Reports</a>
+            </li>
+        </ul>
+</div>
+			     
+    <!--=== Normal ===--> 				     
+    <div class="row">					       
+      <div class="col-md-12">						         
+        <!--<h4 class="text-left heding_6">Manage Properties</h4>-->
+        <div class="widget box box-vas">							 							           
+          <div class="widget-content widget-content-vls">
+          <?php  if(isset($_POST['btn_export'])) {//print_r($_POST['delete']); die;
+			   	$this->direct($_POST['delete']);
+		  }?>                                             
+            <form method="post" name="frmListing" action=""> 
+            <div class="col-md-12 text-right" style="padding-bottom:10px">
+             <!--<span style="margin-right:10px; border-right:1px solid #ccc; padding-right:10px;">											
+                <a href="<?php echo ISP :: AdminUrl('property/add-property/');?>" class="btn btn-info">Add New Property</a>									
+              </span> 
+              
+                <input type="submit" class="btn btn-success btn-ms" name="btn_Publish" value="Publish" onclick="document.frmListing.status.value='1';" />                          
+                                      
+                <input type="submit" class="btn btn-warning btn-ms" name="btn_UnPublish" value="Unpublish" onclick="document.frmListing.status.value='0';" />                           
+                <input type="submit" class="btn btn-danger btn-ms" name="btn_delete" value="Delete" onclick="document.frmListing.status.value='-1';" />-->                
+              
+             	<input type="submit" class="btn btn-info" name="btn_export" value="Export" onclick="document.frmListing.status.value='export';">
+             	<!--<a href="javascript: void(0);" onclick="exportTableToCSV.apply(this, [$('#dataTables-example'), 'export-joblocations.csv']);" class="btn btn-info">Export</a>-->									               
+               
+            </div>                                                 
+              <table class="table table-striped table-bordered table-hover table-checkable table-responsive datatable">                                                     
+                <thead class="cf">							                   
+                  <tr>                                     
+                    <th align="center">S.N.</th>
+                     <th align="center" data-hide="phone" class="hideexport divchecker"><input type="checkbox" class="uniform" name="del[]" onclick="selectDeselect('delete[]');"/> 								                     
+                    <th align="center"  data-class="expand">Job Location</th>								                     
+                    <th align="center" data-hide="phone">Address</th>                                     
+                    <th align="center" data-hide="phone">Assigned To</th>                                     
+                    <th align="center" data-hide="phone">Phone Number</th>                                     
+                    <th align="center" data-hide="phone">Important Notes</th>                                     
+                    <th align="center" data-hide="phone">Assigned Location</th> 
+                   <!-- <th align="center" data-hide="phone">Priority</th>                                    
+                    <th align="center" data-hide="phone" class="hideexport">Status</th>                                     
+                    <th align="center" data-hide="phone" class="hideexport">Edit</th>-->                                                                                                                              <th align="center" data-hide="phone" class="hideexport">&nbsp;</th>                                     
+                    <th align="center" data-hide="phone" class="hideexport">&nbsp;</th>                                                                                                                                                              
+                   <!-- <th align="center" data-hide="phone" class="hideexport divchecker"><input type="checkbox" class="uniform" name="del[]" onclick="selectDeselect('delete[]');"/> -->                    
+                    </th>						                   
+                  </tr>						                 
+                </thead>						                 
+                <tbody>                       
+<?php
+			
+			if($objRs): // Check for the resource exists or not
+			 $intI=1;
+			 
+			  while($objRow = $objRs->fetch_object())  // Fetch the result in the object array
+			  {
+			    $strStatus = ($objRow->status)?'0':'1';
+				
+				if($intI++%2==0)  // Condition for alternate rows color
+				   $strCss='evenTr';
+				else
+				   $strCss='oddTr';
+				
+                                    			?>         			                   
+                  <tr>
+                  <td><?php echo $intI-1;?></td>
+                   <td align="center" class="hideexport divchecker"><input type="checkbox" class="uniform" name="delete[]" value="<?php echo $objRow->id;?>"  /></td> 
+                      <td><?php echo $objRow->job_listing;?>
+                      <br> <br>
+                     <!-- <a class="btn btn-danger btn-ms" href="<?php echo ISP :: AdminUrl('property/job-history/id/'.$objRow->id);?>">History</a>-->
+                      </td> 
+                      <td><?php echo $objRow->location_address;?></td>
+                      <td><?php
+                      if($objRow->assigned_to >0) {
+                        $rowD = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow->assigned_to));
+                        echo $rowD[0]->f_name.' '.$rowD[0]->l_name;  
+                      }
+                      else{
+                        echo 'Unassigned';    
+                      }
+                      ?>
+                      </td>
+                      <td><a href="tel:<?php echo $objRow->phn_no;?>"><?php echo $objRow->phn_no;?></a></td> 
+                      <td><?php echo $objRow->importent_notes;?></td>
+                      <td><?php
+                      echo $this->objFunction->iFind(TBL_SERVICE,'name', array('id'=>$objRow->location_id));
+                      //echo $rowD[0]->f_name.' '.$rowD[0]->l_name;
+                      ?>                      
+                      <?php //echo $objRow->assigned_under_1;?></td>                                    
+                    
+                    <!--<td align="cente"><a href="<?php echo ISP :: AdminUrl('property/modifyjoblocation/priority_status/'.(($objRow->priority_status==1)?"0":"1").'/delete/'.$objRow->id);?>" class="<?php echo ($objRow->priority_status==1)?'high_priority':'normal_priority';?>"><?php echo ($objRow->priority_status==1)?'High':'Normal';?></a></td>
+                    <td align="center" class="hideexport">
+                    <a href="<?php echo ISP :: AdminUrl('property/modifyjoblocation/delete/'.$objRow->id.'/status/'.$strStatus);?>" alt="Click to <?php echo ($objRow->status==1)?'Deactivate':'Activate';?>" title="Click to <?php echo ($objRow->status==1)?'Deactivate':'Activate';?>">
+                     <i class="fa fa-toggle-<?php if($objRow->status==1) echo 'on'; else echo 'off';?>"></i>
+                    </a>
+                    </td>                                               
+                    <td align="center" class="hideexport">
+                    <a href="<?php echo ISP :: AdminUrl('property/edit-property/id/'.$objRow->id);?>">
+                    
+                    <i class="fa fa-pencil-square-o"></i></a>
+                    </td>-->
+                    <td align="center" class="hideexport"> <a class="btn btn-danger btn-ms" href="<?php echo ISP :: AdminUrl('property/job-history/id/'.$objRow->id);?>">View</a></td>
+                    <td align="center" class="hideexport"><a href="<?php echo ISP :: AdminUrl('reports/direct/?jid='.$objRow->id);?>" class="btn btn-info">Export</a></td>                               
+                   <!-- <td align="center" class="hideexport divchecker"><input type="checkbox" class="uniform" name="delete[]" value="<?php echo $objRow->id;?>"  /></td> -->                            
+                  </tr>                            
+<?php
+			   }
+                                    			   ?>                            
+                </tbody>                       
+              </table>             
+                              
+<?php
+			 else:
+			       echo '<tr><td colspan="5" class="errNoRecord">No Record Found!</td></tr>';
+			 endif;  
+                            			 ?>                          
+             <!-- <input type="hidden" name="status" value="1" />                       
+              <input type="hidden" name="task" value="modifyjoblocation" /> -->                  
+            </form>						 		           
+          </div>						         
+        </div>					       
+      </div>				     
+    </div>				     
+    <!-- /Normal --> 			   
+  </div>			   
+  <!-- /.container --> 		 
+</div>
+<?php 
+   }  // End of Function 
    protected function reportForm($recordSet, $form_id)
    {
 ?>
