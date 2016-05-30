@@ -145,7 +145,7 @@ class REPORT extends REPORT_HTML_CONTENT
 					->setKeywords("office 2007 openxml php")
 					->setCategory("Test result file");
 			//print_r($pids); die;
-		foreach(range('A','Z') as $columnID) {
+		foreach(range('A','D') as $columnID) {
 			$objPHPExcel->getActiveSheet()->getColumnDimension($columnID)
 				->setAutoSize(true);
 		}
@@ -190,11 +190,14 @@ class REPORT extends REPORT_HTML_CONTENT
 			while( $objRow = $jobdata->fetch_object() )
 			{ 
 				$col=0;
+				$startdate = date('Y-m-d h:i:s a', strtotime($objRow->starting_date));
+				$enddate = date('Y-m-d h:i:s a', strtotime($objRow->starting_date));
+				$closedate = strtotime($objRow->closing_date);
 				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $count);$col++; 
-				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $objRow->starting_date);$col++;
+				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $startdate);$col++;
 				$rowD = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow->started_by));
 				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $rowD[0]->f_name.' '.$rowD[0]->l_name);$col++;
-				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $objRow->closing_date);$col++;
+				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $enddate);$col++;
 				$rowD = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow->closed_by));
 				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $rowD[0]->f_name.' '.$rowD[0]->l_name);$row++; $count++;
 				 
@@ -242,7 +245,7 @@ class REPORT extends REPORT_HTML_CONTENT
 							$img = explode(',', $value);
 							foreach($img as $pimg)
 							{
-								//$objPHPExcel->getActiveSheet()->getColumnDimension($imgcell)->setWidth(40);
+								$objPHPExcel->getActiveSheet()->getColumnDimension($imgcell)->setWidth(30);
 								$objDrawing = new PHPExcel_Worksheet_Drawing();
 								$objDrawing->setName('Customer Signature');
 								$objDrawing->setDescription('Customer Signature');
@@ -261,7 +264,7 @@ class REPORT extends REPORT_HTML_CONTENT
 						else
 						{
 							$imgcell = 'D';
-							//$objPHPExcel->getActiveSheet()->getColumnDimension($imgcell)->setWidth(40);
+							$objPHPExcel->getActiveSheet()->getColumnDimension($imgcell)->setWidth(30);
 							$image = $value;
 							$objDrawing = new PHPExcel_Worksheet_Drawing();
 							$objDrawing->setName('Customer Signature');
@@ -382,7 +385,7 @@ class REPORT extends REPORT_HTML_CONTENT
 					$img = explode(',', $value);
 					foreach($img as $pimg)
 					{
-						//$objPHPExcel->getActiveSheet()->getColumnDimension($imgcell)->setWidth(40);
+						$objPHPExcel->getActiveSheet()->getColumnDimension($imgcell)->setWidth(30);
 						$objDrawing = new PHPExcel_Worksheet_Drawing();
 						$objDrawing->setName('Customer Signature');
 						$objDrawing->setDescription('Customer Signature');
@@ -401,7 +404,7 @@ class REPORT extends REPORT_HTML_CONTENT
 				else
 				{
 					$imgcell = 'D';
-					//$objPHPExcel->getActiveSheet()->getColumnDimension($imgcell)->setWidth(40);
+					$objPHPExcel->getActiveSheet()->getColumnDimension($imgcell)->setWidth(30);
 					$image = $value;
 					$objDrawing = new PHPExcel_Worksheet_Drawing();
 					$objDrawing->setName('Customer Signature');
