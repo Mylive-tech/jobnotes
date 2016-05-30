@@ -1,0 +1,111 @@
+## Changes
+
+## 2016-04-05
+	1. Removed IVR staff log widget from dashboard 
+	2. Customized widget to show pie chart called “IVR - Clock in / out” – In this widget we will show the current active users vs inactive user
+	3. Changed the user roles to following:
+            a.Administrator
+            b.Staff
+            c.Operations Manager
+            d.Drivers
+            e.Sidewalk Guys
+            f.Sub-Contractors
+
+## 2016-04-06
+
+	1. Fixed the issue with location status and details widget
+
+## 2016-04-07
+
+	1. Added new roles to the staff details page and Staff permissions page
+
+## 2016-04-08
+
+	1. Added IVR clock in /out widget on new setup on staging jobnotes
+	2. Created three pie charts to show the clocked in/out user based on roles (driver, sidewalk guys and sub contractor)
+	
+## 2016-04-15
+
+	1. Fixed dashboard widgets tabs label spacing issues
+	2. Linked the name to the user profile page when clicked in the staff widget listing
+
+## 2016-04-26
+
+	1. Customized reporting menu at dashboard and make reports manager not click-able
+	2. Added custom report, IVR log and driver reports sub-menus under Reporting > reports manager
+	3. Added screen for custom reports from reports manager
+	
+## 2016-04-27
+
+	1. Added screen for IVR log under reports manager
+	2. Added Screen for driver reports in reports manager
+	3. Removed IVR log section from staff management > manage users tab
+
+## 2016-04-28
+
+	1. Created Driver reports table under reporting > reporting manage > driver reports
+	2. Added note table to store custom notes added by users with the fields (ID, property ID, staff Id/admin, notes, date added)
+	
+## 2016-04-29
+
+	1. Created driver table to display number of hours worked for last start and close date for the job
+
+## 2016-05-02
+
+	1. Removed edit form at IVR view log screen
+	2. Added back button at IVR log to go back to the IVR report
+	3. Added search by date field on view log
+	4. Created screen for view log of driver report
+	5. Removed Today IVR log menu from staff management > manage users section
+
+## 2016-05-03
+
+	1. Display Driver reports log data for individuals
+    2. Applied date-time filter to fetch reports based on selected date & time
+	
+## 2016-05-04
+
+	1. Displayed yesterday/today records in driver reports by default
+	2. Changed IVR log column structure for the date, time and status
+	3. Fixed the alignment issue on driver report search form
+	4. Added check for php extension on snownotes and dev.jobnotes website for file upload
+
+## 2016-05-05
+
+	1. Created doc for snow notes mobile application snapshots
+
+## 2016-05-06
+
+	1. Created IVR view log screen under reports manager
+	
+## 2016-05-09
+	
+	1. Display user info of IVR view log on view log screen at the top
+	2. Added date-time picker to filter and displayed data based on selected date and time
+
+## 2016-05-10
+	
+	1. Fixed staff permission saving issue for the selected roles with checkboxes
+	2. Displayed assigned permissions on staff permission page from the database
+	
+## 2016-05-11
+
+	1. Added legend for checked and unchecked permissions on staff permission page
+	2. Changed view log screen user details appearance on top of the page
+	
+## 2016-05-16
+
+	1. Created new table to store staff uploaded images.
+	2. Saved staff uploaded properties image in the newly created tables with property and staff details.
+
+## 2016-05-18
+
+	- Integrated the phpexcel export for the properties report as the same way it was with javascript
+
+## 2016-05-24
+
+	1. Created property report menu and screens under reports manager section
+	2. Exported data all together for job details
+
+## 2016-05-26
+	1. Added feature to export multiple properties data with job start & end details and staff uploaded images
