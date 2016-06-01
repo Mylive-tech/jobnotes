@@ -173,7 +173,7 @@ class REPORT extends REPORT_HTML_CONTENT
 			$objPHPExcel->getActiveSheet()->getStyle('A'.$row)->getFont()->setBold(true)->setSize(16);
 			
 			$row = $row+2;
-			$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $row, 'S NO');
+			$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $row, 'Staff #');
 			$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $row, 'Job Started On');
 			$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $row, 'Job Started By');
 			$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $row, 'Completed On');
