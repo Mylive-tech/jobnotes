@@ -213,7 +213,7 @@ class staff extends STAFF_HTML_CONTENT
 					parent::admin_Form($this->objRecord);
 				}
 				else:
-					if ($_POST['password'] != '') $_POST['db_password'] = $_POST['password'];
+					if ($_POST['password'] != '') $_POST['db_password'] = md5($_POST['password']);
 					$this->objDatabase->updateForm($tbl); //Update Exisiting content
 					$this->objFunction->showMessage('Record has been updated successfully.', $_SERVER['REQUEST_URI']); //Function to show the message
 				endif;
