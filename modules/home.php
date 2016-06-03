@@ -168,7 +168,7 @@ endif;
 
 						<i class="icon-user"></i>
 
-						<input type="text" name="md_username" class="form-control" placeholder="Username" autofocus="autofocus" data-rule-required="true" data-msg-required="Please enter your username." value="<?php echo $_COOKIE['remember_me']; ?>" />
+						<input type="text" name="md_username" class="form-control" placeholder="Username" autofocus="autofocus" data-rule-required="true" data-msg-required="Please enter your username." value="<?php echo $_COOKIE['remember_me']; ?>" tabindex="1" />
 
 					</div>
 
@@ -182,7 +182,7 @@ endif;
 
 						<i class="icon-lock"></i>
 
-						<input type="password" name="md_password" class="form-control" placeholder="Password" data-rule-required="true" data-msg-required="Please enter your password." />
+						<input type="password" name="md_password" class="form-control" placeholder="Password" data-rule-required="true" data-msg-required="Please enter your password." tabindex="2" />
 
 					</div>
 
@@ -202,7 +202,7 @@ $_SESSION['captcha_sum'] = $sum;
 
 						<i style="width:75px; color:#000; font-style:normal; font-size:15px;"><?php echo $number1." + ".$number2." = ";?></i>
 
-						<input style="padding-left:80px !important;  font-size:15px !important;" type="text" name="captcha" required class="form-control" autocomplete="off" placeholder="" data-rule-required="true" data-msg-required="Please enter your password." />
+						<input style="padding-left:80px !important;  font-size:15px !important;" type="text" name="captcha" required class="form-control" autocomplete="off" placeholder="" data-rule-required="true" data-msg-required="Please enter your password." tabindex="3" />
 
 					</div>
 
@@ -218,11 +218,11 @@ $_SESSION['captcha_sum'] = $sum;
 
 				<div class="form-actions">
 
-					<label class="checkbox pull-right"><input type="checkbox" class="uniform" value="1" name="remember"  <?php echo $_COOKIE['check_me_remember'];?>> Remember me</label>
+					<label class="checkbox pull-right"><input type="checkbox" class="uniform" value="1" name="remember"  <?php echo $_COOKIE['check_me_remember'];?> tabindex="5"> Remember me</label>
 
-					<label class="checkbox pull-left"><input type="checkbox" class="uniform" value="1" name="keep_me_logged_in" <?php echo $_COOKIE['check_me_login'];?>> Keep Me Logged In</label>
+					<label class="checkbox pull-left"><input type="checkbox" class="uniform" value="1" name="keep_me_logged_in" <?php echo $_COOKIE['check_me_login'];?> tabindex="4"> Keep Me Logged In</label>
 
-					<button type="submit" class="submit btn btn-info btn-primary pull-right">
+					<button type="submit" class="submit btn btn-info btn-primary pull-right" tabindex="6">
 
 						Sign In <i class="icon-angle-right"></i>
 

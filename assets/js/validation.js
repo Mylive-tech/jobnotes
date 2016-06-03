@@ -634,11 +634,7 @@ return false;  // date is valid
 
 					strMsg = strArgvalue.replace(/_/g, ' ');
 
-					
-
-									
-
-					if(field.type == 'select-one') {
+					if(field.type == 'select-one' && field.name != 'md_job_title') {
 
 						strMessage = 'Required field can not be left blank.';
 
@@ -653,11 +649,12 @@ return false;  // date is valid
 						strMessage = 'Required field can not be left blank.';
 
 					}
-
-					else {
-
+					else if(field.name == 'md_job_title') {
+						return true;
+					}
+					else
+					{
 						strMessage = 'Required field can not be left blank.';
-
 					}
 
 					if(blankField(field, strMessage))

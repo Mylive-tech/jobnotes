@@ -228,7 +228,7 @@ class Database
             
                if( substr($key, 0, 3) == 'md_')
                {
-                 if(trim($value)=="")
+                 if(trim($value)=="" && trim($key) != "md_job_title")
                    $strMessage= '<li>Required fields can not be left blank</li>';
                }
             

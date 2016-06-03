@@ -112,3 +112,8 @@
 	
 ## 2016-06-02
 	1. Fixed  user access issue with password saving when edit user from dashboard.
+	
+## 2016-06-03
+	1. Fixed  home login screen tab index issue
+	2. Made edit staff page job title field as not required
+	3. Changed staff permission service module labels
