@@ -117,3 +117,10 @@
 	1. Fixed  home login screen tab index issue
 	2. Made edit staff page job title field as not required
 	3. Changed staff permission service module labels
+
+## 2016-06-07
+	1. Removed redirect message on pages when save forms
+
+## 2016-06-08
+	1. Added pause/unpause functionality at job details page
+	2. Applied export property report in the given column header format
