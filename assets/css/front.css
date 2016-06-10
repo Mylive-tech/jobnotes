@@ -67,7 +67,7 @@ div.attachphotos:hover .fa-camera
 	vertical-align: middle;
 }
 .propertystatus div.startbutton {
-	height: 100px;
+	height: 150px;
 	padding-top: 25px !important;
 	vertical-align: middle;
 	background: #c4c8cb;
@@ -80,7 +80,7 @@ div.attachphotos:hover .fa-camera
 	text-transfor: uppercase;
 }
 .propertystatus div.attachphotos {
-	padding-top: 20px !important;
+	padding-top: 40px !important;
   position:relative;
 }
 .propertygallery {

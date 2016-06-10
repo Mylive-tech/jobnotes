@@ -942,8 +942,19 @@ function reloadPage()
          <a href="<?php echo SITE_URL;?>index.php?dir=property&task=start&s=2&id=<?php echo intval($_GET['id']);?>">
            <button type="button" class="btn btn-info">Complete</button>
           </a>
+           <a href="<?php echo SITE_URL;?>index.php?dir=property&task=start&s=3&id=<?php echo intval($_GET['id']);?>">
+           <button type="button" class="btn btn-info">Pause</button>
+          </a>
          <?php
           }
+		  elseif($objRecordSet->progress==3)
+		  { 
+			 ?>
+			   <a href="<?php echo SITE_URL;?>index.php?dir=property&task=start&s=1&id=<?php echo intval($_GET['id']);?>">
+			   <button type="button" class="btn btn-info">Unpause</button>
+			  </a>
+			 <?php
+		   }
           elseif($objRecordSet->progress==2)
           { 
          ?>

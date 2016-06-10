@@ -174,16 +174,18 @@ class REPORT extends REPORT_HTML_CONTENT
 			
 			$row = $row+2;
 			$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $row, 'Staff #');
-			$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $row, 'Job Started On');
-			$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $row, 'Job Started By');
-			$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $row, 'Completed On');
-			$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(4, $row, 'Completed By');
+			$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $row, 'Started By');
+			$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $row, 'Job Start (or unpause)');
+			$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $row, 'Pause');
+			$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(4, $row, 'Job End');
+			$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(5, $row, 'Completed By');
 			
 			$objPHPExcel->getActiveSheet()->getStyle('A'.$row)->getFont()->setBold(true)->setSize(12);
 			$objPHPExcel->getActiveSheet()->getStyle('B'.$row)->getFont()->setBold(true)->setSize(12);
 			$objPHPExcel->getActiveSheet()->getStyle('C'.$row)->getFont()->setBold(true)->setSize(12);
 			$objPHPExcel->getActiveSheet()->getStyle('D'.$row)->getFont()->setBold(true)->setSize(12);
 			$objPHPExcel->getActiveSheet()->getStyle('E'.$row)->getFont()->setBold(true)->setSize(12);
+			$objPHPExcel->getActiveSheet()->getStyle('F'.$row)->getFont()->setBold(true)->setSize(12);
 			// Build cells
 			$row++;
 			$count =1;
@@ -191,12 +193,20 @@ class REPORT extends REPORT_HTML_CONTENT
 			{ 
 				$col=0;
 				$startdate = date('Y-m-d h:i:s a', strtotime($objRow->starting_date));
-				$enddate = date('Y-m-d h:i:s a', strtotime($objRow->starting_date));
+				if($objRow->pausing_date != '0000-00-00 00:00:00')
+					$pausedate = date('Y-m-d h:i:s a', strtotime($objRow->pausing_date));
+				else
+					$pausedate = '00:00 Null';
+				if($objRow->closing_date != '0000-00-00 00:00:00')
+					$enddate = date('Y-m-d h:i:s a', strtotime($objRow->closing_date));
+				else
+					$enddate = '00:00 Null';
 				$closedate = strtotime($objRow->closing_date);
-				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $count);$col++; 
-				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $startdate);$col++;
+				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $count);$col++;
 				$rowD = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow->started_by));
-				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $rowD[0]->f_name.' '.$rowD[0]->l_name);$col++;
+				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $rowD[0]->f_name.' '.$rowD[0]->l_name);$col++; 
+				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $startdate);$col++;
+				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $pausedate);$col++;
 				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $enddate);$col++;
 				$rowD = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow->closed_by));
 				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $rowD[0]->f_name.' '.$rowD[0]->l_name);$row++; $count++;
@@ -316,28 +326,41 @@ class REPORT extends REPORT_HTML_CONTENT
 	$objPHPExcel->getActiveSheet()->getStyle('A1')->getFont()->setBold(true)->setSize(16);
 	
 	$row = $row+2;
-	$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $row, 'S NO');
-	$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $row, 'Job Started On');
-	$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $row, 'Job Started By');
-	$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $row, 'Completed On');
-	$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(4, $row, 'Completed By');
+	$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $row, 'Staff #');
+	$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $row, 'Started By');
+	$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $row, 'Job Start (or unpause)');
+	$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $row, 'Pause');
+	$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(4, $row, 'Job End');
+	$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(5, $row, 'Completed By');
 	
 	$objPHPExcel->getActiveSheet()->getStyle('A'.$row)->getFont()->setBold(true)->setSize(12);
 	$objPHPExcel->getActiveSheet()->getStyle('B'.$row)->getFont()->setBold(true)->setSize(12);
 	$objPHPExcel->getActiveSheet()->getStyle('C'.$row)->getFont()->setBold(true)->setSize(12);
 	$objPHPExcel->getActiveSheet()->getStyle('D'.$row)->getFont()->setBold(true)->setSize(12);
 	$objPHPExcel->getActiveSheet()->getStyle('E'.$row)->getFont()->setBold(true)->setSize(12);
+	$objPHPExcel->getActiveSheet()->getStyle('F'.$row)->getFont()->setBold(true)->setSize(12);
 	// Build cells
 	$row++;
 	$count =1;
 	while( $objRow = $jobdata->fetch_object() )
 	{ 
 		$col=0;
-		$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $count);$col++; 
-		$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $objRow->starting_date);$col++;
+		$startdate = date('Y-m-d h:i:s a', strtotime($objRow->starting_date));
+		if($objRow->pausing_date != '0000-00-00 00:00:00')
+			$pausedate = date('Y-m-d h:i:s a', strtotime($objRow->pausing_date));
+		else
+			$pausedate = '00:00 Null';
+		if($objRow->closing_date != '0000-00-00 00:00:00')
+			$enddate = date('Y-m-d h:i:s a', strtotime($objRow->closing_date));
+		else
+			$enddate = '00:00 Null';
+		$closedate = strtotime($objRow->closing_date);
+		$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $count);$col++;
 		$rowD = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow->started_by));
-		$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $rowD[0]->f_name.' '.$rowD[0]->l_name);$col++;
-		$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $objRow->closing_date);$col++;
+		$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $rowD[0]->f_name.' '.$rowD[0]->l_name);$col++; 
+		$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $startdate);$col++;
+		$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $pausedate);$col++;
+		$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $enddate);$col++;
 		$rowD = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow->closed_by));
 		$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $rowD[0]->f_name.' '.$rowD[0]->l_name);$row++; $count++;
 		 

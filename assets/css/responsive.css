@@ -790,7 +790,7 @@
 
   }
 
-  #untouchedbox div:nth-child(2), #completedbox div:nth-child(2){
+  #untouchedbox div:nth-child(2), #completedbox div:nth-child(2), #pausedbox div:nth-child(2){
     padding-left: 15px;
     padding-right: 15px;
   }
@@ -875,7 +875,7 @@
 
   }
 
-  #untouchedbox div:nth-child(2), #completedbox div:nth-child(2){
+  #untouchedbox div:nth-child(2), #completedbox div:nth-child(2), #pausedbox div:nth-child(2){
     padding-left: 15px;
     padding-right: 15px;
   }

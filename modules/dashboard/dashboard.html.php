@@ -136,18 +136,28 @@ $(".inside_widget_greenheading").click(function()
    $("#completedbox").toggle();
    $("#untouchedbox").hide();
    $("#inprogressbox").hide();
+   $("#pausedbox").hide();
 });
 $(".inside_widget_progressheading").click(function()
 {
    $("#completedbox").hide();
    $("#untouchedbox").hide();
    $("#inprogressbox").toggle();
+   $("#pausedbox").hide();
 });
 $(".inside_widget_redheading").click(function()
 {
    $("#completedbox").hide();
    $("#untouchedbox").toggle();
    $("#inprogressbox").hide();
+   $("#pausedbox").hide();
+});
+$(".inside_widget_pauseheading").click(function()
+{
+   $("#completedbox").hide();
+   $("#untouchedbox").hide();
+   $("#inprogressbox").hide();
+   $("#pausedbox").toggle();
 });
 </script>       
 <?php }

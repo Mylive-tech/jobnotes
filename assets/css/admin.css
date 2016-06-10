@@ -181,19 +181,19 @@ div.widget-content ul li:nth-child(even) {
   line-height: 17px;
 }
 ul.bxslider li{width:100% !important; float:left;}
-#untouchedbox, #inprogressbox, #completedbox
+#untouchedbox, #inprogressbox, #completedbox, #pausedbox
 {
     background:#fff;
     height: 182px; 
     overflow-y: hidden;
 }
-#untouchedbox div:first-child, #inprogressbox div:first-child, #completedbox div:first-child
+#untouchedbox div:first-child, #inprogressbox div:first-child, #completedbox div:first-child, #pausedbox div:first-child
 {
     height: 182px; 
     overflow-y: auto;
 } 
 
-#untouchedbox div:nth-child(2), #inprogressbox div:nth-child(2), #completedbox div:nth-child(2)
+#untouchedbox div:nth-child(2), #inprogressbox div:nth-child(2), #completedbox div:nth-child(2), #pausedbox div:nth-child(2)
 {
   padding-left: 10px !important;   
 }
@@ -202,7 +202,8 @@ ul.bxslider li{width:100% !important; float:left;}
 
 .inside_widget_redheading i.icon-angle-down,
 .inside_widget_greenheading i.icon-angle-down,
-.inside_widget_progressheading i.icon-angle-down
+.inside_widget_progressheading i.icon-angle-down,
+.inside_widget_pauseheading i.icon-angle-down
 {
   float:right;
   color:#fff;
@@ -211,6 +212,7 @@ ul.bxslider li{width:100% !important; float:left;}
 .inside_widget_redheading{background:#e25856; width:100%; color:#fff; text-transform:uppercase;}
 .inside_widget_greenheading{background:#289762; width:100%; color:#fff; text-transform:uppercase;}
 .inside_widget_progressheading{background:#e28a30; width:100%; color:#fff; text-transform:uppercase;}
+.inside_widget_pauseheading{background:#3366CC; width:100%; color:#fff; text-transform:uppercase;}
 .drag {
     width: 100%;
     line-height: 25px;

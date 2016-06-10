@@ -198,6 +198,12 @@
         $("#completedbox div:first-child").mouseleave(function() {
           $("#widgetsorting .sortable" ).sortable('enable');
         }); 
+		$("#pausedbox div:first-child").mouseenter(function() {
+          $("#widgetsorting .sortable" ).sortable('disable');
+        });  
+        $("#pausedbox div:first-child").mouseleave(function() {
+          $("#widgetsorting .sortable" ).sortable('enable');
+        });
       });
     </script>                   
         <div class="widget-header dragwidget_location_status_details">                         
@@ -324,6 +330,46 @@
                         <b>Assigned To: </b><?php $rowD = $this->iFindAll(TBL_STAFF, array('id'=>$objProperty->assigned_to));  echo $rowD[0]->f_name.' '.$rowD[0]->l_name;?><br>
                         <b>Phone: </b><?php echo $rowD[0]->phone;?><br>  
                         <b>Completed On: </b><?php echo strftime("%m/%d/%Y %I:%M %p", strtotime($objProperty->completion_date));?><br>
+                        </p>         
+                    <?php
+                    }
+                    ?>                                                       
+                </div>                
+            </div>
+            <div class="inside_widget_pauseheading padding10">Properties Paused
+              <i class="icon-angle-down"></i>
+            </div>                        
+            <div class="col-md-12 nopadding" id="pausedbox" style="display:none">                
+                <div class="col-md-6 full pull-left">                                            
+                    <ul class="bxslider">           
+                        <?php
+                        $objRs = $this->objDBCon->dbQuery("Select j.*, s.name as section_name from ".TBL_JOBLOCATION." j inner join ".TBL_SERVICE." s on j.location_id =s.id and j.site_id='".$_SESSION['site_id']."' where j.progress=3 and j.status=1");
+                        $fistUntouch=0;
+                        while($objProperty = $objRs->fetch_object())
+                        {
+                        if($fistUntouch==0)
+                        $fistUntouch= $objProperty->id;
+                        ?>                                  
+                        <li class="<?php if($fistUntouch==$objProperty->id) echo 'activelink';?>"><a class="padding10" href="javascript: void(0);" onclick="showlocactionInfo($(this),<?php echo $objProperty->id;?>);"><b><?php echo $objProperty->job_listing;?></b> (<?php echo $objProperty->section_name;?> )</a></li>           
+                        <?php
+                        }
+                        ?>                              
+                    </ul>                         
+                </div>                         
+                <div class="col-md-6 nopadding pull-left">         
+                    <?php
+                    $objRsDetails = $this->objDBCon->dbQuery("Select j.*, s.name as section_name, s.territory from ".TBL_JOBLOCATION." j inner join ".TBL_SERVICE." s on j.location_id =s.id where j.progress=3 and j.status=1 and j.site_id='".$_SESSION['site_id']."'");
+                    while($objProperty = $objRsDetails->fetch_object())
+                    {
+                    ?>                            
+                        <p id="p_<?php echo $objProperty->id;?>" class="<?php if($fistUntouch==$objProperty->id) echo 'show'; else echo 'hide';?>  insidewidget_locationdetails">
+                        <b>Name: </b><?php echo $objProperty->job_listing;?><br>
+                        <b>Address: </b><?php echo $objProperty->location_address;?><br>
+                        <b>Section: </b><?php echo $objProperty->section_name;?><br>
+                        <b>Territory: </b><?php echo $objProperty->territory;?><br>
+                        <b>Assigned To: </b><?php $rowD = $this->iFindAll(TBL_STAFF, array('id'=>$objProperty->assigned_to));  echo $rowD[0]->f_name.' '.$rowD[0]->l_name;?><br>
+                        <b>Phone: </b><?php echo $rowD[0]->phone;?><br>  
+                        <b>Paused On: </b><?php echo strftime("%m/%d/%Y %I:%M %p", strtotime($objProperty->pause_date));?><br>
                         </p>         
                     <?php
                     }
@@ -1049,7 +1095,7 @@ function showMessage($strMessage, $strUrl='')
     <h1 class="page-header"></h1>
   </div>
 </div>
-<table width="50%" border="0" cellspacing="0" cellpadding="0" class="tableBorder" align="center">
+<!--<table width="50%" border="0" cellspacing="0" cellpadding="0" class="tableBorder" align="center">
   <tr>
     <td class="headertext">Redirecting...</td>
   </tr>
@@ -1067,7 +1113,7 @@ function showMessage($strMessage, $strUrl='')
   <tr>
     <td>&nbsp;</td>
   </tr>
-</table>
+</table>-->
  <?php if($strUrl<>'') : ?>
 <META http-equiv="refresh" content="2;URL=<?php echo $strUrl;?>">
 <?php endif; ?>

@@ -309,12 +309,17 @@ class JOBLOCATION extends JOBLOCATION_HTML_CONTENT
      if(intval($_GET['s'])==1)
      {
        $this->objDatabase->dbQuery("UPDATE ".TBL_JOBLOCATION." set progress='".intval($_GET['s'])."', start_date='".date('Y-m-d H:i:s')."' where id='".$this->intId."'");
-       $this->objDatabase->dbQuery("INSERT INTO ".TBL_JOBSTATUS." (job_id, started_by, start_date) values('".$this->intId."', '".$_SESSION['adminid']."', '".date('Y-m-d H:i:s')."')");
+       $this->objDatabase->dbQuery("INSERT INTO ".TBL_JOBSTATUS." (job_id, started_by, starting_date) values('".$this->intId."', '".$_SESSION['adminid']."', '".date('Y-m-d H:i:s')."')");
      }
      elseif(intval($_GET['s'])==2)
      {  
         $this->objDatabase->dbQuery("UPDATE ".TBL_JOBLOCATION." set progress='".intval($_GET['s'])."', completion_date='".date('Y-m-d H:i:s')."' where id='".$this->intId."'");
-         $this->objDatabase->dbQuery("UPDATE ".TBL_JOBSTATUS." set closed_by='".$_SESSION['adminid']."', closing_date='".date('Y-m-d H:i:s')."' where job_id='".$this->intId."' and closed_by='' ");
+         $this->objDatabase->dbQuery("UPDATE ".TBL_JOBSTATUS." set closed_by='".$_SESSION['adminid']."', closing_date='".date('Y-m-d H:i:s')."' where job_id='".$this->intId."' and pausing_date='0000-00-00 00:00:00' and closed_by='' ");
+     }
+	 elseif(intval($_GET['s'])==3)
+     {  
+        $this->objDatabase->dbQuery("UPDATE ".TBL_JOBLOCATION." set progress='".intval($_GET['s'])."', pause_date='".date('Y-m-d H:i:s')."' where id='".$this->intId."'");
+         $this->objDatabase->dbQuery("UPDATE ".TBL_JOBSTATUS." set closed_by='".$_SESSION['adminid']."', pausing_date='".date('Y-m-d H:i:s')."' where job_id='".$this->intId."' and closed_by='' ");
      }
      $this->objFunction->__doRedirect('index.php?dir=property&task=view&id='.$_REQUEST['id']);
      die();
@@ -335,7 +340,7 @@ class JOBLOCATION extends JOBLOCATION_HTML_CONTENT
    public function reStartJob()
    {
      $this->objDatabase->dbQuery("UPDATE ".TBL_JOBLOCATION." set progress='1', completion_date='0000-00-00 00:00:00', start_date='".date('Y-m-d H:i:s')."' where id='".$this->intId."'");
-     $this->objDatabase->dbQuery("INSERT INTO ".TBL_JOBSTATUS." (job_id, started_by, start_date) values('".$this->intId."', '".$_SESSION['adminid']."', '".date('Y-m-d H:i:s')."')");
+     $this->objDatabase->dbQuery("INSERT INTO ".TBL_JOBSTATUS." (job_id, started_by, starting_date) values('".$this->intId."', '".$_SESSION['adminid']."', '".date('Y-m-d H:i:s')."')");
      $this->objFunction->__doRedirect('index.php?dir=property&task=view&id='.$this->intId);
    }
    
