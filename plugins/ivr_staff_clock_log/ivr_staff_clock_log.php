@@ -16,10 +16,12 @@ class ivr_staff_clock_log
   {
     $this->objDBCon = new Database();	
     $this->objFunction = $objFunctions;	
-    $this->staff_regular =  $this->staff_contractor = $this->staff_contractor_login = $this->staff_regular_login = array();
-	$this->driver_login =  $this->driver_logout = $this->sub_contractor_login = $this->sub_contractor_logout = $this->sidewalk_login = $this->sidewalk_logout = array();
+    $this->staff_regular =  $this->staff_contractor = $this->staff_contractor_login = $this->staff_regular_login = $this->scsinid = $this->scsoutid = array();
+	$this->driver_login =  $this->driver_logout = $this->sub_contractor_login = $this->sub_contractor_logout = $this->sidewalk_login = $this->sidewalk_logout = $this->drvinid = $this->drvoutid = $this->sdwinid = $this->sdwoutid = array();
     $this->staff_obj = file_get_contents('http://www.ivrhq.me/applications/10042/api/select.php?account_key=3KoD1T56&table=staff_activity');
-    $staff_array = array_reverse(json_decode($this->staff_obj, true));	$new_sa = array(); $b = '';	$driver_array = $sidewalk_array = $subcontractor_array = array();
+    $staff_array = array_reverse(json_decode($this->staff_obj, true));
+	$new_sa = array(); $b = '';
+	$driver_array = $sidewalk_array = $subcontractor_array = array();
 	foreach($staff_array as $sa)
 	{
 		$user_type = $this->objFunction->getUserRoleUsingId($sa['staff_id']);
@@ -47,15 +49,19 @@ class ivr_staff_clock_log
 				$new_sa[$sa['staff_id']] = $sa;
 			}
 		}
-	}   //echo $b.'<pre>'; print_r($new_sa); echo '</pre>';  //echo 'dddd'; print_r(array_unique(array_reverse($staff_array)));
+	} 
+  //echo $b.'<pre>'; print_r($new_sa); echo '</pre>';
+  //echo 'dddd'; print_r(array_unique(array_reverse($staff_array)));
 	/*Subcontractor*/
 	foreach($subcontractor_array as $key => $val) {
      
        if($val['clock_action_description'] == 'clock in') {
               $this->subcontractor_login[$val['staff_id']]= 1;
+			  $this->scsinid[] = $val['staff_id'];
        }
        elseif($val['clock_action_description'] == 'clock out') {
                $this->subcontractor_logout[$val['staff_id']]= 1;
+			   $this->scsoutid[] = $val['staff_id'];
        }  
     }
 	/*Drivers*/
@@ -63,9 +69,11 @@ class ivr_staff_clock_log
      
        if($val['clock_action_description'] == 'clock in') {
               $this->driver_login[$val['staff_id']]= 1;
+			  $this->drvinid[] = $val['staff_id'];
        }
        elseif($val['clock_action_description'] == 'clock out') {
                $this->driver_logout[$val['staff_id']]= 1;
+			   $this->drvoutid[] = $val['staff_id'];
        }  
     }
 	/*Sidewalk*/
@@ -73,12 +81,26 @@ class ivr_staff_clock_log
      
        if($val['clock_action_description'] == 'clock in') {
               $this->sidewalk_login[$val['staff_id']]= 1;
+			  $this->sdwinid[] = $val['staff_id'];
        }
        elseif($val['clock_action_description'] == 'clock out') {
                $this->sidewalk_logout[$val['staff_id']]= 1;
+			   $this->sdwoutid[] = $val['staff_id'];
        }  
     }
-	/**/    foreach($new_sa as $key => $val) {            if($val['clock_action_description'] == 'clock in') {           //if($val['clock_action_description'] == 'clock in')              $this->staff_regular_login[$val['staff_id']]= 1;       }       elseif($val['clock_action_description'] == 'clock out') {           //if($val['clock_action_description'] == 'clock in')               $this->staff_contractor_login[$val['staff_id']]= 1;              //$this->staff_contractor_login++;       }      }
+	/**/
+    foreach($new_sa as $key => $val) {
+     
+       if($val['clock_action_description'] == 'clock in') {
+           //if($val['clock_action_description'] == 'clock in')
+              $this->staff_regular_login[$val['staff_id']]= 1;
+       }
+       elseif($val['clock_action_description'] == 'clock out') {
+           //if($val['clock_action_description'] == 'clock in')
+               $this->staff_contractor_login[$val['staff_id']]= 1;
+              //$this->staff_contractor_login++;
+       }  
+    }
     $this->ivr_staff_clock_log_init();
   }
   
@@ -114,33 +136,76 @@ class ivr_staff_clock_log
                         $widgetContent.='[\'Clocked out '.count($this->subcontractor_logout).'\', '.count($this->subcontractor_logout).'],';
   $widgetContent.=']);
 				var chart = new google.visualization.PieChart(document.getElementById(\'visualization_clock_subcontactor\'));
-				new google.visualization.PieChart(document.getElementById(\'visualization_clock_subcontactor\')).
-                draw(data_sc, {title:"Sub-contractor Clocked In Vs Clocked Out", is3D: true});
+				chart.draw(data_sc, {title:"Sub-contractor Clocked In Vs Clocked Out", is3D: true});
 				
-				google.visualization.events.addListener(chart, "select", selectHandler); 
-				function selectHandler(e)     {   
-					alert(data.getValue(chart.getSelection()[0].row, 0));
-				}
+				google.visualization.events.addListener(chart, "select", function(){
+					var str = data_sc.getValue(chart.getSelection()[0].row, 0);
+					var res_in = str.match(/Clocked in/g); 
+					var res_out = str.match(/Clocked out/g); 
+					//alert("You just selected:'.implode(',', $this->scsinid).' ");
+					//alert("You just selected:'.implode(',', $this->scsoutid).' ");
+					if(res_in == "Clocked in")
+					{
+						window.location.href="'.ISP::AdminUrl("reports/piechartuserdetails/?title=Sub-contractor Clocked In&sid=".implode(',', $this->scsinid)).'";
+					}
+					else if(res_out == "Clocked out")
+					{
+						window.location.href="'.ISP::AdminUrl("reports/piechartuserdetails/?title=Sub-contractor Clocked Out&sid=".implode(',', $this->scsoutid)).'";
+					}
+				});
+				
 				var data_d = google.visualization.arrayToDataTable([
                     [\'Clock In\', \'Number\'],';
                         $widgetContent.='[\'Clocked in '.count($this->driver_login).'\', '.count($this->driver_login).'],';
                         $widgetContent.='[\'Clocked out '.count($this->driver_logout).'\', '.count($this->driver_logout).'],';
   $widgetContent.=']);
-				new google.visualization.PieChart(document.getElementById(\'visualization_clock_driver\')).
-                draw(data_d, {title:"Drivers Clocked In Vs Clocked Out", is3D: true});
+				var chart2 = new google.visualization.PieChart(document.getElementById(\'visualization_clock_driver\'));
+                chart2.draw(data_d, {title:"Drivers Clocked In Vs Clocked Out", is3D: true});
+				
+				google.visualization.events.addListener(chart2, "select", function(){
+					var str = data_d.getValue(chart2.getSelection()[0].row, 0);
+					var res_in = str.match(/Clocked in/g); 
+					var res_out = str.match(/Clocked out/g); 
+					//alert("You just selected:'.implode(',', $this->drvinid).' ");
+					//alert("You just selected:'.implode(',', $this->drvoutid).' ");
+					if(res_in == "Clocked in")
+					{
+						window.location.href="'.ISP::AdminUrl("reports/piechartuserdetails/?title=Drivers Clocked In&sid=".implode(',', $this->drvinid)).'";
+					}
+					else if(res_out == "Clocked out")
+					{
+						window.location.href="'.ISP::AdminUrl("reports/piechartuserdetails/?title=Drivers Clocked Out&sid=".implode(',', $this->drvoutid)).'";
+					}
+				});
 				
 				var data_s = google.visualization.arrayToDataTable([
                     [\'Clock In\', \'Number\'],';
                         $widgetContent.='[\'Clocked in '.count($this->sidewalk_login).'\', '.count($this->sidewalk_login).'],';
                         $widgetContent.='[\'Clocked out '.count($this->sidewalk_logout).'\', '.count($this->sidewalk_logout).'],';
   $widgetContent.=']);
-				new google.visualization.PieChart(document.getElementById(\'visualization_clock_sidewalk\')).
-                draw(data_s, {title:"Sidewalk Clocked In Vs Clocked Out", is3D: true});
+				var chart3 = new google.visualization.PieChart(document.getElementById(\'visualization_clock_sidewalk\'));
+                chart3.draw(data_s, {title:"Sidewalk Clocked In Vs Clocked Out", is3D: true});
+				
+				google.visualization.events.addListener(chart3, "select", function(){
+					var str = data_s.getValue(chart3.getSelection()[0].row, 0);
+					var res_in = str.match(/Clocked in/g); 
+					var res_out = str.match(/Clocked out/g); 
+					//alert("You just selected:'.implode(',', $this->sdwinid).' ");
+					//alert("You just selected:'.implode(',', $this->sdwoutid).' ");
+					if(res_in == "Clocked in")
+					{
+						window.location.href="'.ISP::AdminUrl("reports/piechartuserdetails/?title=Sidewalk Clocked In&sid=".implode(',', $this->sdwinid)).'";
+					}
+					else if(res_out == "Clocked out")
+					{
+						window.location.href="'.ISP::AdminUrl("reports/piechartuserdetails/?title=Sidewalk Clocked Out&sid=".implode(',', $this->sdwoutid)).'";
+					}
+				});
             }  
             google.setOnLoadCallback(drawVisualization);
         </script>             
              ';                
-    $this->objFunction->widgetContentArray[] = $widgetContent;            
+    $this->objFunction->widgetContentArray[] = $widgetContent;  
   }
 }
 ?>

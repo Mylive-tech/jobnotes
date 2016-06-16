@@ -287,7 +287,7 @@
                 <b>Address: </b><?php echo $objProperty->location_address;?><br>
                 <b>Section: </b><?php echo $objProperty->section_name;?><br>        
                 <b>Territory: </b><?php echo $objProperty->territory;?><br>
-                <b>Assigned To: </b><?php $rowD = $this->iFindAll(TBL_STAFF, array('id'=>$objProperty->assigned_to)); echo $rowD[0]->f_name.' '.$rowD[0]->l_name;?><br
+                <b>Assigned To: </b><?php $rowD = $this->iFindAll(TBL_STAFF, array('id'=>$objProperty->assigned_to)); echo $rowD[0]->f_name.' '.$rowD[0]->l_name;?><br>
                 <b>Phone: </b><?php echo $rowD[0]->phone;?><br> 
                 <b>Started On: </b> <?php echo strftime("%m/%d/%Y %I:%M %p", strtotime($objProperty->start_date));?><br>        
                 </p>         
@@ -343,7 +343,7 @@
                 <div class="col-md-6 full pull-left">                                            
                     <ul class="bxslider">           
                         <?php
-                        $objRs = $this->objDBCon->dbQuery("Select j.*, s.name as section_name from ".TBL_JOBLOCATION." j inner join ".TBL_SERVICE." s on j.location_id =s.id and j.site_id='".$_SESSION['site_id']."' where j.progress=3 and j.status=1");
+                       $objRs = $this->objDBCon->dbQuery("Select j.*, s.name as section_name from ".TBL_JOBLOCATION." j inner join ".TBL_SERVICE." s on j.location_id =s.id and j.site_id='".$_SESSION['site_id']."' where j.progress=3 and j.status=1");
                         $fistUntouch=0;
                         while($objProperty = $objRs->fetch_object())
                         {
@@ -1629,6 +1629,18 @@ public function getFormSubmissionValues($submission_id)
         foreach($staff_array as $key => $val) {
                 //$staff_data[$val['staff_id']] = strftime('%b, %d %Y', $val['time_stamp']).' '.$val['clock_action_description'];
 				$staff_data[$val['staff_id']] = $val['date'].','.$val['time_24_hour_clock'].','.$val['clock_action_description'];
+        }        
+        return $staff_data;
+    }
+	
+	public function getStaffLogDetails($sidarray) {
+        $json_output = file_get_contents('http://www.ivrhq.me/applications/10042/api/select.php?account_key=3KoD1T56&table=staff_activity');
+        $staff_array = json_decode($json_output, true);
+        $staff_data = array();
+        foreach($staff_array as $key => $val) {
+                //$staff_data[$val['staff_id']] = strftime('%b, %d %Y', $val['time_stamp']).' '.$val['clock_action_description'];
+				if(in_array($val['staff_id'], $sidarray))
+					$staff_data[$val['staff_id']] = $val['date'].','.$val['time_24_hour_clock'].','.$val['clock_action_description'];
         }        
         return $staff_data;
     }

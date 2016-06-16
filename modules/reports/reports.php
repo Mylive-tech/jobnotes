@@ -72,6 +72,13 @@ class REPORT extends REPORT_HTML_CONTENT
 				parent::admin_report_ivr_log($this->objSet);
 	}
 	
+	public function piechartuserdetails($sids)
+			{
+				$strSql = "SELECT s.*,st.label as userRole FROM " . TBL_STAFF . " s inner join " . TBL_STAFFTYPE . " st on s.user_type=st.id where s.username IN($sids) and s.user_type >1  and s.site_id='" . $_SESSION['site_id'] . "'";
+				$this->objSet = $this->objDatabase->dbQuery($strSql);
+				parent::admin_piechartuserdetails($this->objSet);
+	}
+	
 	public function driver_report()
 			{
 				if(isset($_GET['s']))
@@ -1099,6 +1106,9 @@ switch($strTask)
    break;
    case 'direct':
     $objContent->direct();
+  break;
+  case 'piechartuserdetails':
+    $objContent->piechartuserdetails($_GET['sid']);
   break;
   
 }

@@ -39,11 +39,15 @@ class staff_widget
                           <th data-class="expand">User ID</th>
                           <th data-class="phone">Phone</th>
                           <th data-hide="expand" class="visible-desktop">Status</th>
-                          <th data-hide="expand" class="visible-desktop">Availability</th>
+                          <!--th data-hide="expand" class="visible-desktop">Availability</th-->
                       </tr>
 									</thead>
 									<tbody>';
-$objStaffArr = $this->objDBCon->dbFetch("SELECT * FROM ".TBL_STAFF." where site_id='".$_SESSION['site_id']."' order by id desc limit 5");		
+$objStaffArr = $this->objDBCon->dbFetch("SELECT * FROM ".TBL_STAFF." where site_id='".$_SESSION['site_id']."' order by id desc limit 5");	
+
+$this->staff_obj = file_get_contents('http://www.ivrhq.me/applications/10042/api/select.php?account_key=3KoD1T56&table=staff_activity');
+$staff_array = array_reverse(json_decode($this->staff_obj, true));	
+//print_r($staff_array);
 		
     	if(count($objStaffArr)>0): // Check for the resource exists or not
 			 $intI=1;
@@ -51,7 +55,7 @@ $objStaffArr = $this->objDBCon->dbFetch("SELECT * FROM ".TBL_STAFF." where site_
 			  foreach($objStaffArr as $objRow)
 			    { 				
         
-          $statusLabel = ($objRow->status==1)?'<span class="label label-success">Approved</span>':'<span class="label label-danger">Blocked</span>';
+          //$statusLabel = ($objRow->status==1)?'<span class="label label-success">Approved</span>':'<span class="label label-danger">Blocked</span>';
           $availabilityLabel = ($objRow->is_login==1)?'<span class="label label-success">Online</span>':'<span class="label label-danger">Offline</span>';
 
 $widgetContent .='<tr>
@@ -62,10 +66,18 @@ $widgetContent .='<tr>
               '.$objRow->id.'
               </a>
               </td>
-              <td align="left" class="visible-desktop">'.$objRow->phone.'</td>
-              <td align="left" class="visible-desktop">'.$statusLabel.'</td>
-              <td align="left" class="visible-desktop">'.$availabilityLabel.'</td>
-           </tr>';
+              <td align="left" class="visible-desktop">'.$objRow->phone.'</td>';
+			  foreach($staff_array as $sa)
+			  {
+				  if($sa['staff_id'] == $objRow->username)
+				  {
+					  $statusLabel = ucfirst($sa['clock_action_description']);
+					  break;
+				  }
+			  }
+			  $widgetContent .='<td align="left" class="visible-desktop">'.$statusLabel.'</td>';
+              //$widgetContent .='<td align="left" class="visible-desktop">'.$availabilityLabel.'</td>';
+              $widgetContent .='</tr>';
 			     }
 			 else:
 			  $widgetContent .='<tr><td  class="errNoRecord">No Record Found!</td></tr>';

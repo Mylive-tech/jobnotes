@@ -464,9 +464,9 @@ if($this->objFunction->checkPermission('Import Staff', 'staff'))
                 <table class="table table-striped table-bordered table-hover table-checkable table-responsive datatable" id="dataTables-example">                    
                   <thead class="cf">											
                     <tr>                          
-                      <th align="center" data-hide="phone">ID
-                      </th>											    
-                      <th data-class="expand">Username
+                      <!--<th align="center" data-hide="phone">ID
+                      </th>-->											    
+                      <th data-class="expand">Staff # / Username
                       </th>												  
                       <th data-hide="phone">Name
                       </th>                          
@@ -508,8 +508,8 @@ if($this->objFunction->checkPermission('Import Staff', 'staff'))
 				   $strCss='oddTr';
                     			?>           
                     <tr> 
-                      <td>
-                        <?php echo $objRow->id;?></td>            
+                     <!-- <td>
+                        <?php echo $objRow->id;?></td>-->            
                       <td align="center">
                         <?php echo $objRow->username;?></td>             
                       <td align="center">

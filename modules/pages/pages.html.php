@@ -98,6 +98,42 @@ class HTML_CONTENT
                  <p>Support Powered by Live-Tech</p>
                 </div>
               </form>
+              <p><strong>Hard drive usage :</strong> 
+			  		<?php
+					$dt = disk_total_space(getcwd());
+					$df =  disk_free_space(getcwd());
+					$du = $dt-$df;
+					$dp = sprintf('%.2f',($du / $dt) * 100);
+					$dt = number_format($dt / 1073741824, 2) . ' GB';
+					$df = number_format($df / 1073741824, 2) . ' GB';
+					$du = number_format($du / 1073741824, 2) . ' GB';
+					?>
+                    <style type='text/css'>
+                .progress_bar {border: 2px solid #5E96E4;height: 36px;width: 540px;}
+                .progress_bar .prgbar {background: #A7C6FF;width: <?php echo $dp; ?>%;position: relative;height: 32px;z-index: 999;}
+                .progress_bar .prgtext {color: #286692;text-align: center;font-size: 13px;padding: 9px 0 0;width: 540px;position: absolute;z-index: 1000; }
+                .progress_bar .prginfo { margin: 3px 0; }
+                </style>
+                <div class='progress_bar'>
+                    <div class='prgtext'><?php echo $dp; ?>% Disk Used</div>
+                    <div class='prgbar'></div>
+                    <div class='prginfo'>
+                        <span style='float: left;'><?php echo "$du of $dt used"; ?></span>
+                        <span style='float: right;'><?php echo "$df of $dt free"; ?></span>
+                        <span style='clear: both;'></span>
+                    </div>
+                </div>
+                <div class="clear"></div>  </p>
+              <p><strong>Memory usage :</strong> 
+			  <?php  $mem_usage = memory_get_usage(false);
+						if ($mem_usage < 1024)
+						echo $mem_usage." Bytes";
+						elseif ($mem_usage < 1048576)
+						echo round($mem_usage/1024,2)." KB";
+						else
+						echo round($mem_usage/1048576,2)." MB"; ?>
+             	</p>
+              <p><strong>PHP Version :</strong>  <?php echo phpversion(); ?></p>
              </div>
             </div>
           </div>

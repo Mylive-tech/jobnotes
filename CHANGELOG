@@ -124,3 +124,15 @@
 ## 2016-06-08
 	1. Added pause/unpause functionality at job details page
 	2. Applied export property report in the given column header format
+	
+## 2016-06-10
+	1. Added properties paused tab into dashboard widget "Location status & details"
+	
+## 2016-06-14
+	1. Removed ID column from manage users grid under staff management
+	2. Changed column label from username to staff # / username
+	
+## 2016-06-15
+	1. Added hardrive usage, memory usage and php version on tech support page
+	2. Added clock in/out status on dashboard staff widget 
+	3. Created screens to show user details when clicked on dashboard piechars for clocked in/out slices
