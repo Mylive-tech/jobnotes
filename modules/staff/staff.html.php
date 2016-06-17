@@ -73,6 +73,17 @@ if($this->objFunction->checkPermission('Import Staff', 'staff'))
           </ul>  
           <div class="tab-content formTableBg widget box box-vas">
             <div class="widget-content formTableBg  widget-content-vls">
+<?php
+if(isset($_POST['save']))
+{
+	$sdata = $this->saveContent(TBL_STAFF);
+	if($sdata)
+	{
+		echo $sdata;
+	}
+	$objRs = $this->get_admin_Staff_details();
+}
+?>
               <form name="frmContent" class="form_holder" method="post" onsubmit="return validateFrm(this);" enctype="multipart/form-data">  
                 <div class="form-group">    
                   <label for="exampleInputEmail1">Username/IVR Staff ID
@@ -136,7 +147,7 @@ foreach($this->objFunction->staff_job_title as $key=>$value) {
 </div> 
 
                 
-                <input type="hidden" name="task" value="savestaff" />    
+                <!--<input type="hidden" name="task" value="savestaff" /> -->   
                 <input type="hidden" name="id" value="<?php echo $objRs->id;?>" />     
                 <input type="hidden" name="db_site_id" value="<?php echo $_SESSION['site_id'];?>">  
                 <button type="submit" name="save" class="btn btn-default">Save Staff

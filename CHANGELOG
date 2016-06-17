@@ -136,3 +136,6 @@
 	1. Added hardrive usage, memory usage and php version on tech support page
 	2. Added clock in/out status on dashboard staff widget 
 	3. Created screens to show user details when clicked on dashboard piechars for clocked in/out slices
+	
+## 2016-06-17
+	1. Removed multiple redirections on configuration setting page and user edit page under staff management

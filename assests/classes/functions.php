@@ -1095,7 +1095,7 @@ function showMessage($strMessage, $strUrl='')
     <h1 class="page-header"></h1>
   </div>
 </div>
-<!--<table width="50%" border="0" cellspacing="0" cellpadding="0" class="tableBorder" align="center">
+<table width="50%" border="0" cellspacing="0" cellpadding="0" class="tableBorder" align="center">
   <tr>
     <td class="headertext">Redirecting...</td>
   </tr>
@@ -1113,7 +1113,7 @@ function showMessage($strMessage, $strUrl='')
   <tr>
     <td>&nbsp;</td>
   </tr>
-</table>-->
+</table>
  <?php if($strUrl<>'') : ?>
 <META http-equiv="refresh" content="2;URL=<?php echo $strUrl;?>">
 <?php endif; ?>

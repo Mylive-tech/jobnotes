@@ -42,6 +42,21 @@ class staff extends STAFF_HTML_CONTENT
 			endif;
 		} // End Function
         
+		public function get_admin_Staff_details()
+	{
+		if ($this->intId <> ''): // condition i.e page for the edit content
+			$strSql = 'SELECT * FROM ' . TBL_STAFF . ' where id=%d';
+			$this->objRecord = $this->objDatabase->fetchRows(sprintf($strSql, $this->intId));
+			//parent::admin_Staff_Form($this->objRecord, $_REQUEST['type']); // show the form with already filled values
+			return $this->objRecord;
+			else:
+				$this->objFunction->filterPosted();
+				$this->objRecord = (object)$_POST; // converion of Posted array to object message
+				//parent::admin_Staff_Form($this->objRecord, $_REQUEST['type']); // // show the form to Add content
+				return $this->objRecord;
+			endif;
+		}
+		
 		public function users_Edit_Form()
 		{
 			$strSql = 'SELECT * FROM ' . TBL_STAFF . ' where id=%d';
@@ -205,7 +220,8 @@ class staff extends STAFF_HTML_CONTENT
 			if ($this->intId == ''): //Check for content posted is "New" or "Existing"
 				$this->intId = $this->objDatabase->insertForm($tbl); //Insert new content in table
 				if ($this->intId) {
-					$this->objFunction->showMessage('Record has been added successfully.', $_SERVER['REQUEST_URI']); //Function to show the message
+					//$this->objFunction->showMessage('Record has been added successfully.', $_SERVER['REQUEST_URI']); //Function to show the message
+					return '<h3>Record has been updated successfully.</h3>';
 				}
 				else {
 					$this->objFunction->filterPosted();
@@ -215,7 +231,8 @@ class staff extends STAFF_HTML_CONTENT
 				else:
 					if ($_POST['password'] != '') $_POST['db_password'] = md5($_POST['password']);
 					$this->objDatabase->updateForm($tbl); //Update Exisiting content
-					$this->objFunction->showMessage('Record has been updated successfully.', $_SERVER['REQUEST_URI']); //Function to show the message
+					return '<h3>Record has been updated successfully.</h3>';
+					//$this->objFunction->showMessage('Record has been updated successfully.', $_SERVER['REQUEST_URI']); //Function to show the message
 				endif;
 			} //end function
             

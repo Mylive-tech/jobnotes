@@ -125,7 +125,6 @@ public function changePassword()
    public function config()
 
    {
-
       Functions:: checkSession();
 
      $strSql ='SELECT * FROM '.TBL_CONFIGURATION." WHERE 1=1 AND status ='1'";
@@ -136,7 +135,6 @@ public function changePassword()
 
    } // end function
 
-   
 
 /**
 
@@ -179,8 +177,9 @@ public function changePassword()
        $this->objDatabase->dbQuery("update ".TBL_CONFIGURATION." set config_value='".$logoName."' where config_key ='site_logo'");
 
      }
-
-	   $this->objFunction->showMessage('Settings have been saved successfully.',$_SERVER['REQUEST_URI']);  // Function to show the message
+	return '<h3>Settings have been saved successfully.</h3>';
+	
+	   //$this->objFunction->showMessage('Settings have been saved successfully.',$_SERVER['REQUEST_URI']);  // Function to show the message
 
    } // end function
 
@@ -399,6 +398,16 @@ public function changePassword()
    } // end function
 
    
+   
+	public function getconfig()
+   {
+	   
+       $strSql ='SELECT * FROM '.TBL_CONFIGURATION." WHERE 1=1 ";
+	   $sdata = $this->objDatabase->dbQuery($strSql);
+
+	   return $sdata;
+
+   } // end function   
 
    public function addPlugin()
 
