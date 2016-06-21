@@ -92,7 +92,18 @@ protected function admin_joblocation_Form($objRs)
         <h4 class="text-left heding_6">          
           <?php echo ($objRs->id=='')?'Add New': 'Edit';?> Property</h4>            
         <div class="add-new-job-l widget box box-vas">                 
-          <div class="widget-content formTableBg widget-content-vls">                       
+          <div class="widget-content formTableBg widget-content-vls">
+          	<?php
+            if( (isset($_POST['save_new'])) || (isset($_POST['save_back'])) )
+            {
+				$sdata = $this->saveContent(TBL_JOBLOCATION);
+				if($sdata)
+				{
+					echo $sdata;
+				}
+				$objRs = $this->get_admin_joblocation_Details();
+            }
+            ?>                       
             <div class="form_holder">                           
               <form name="frmContent" method="post" onsubmit="return validateFrm(this);" enctype="multipart/form-data">                                 
                 <div class="form-group">                                     
@@ -231,7 +242,7 @@ protected function admin_joblocation_Form($objRs)
                 <button type="submit" value="New" name="save_new" class="btn btn-default sumit_bottom">Save & Add New</button>                                 
                 <button type="submit" value="back" name="save_back" class="btn btn-default sumit_bottom pull-right">Save & Go Back                 
                 </button>                                 
-                <input type="hidden" name="task" value="savejoblocationlisting" />
+                <!--<input type="hidden" name="task" value="savejoblocationlisting" />-->
                 <input type="hidden" name="db_site_id" value="<?php echo $_SESSION['site_id'];?>">
                 </div>                                            
               </form>                     
@@ -362,7 +373,17 @@ $(document).ready(function() {
     <div class="row">					       
       <div class="col-md-12">						         
         <h4 class="text-left heding_6">Manage Properties</h4>						         
-        <div class="widget box box-vas">							 							           
+        <div class="widget box box-vas">							 							           <?php
+            if( (isset($_POST['btn_Publish'])) || (isset($_POST['btn_UnPublish'])) || (isset($_POST['btn_delete'])) || (isset($_POST['btn_export'])) )
+            {
+				$sdata = $this->modifyContent(TBL_JOBLOCATION);
+				if($sdata)
+				{
+					echo $sdata;
+				}
+				$objRs = $this->get_admin_joblocationlisting_Details();
+            }
+            ?>
           <div class="widget-content widget-content-vls">                                             
             <form method="post" name="frmListing"> 
             <div class="col-md-12 text-right" style="padding-bottom:10px">
@@ -466,7 +487,7 @@ $(document).ready(function() {
 			 endif;  
                             			 ?>                          
               <input type="hidden" name="status" value="1" />                       
-              <input type="hidden" name="task" value="modifyjoblocation" />                   
+              <!--<input type="hidden" name="task" value="modifyjoblocation" />-->                   
             </form>						 		           
           </div>						         
         </div>					       

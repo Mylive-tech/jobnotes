@@ -1247,8 +1247,18 @@ function loadUsers(roleId)
         <div class="widget box box-vas">						 							
           <div class="widget-content widget-content-vls">                
             <div class="col-md-12 padded" style="padding-bottom:30px;">                Permissions let you control what users can do on your site. Each user role (defined on the 
-              <a href="@role">user roles page</a>) has its own set of permissions. For example, you could give users classified as "Administrators" permission to "administer nodes" but deny this power to ordinary, "authenticated" users. You can use permissions to reveal new features to privileged users (those with subscriptions, for example). Permissions also allow trusted users to share the administrative burden of running a busy site. <p align="right"><img src="/jobnotes/assets/img/checkChk.png"> Permitted | <img src="/jobnotes/assets/img/uncheck.png"> Restricted </p>                 
-            </div>						               
+              <a href="@role">user roles page</a>) has its own set of permissions. For example, you could give users classified as "Administrators" permission to "administer nodes" but deny this power to ordinary, "authenticated" users. You can use permissions to reveal new features to privileged users (those with subscriptions, for example). Permissions also allow trusted users to share the administrative burden of running a busy site. <p align="right"><img src="/assets/img/checkChk.png"> Permitted | <img src="/assets/img/uncheck.png"> Restricted </p>                 
+            </div>
+			<?php
+            if(isset($_POST['submit']))
+            {
+				$sdata = $this->savePermissions();
+				if($sdata)
+				{
+					echo $sdata;
+				}
+            }
+            ?>						               
             <form method="post" name="frmListing">                
               <table class="table table-striped table-bordered table-hover cf" id="rt1">                  
                 <thead class="cf">											
@@ -1320,7 +1330,7 @@ function loadUsers(roleId)
                 <div class="clearfix">
                 </div>          
               </div>        
-              <input type="hidden" name="task" value="savepermissions" />    	  
+             <!-- <input type="hidden" name="task" value="savepermissions" />-->    	  
             </form>								
           </div>						
         </div>					

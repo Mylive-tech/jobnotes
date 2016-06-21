@@ -49,7 +49,18 @@ class SERVICE extends SERVICE_HTML_CONTENT
 	  endif;	  
    } // End Function  
    
-   
+   public function get_admin_service_Details()
+   {
+      if($this->intId <> ''): // condition i.e page for the edit content
+	    	$strSql ='SELECT * FROM '.TBL_SERVICE.' where id=%d';
+			$this->objRecord = $this->objDatabase->fetchRows(sprintf($strSql,$this->intId));
+			return $this->objRecord;
+	  else:
+	       $this->objFunction->filterPosted();
+	       $this->objRecord=(object)$_POST; // converion of Posted array to object message
+		   return $this->objRecord;
+	  endif;	  
+   } // End Function 
      public function admin_state_Form()
    {
       if($this->intId <> ''): // condition i.e page for the edit content
@@ -115,8 +126,8 @@ class SERVICE extends SERVICE_HTML_CONTENT
            {
               $redirectUrl = ISP :: AdminUrl('service/edit-location/id/'.$this->intId);
            }
-     
-          $this->objFunction->showMessage('Record status has been '.$msgAction.' successfully.',$redirectUrl);  //Function to show the message	 	  
+     		return '<h3>Record status has been '.$msgAction.' successfully.</h3>';
+          //$this->objFunction->showMessage('Record status has been '.$msgAction.' successfully.',$redirectUrl);  //Function to show the message	 	  
    } //end function   
  
    

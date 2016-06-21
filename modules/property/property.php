@@ -48,7 +48,20 @@ class JOBLOCATION extends JOBLOCATION_HTML_CONTENT
     endif;    
    } // End Function 
    
-  
+   public function get_admin_joblocation_Details()
+   {
+      if($this->intId <> ''): // condition i.e page for the edit content
+        $strSql ='SELECT * FROM '.TBL_JOBLOCATION.' where id=%d';
+      $this->objRecord = $this->objDatabase->fetchRows(sprintf($strSql,$this->intId));
+     	return $this->objRecord;
+    else:
+         $this->objFunction->filterPosted();
+         $this->objRecord=(object)$_POST; // converion of Posted array to object message
+      	return $this->objRecord;
+    endif;    
+   } // End Function 
+   
+  	
    public function loadJobLocations()
    {
        $strSql = "SELECT * FROM ".TBL_JOBLOCATION." where status=1 and location_id='".$this->intId."'";
@@ -70,6 +83,14 @@ class JOBLOCATION extends JOBLOCATION_HTML_CONTENT
       $strSql = "SELECT * FROM ".TBL_JOBLOCATION." where 1=1 and site_id='".$_SESSION['site_id']."'";
 			$this->objSet = $this->objDatabase->dbQuery($strSql);
 			parent :: admin_joblocationlisting($this->objSet ,'joblocation');
+        
+   } // End Function
+   
+   public function get_admin_joblocationlisting_Details()
+   {
+      $strSql = "SELECT * FROM ".TBL_JOBLOCATION." where 1=1 and site_id='".$_SESSION['site_id']."'";
+			$this->objSet = $this->objDatabase->dbQuery($strSql);
+			return $this->objSet;
         
    } // End Function
    
@@ -227,7 +248,8 @@ class JOBLOCATION extends JOBLOCATION_HTML_CONTENT
         $redirectUrl = ISP :: AdminUrl('property/edit-property/id/'.$this->intId);
      }
      
-     $this->objFunction->showMessage('Record status has been '.$msgAction.' successfully.',$redirectUrl);  //Function to show the message	 	  
+     return '<h3>Record status has been '.$msgAction.' successfully.</h3>';
+	 //$this->objFunction->showMessage('Record status has been '.$msgAction.' successfully.',$redirectUrl);  //Function to show the message	 	  
    } //end function   
    
   
@@ -274,7 +296,8 @@ class JOBLOCATION extends JOBLOCATION_HTML_CONTENT
 	    $this->objDatabase->dbQuery('DELETE FROM '.$tbl.' where id in ('.$this->intId.')');
           }
          if ($intStatus <> 'export') {
-	     $this->objFunction->showMessage('Record has been '.$strWord.' successfully.',ISP :: AdminUrl('property/manage-properties'));  
+		  return '<h3>Record has been '.$strWord.' successfully.</h3>';
+	     //$this->objFunction->showMessage('Record has been '.$strWord.' successfully.',ISP :: AdminUrl('property/manage-properties'));  
          }    
 	 
    } //end function

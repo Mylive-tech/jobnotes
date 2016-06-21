@@ -280,7 +280,8 @@ class staff extends STAFF_HTML_CONTENT
 					}
 				}
 
-				$this->objFunction->showMessage('Permissons have been updated successfully.', $_SERVER['REQUEST_URI']); //Function to show the message
+				//$this->objFunction->showMessage('Permissons have been updated successfully.', $_SERVER['REQUEST_URI']); //Function to show the message
+				return '<h3>Permissons have been updated successfully.</h3>';
 			}
 
 			public function getUserInfo()
