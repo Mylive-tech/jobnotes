@@ -619,7 +619,8 @@ class REPORT extends REPORT_HTML_CONTENT
   {
     $intStatus = $_REQUEST['status'];
     $this->objDatabase->dbQuery("UPDATE ".TBL_REPORTS." set status='".$intStatus."' where report_id='".$this->intId."'");
-    $this->objFunction->showMessage('Form status been updated successfully.', ISP :: AdminUrl('reports/listing'));  //Function to show the message
+	echo '<script>window.location.href="'.ISP :: AdminUrl('reports/listing').'"</script>';
+    //$this->objFunction->showMessage('Form status been updated successfully.', ISP :: AdminUrl('reports/listing'));  //Function to show the message
   }
   
     public function zipbackup() {

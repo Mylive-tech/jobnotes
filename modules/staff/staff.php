@@ -73,6 +73,13 @@ class staff extends STAFF_HTML_CONTENT
 			$this->objSet = $this->objDatabase->dbQuery($strSql);
 			parent::admin_staffListing($this->objSet, 'staff');
 		} // End Function
+		
+		public function get_admin_staffListing_Details()
+		{
+			$strSql = "SELECT s.*,st.label as userRole FROM " . TBL_STAFF . " s left join " . TBL_STAFFTYPE . " st on s.user_type=st.id where s.user_type >1  and s.site_id='" . $_SESSION['site_id'] . "'";
+			$this->objSet = $this->objDatabase->dbQuery($strSql);
+			return $this->objSet;
+		} // End Function
         
 		public function import_staff()
 		{
@@ -253,8 +260,8 @@ class staff extends STAFF_HTML_CONTENT
 				}
 
 				// $this->updatecache();
-
-				$this->objFunction->showMessage('Record has been ' . $strWord . ' successfully.', ISP::AdminUrl('staff/users-listing/')); //Function to show the message
+					return '<h3>Record has been ' . $strWord . ' successfully.</h3>';
+				//$this->objFunction->showMessage('Record has been ' . $strWord . ' successfully.', ISP::AdminUrl('staff/users-listing/')); //Function to show the message
 			} //end function
             
             

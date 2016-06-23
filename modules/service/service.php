@@ -85,6 +85,14 @@ class SERVICE extends SERVICE_HTML_CONTENT
         
    } // End Function
    
+   public function get_admin_serviceListing_Details()
+   {
+           $strSql = "SELECT * FROM ".TBL_SERVICE." where 1=1 and site_id='".$_SESSION['site_id']."' order by id asc";
+			$this->objSet = $this->objDatabase->dbQuery($strSql);
+			return $this->objSet;
+        
+   } // End Function
+   
     public function admin_stateListing()
    {
            $strSql = "SELECT * FROM ".TBL_STATE." where 1=1";
@@ -126,8 +134,8 @@ class SERVICE extends SERVICE_HTML_CONTENT
            {
               $redirectUrl = ISP :: AdminUrl('service/edit-location/id/'.$this->intId);
            }
-     		return '<h3>Record status has been '.$msgAction.' successfully.</h3>';
-          //$this->objFunction->showMessage('Record status has been '.$msgAction.' successfully.',$redirectUrl);  //Function to show the message	 	  
+     		//return '<h3>Record status has been '.$msgAction.' successfully.</h3>';
+          $this->objFunction->showMessage('Record status has been '.$msgAction.' successfully.',$redirectUrl);  //Function to show the message	 	  
    } //end function   
  
    
@@ -155,7 +163,8 @@ class SERVICE extends SERVICE_HTML_CONTENT
 		  $this->objDatabase->dbQuery('DELETE FROM '.$tbl.' where id in ('.$this->intId.')');
     }
 
-	  $this->objFunction->showMessage('Record has been '.$strWord.' successfully.',ISP :: AdminUrl('service/manage-locations/'));      //Function to show the message
+		return '<h3>Record has been '.$strWord.' successfully.</h3>';
+	  //$this->objFunction->showMessage('Record has been '.$strWord.' successfully.',ISP :: AdminUrl('service/manage-locations/'));      //Function to show the message
 	 
    } //end function
    

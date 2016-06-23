@@ -461,7 +461,18 @@ if($this->objFunction->checkPermission('Import Staff', 'staff'))
  }
 ?>
           </ul>						
-          <div class="widget box box-vas">							 							
+          <div class="widget box box-vas">
+          <?php
+        if( (isset($_POST['btn_Publish'])) || (isset($_POST['btn_UnPublish'])) || (isset($_POST['btn_delete'])) )
+        {
+			$sdata = $this->modifyContent(TBL_STAFF);
+			if($sdata)
+			{
+				echo $sdata;
+			}
+			$objRs = $this->get_admin_staffListing_Details();
+        }
+        ?>							 							
             <div class="widget-content widget-content-vls">                
               <form method="post" name="frmListing">                
                 <div class="col-md-12 text-right" style="padding-bottom:10px">                 
@@ -560,7 +571,7 @@ if($this->objFunction->checkPermission('Import Staff', 'staff'))
                   </tbody>        
                 </table>         
                 <input type="hidden" name="status" value="1" />        
-                <input type="hidden" name="task" value="modifystaff" />                  	  
+                <!--<input type="hidden" name="task" value="modifystaff" />-->
               </form>			
             </div>    
           </div>

@@ -88,18 +88,7 @@ $(function() {
         <h4 class="text-left heding_6"><?php if(intval($objRs->id)>0) echo 'Edit'; else echo 'Add New';?> Location</h4>
         <div class="widget box box-vas">
           <div class="widget-content formTableBg widget-content-vls">
-            <div class="form_holder"> 
-            <?php
-            if( (isset($_POST['save_back'])) || (isset($_POST['save_new'])) )
-            {
-				$sdata = $this->saveContent(TBL_SERVICE);
-				if($sdata)
-				{
-					echo $sdata;
-				}
-				$objRs = $this->get_admin_service_Details();
-            }
-            ?>     
+            <div class="form_holder">     
               <form name="frmContent" method="post" onsubmit="return validateFrm(this);" enctype="multipart/form-data">		
                 <div class="form-group">			    
                   <label for="exampleInputEmail1">Name of Location
@@ -186,7 +175,7 @@ $(function() {
                     <option value="priority">Priority</option>
                     <option value="top-priority">Top Priority</option>                            
                   </select>                            
-                  <!--<input type="hidden" name="task" value="saveservice" />-->        
+                  <input type="hidden" name="task" value="saveservice" />        
                   <input type="hidden" name="id" value="<?php echo $objRs->id;?>" />         			
                   <div class="clearfix">
                   </div>			
@@ -301,7 +290,17 @@ $(document).ready(function() {
       <div class="col-md-12">						
         <h4 class="text-left heding_6">Manage Locations</h4>						
         <div class="widget box">							 							
-                                                    
+		<?php
+        if( (isset($_POST['btn_Publish'])) || (isset($_POST['btn_UnPublish'])) || (isset($_POST['btn_delete'])) )
+        {
+			$sdata = $this->modifyContent(TBL_SERVICE);
+			if($sdata)
+			{
+				echo $sdata;
+			}
+			$objRs = $this->get_admin_serviceListing_Details();
+        }
+        ?>                                      
             <form method="post" name="frmListing"> 
             <div class="widget-header">
             <div class="col-md-12 text-right" style="padding:5px 0px 7px 0px">                       
@@ -386,7 +385,7 @@ $(document).ready(function() {
 			 endif;  
               			 ?>          
               <input type="hidden" name="status" value="1" />        
-              <input type="hidden" name="task" value="modifyservice" /> 
+              <!--<input type="hidden" name="task" value="modifyservice" />--> 
                </div>    
             </form>						 							
           						
