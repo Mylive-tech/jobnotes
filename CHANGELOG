@@ -148,4 +148,15 @@
 	
 ## 2016-06-22
 	1. Removed multiple redirections on modify location, modify staff, custom reports screens
+
+## 2016-06-30
+	1. Created property_notes table to store notes added by staff members
+	2. Moved all important notes to the new notes table
+	3. Removed column for important notes from property listing and history page
+	4. Removed text-area on property screen for notes
+	5. Disabled all check boxes for staff module for other users
+	6. Added permissions for add notes under staff permissions property module
+	7. Created history/view screen under reports module
+	8. Created add notes module to add multiple notes for properties at front end and back end
+	
 	
