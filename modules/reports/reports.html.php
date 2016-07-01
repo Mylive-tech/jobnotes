@@ -756,7 +756,7 @@ $(document).ready(function() {
                     
                     <i class="fa fa-pencil-square-o"></i></a>
                     </td>-->
-                    <td align="center" class="hideexport"> <a class="btn btn-danger btn-ms" href="<?php echo ISP :: AdminUrl('property/job-history/id/'.$objRow->id);?>">View</a></td>
+                    <td align="center" class="hideexport"> <a class="btn btn-danger btn-ms" href="<?php echo ISP :: AdminUrl('reports/job-history/id/'.$objRow->id);?>">View</a></td>
                     <td align="center" class="hideexport"><a href="<?php echo ISP :: AdminUrl('reports/direct/?jid='.$objRow->id);?>" class="btn btn-info">Export</a></td>                               
                    <!-- <td align="center" class="hideexport divchecker"><input type="checkbox" class="uniform" name="delete[]" value="<?php echo $objRow->id;?>"  /></td> -->                            
                   </tr>                            
@@ -777,6 +777,148 @@ $(document).ready(function() {
           </div>						         
         </div>					       
       </div>				     
+    </div>				     
+    <!-- /Normal --> 			   
+  </div>			   
+  <!-- /.container --> 		 
+</div>
+<?php 
+   }  // End of Function 
+
+protected function admin_property_jobHistory($objRs1, $objRow)
+{
+   ?> 
+<script type="text/javascript">
+$(document).ready(function() {
+    $('.datatable').dataTable( {} );
+} );
+</script>      
+<div id="content">			   
+  <div class="container">	
+  <div class="crumbs">
+	<ul id="breadcrumbs" class="breadcrumb">
+		<li>
+			<i class="icon-home"></i>
+			<a href="<?php echo ISP::AdminUrl('dashboard/admin_dashboard/');?>">Dashboard</a>
+		</li>
+    <li>
+			<i class="current"></i>
+			<a href="<?php echo ISP::AdminUrl('reports/property_report/');?>">Property Reports</a>
+		</li>
+		<li class="current">
+			<a href="#" title="">Job History</a>
+		</li>
+	</ul>
+</div>
+			     
+    <!--=== Normal ===--> 				     
+    <div class="row">					       
+      <div class="col-md-12">						         
+        <h4 class="text-left heding_6">Job History</h4>						         
+        <div class="widget box box-vas">							 							           
+          <div class="widget-content widget-content-vls">                                             
+            <form method="post" name="frmListing"> 
+            <div class="col-md-12 text-right" style="padding-bottom:10px">
+            
+              <span>										                 
+               <!-- <a href="javascript: void(0);" onclick="exportTableToCSV.apply(this, [$('#dataTables-example'), 'export-history-<?php echo $objRow->job_listing;?>.xls']);" class="btn btn-info">Export</a>-->
+                <a href="<?php echo ISP :: AdminUrl('reports/direct/?jid='.$objRow->id);?>" class="btn btn-info">Export</a>								               
+              </span> 
+            </div>                                                 
+              <table class="table table-striped table-bordered table-hover table-checkable table-responsive datatable1">                                                     
+                <thead class="cf">							                   
+                  <tr>                                     
+                    <th align="center">S.N.</th>								                     
+                    <th align="center"  data-class="expand">Job Location</th>								                     
+                    <th align="center" data-hide="phone">Address</th>                                     
+                    <th align="center" data-hide="phone">Assigned To</th>                                     
+                    <th align="center" data-hide="phone">Phone Number</th>                                     
+					<!--th align="center" data-hide="phone">Important Notes</th-->                                     
+                    <th align="center" data-hide="phone">Assigned Location</th>                                            
+                    <th align="center" data-hide="phone" class="hideexport">Completion Date</th>                                                                                                                                                                                                                                                                                               
+				            <th align="center" data-hide="phone" class="hideexport">Action</th>       
+                  </tr>						                 
+                </thead>						                 
+                <tbody>                       
+<?php
+	    $strStatus = ($objRow->status)?'0':'1';
+				
+				if($intI++%2==0)  // Condition for alternate rows color
+				   $strCss='evenTr';
+				else
+				   $strCss='oddTr';
+				
+                                    			?>         			                   
+                  <tr>
+                  <td><?php echo $intI-1;?></td>
+                      <td><?php echo $objRow->job_listing;?></td> 
+                      <td><?php echo $objRow->location_address;?></td>
+                      <td><?php $rowD = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow->assigned_to)); echo $rowD[0]->f_name.' '.$rowD[0]->l_name;?></td>
+                      <td><?php echo $objRow->phn_no;?></td> 
+                      <!--td><?php echo $objRow->importent_notes;?></td-->
+                      <td><?php echo $this->objFunction->iFind(TBL_SERVICE,'name', array('id'=>$objRow->location_id));?>                      
+                      </td>                                    
+                     <td align="center" class="hideexport"><?php echo $objRow->completion_date;?></td>
+                     <td align="center" class="hideexport"><a href="<?php echo ISP :: AdminUrl('reports/reset-property/id/'.$objRow->id);?>">Reset</a></td>                               
+                   </tr>                            
+         
+                </tbody>                       
+              </table>  
+              
+              
+              <table id="dataTables-example" class="table table-striped table-bordered table-hover table-checkable table-responsive datatable">                                                     
+                <thead class="cf">							                   
+                  <tr>                                     
+                    <th align="center">S.N.</th>								                     
+                    <th align="center"  data-class="expand">Job Started On</th>								                     
+                    <th align="center" data-hide="phone">Job Started By</th>                                     
+                    <th align="center" data-hide="phone">Completed On</th>                                     
+                    <th align="center" data-class="expand">Completed By</th>                                     
+                          
+                  </tr>						                 
+                </thead>						                 
+                <tbody>                       
+<?php
+			
+			if($objRs1): // Check for the resource exists or not
+			 $intI=1;
+			 
+			  while($objRow1 = $objRs1->fetch_object())  // Fetch the result in the object array
+			  {
+    				if($intI++%2==0)  // Condition for alternate rows color
+    				   $strCss='evenTr';
+    				else
+    				   $strCss='oddTr';
+				
+                                    			?>         			                   
+                  <tr>
+                  <td><?php echo $intI-1;?></td>
+                      <td><?php echo $objRow1->start_date;?></td> 
+                      <td><?php $rowD = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow1->started_by)); echo $rowD[0]->f_name.' '.$rowD[0]->l_name;?></td>
+                      <td><?php 
+                      if($objRow1->closed_by>0){
+                      echo $objRow1->closing_date; } else echo 'In Progress';?></td>
+                      <td>
+                      <?php if($objRow1->closed_by>0){ $rowD = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow1->closed_by)); echo $rowD[0]->f_name.' '.$rowD[0]->l_name; } else echo 'N/A'; ?></td>
+                     </tr>                            
+<?php
+			   }
+      else:
+			       echo '<tr><td colspan="5" class="errNoRecord">No Record Found!</td></tr>';
+			endif;
+?>                            
+                </tbody>                       
+              </table>           
+                              
+<?php
+			  
+                            			 ?>                          
+              <input type="hidden" name="status" value="1" />                       
+              <input type="hidden" name="task" value="modifyjoblocation" />                   
+            </form>						 		           
+          </div>						         
+        </div>					       
+      </div>				                                       
     </div>				     
     <!-- /Normal --> 			   
   </div>			   

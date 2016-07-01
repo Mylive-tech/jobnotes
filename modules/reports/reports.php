@@ -110,6 +110,28 @@ class REPORT extends REPORT_HTML_CONTENT
 			$this->objSet = $this->objDatabase->dbQuery($strSql);
 			parent :: admin_property_report($this->objSet ,'joblocation');
 	}
+	
+	public function resetProperty($id)
+	{
+		if ($id >0) {
+			$this->objDatabase->dbQuery("UPDATE ".TBL_JOBLOCATION." set progress='0', start_date='0000-00-00 00:00:00', completion_date='0000-00-00 00:00:00' where id='".$id."'");
+		}
+		else {
+			$this->objDatabase->dbQuery("UPDATE ".TBL_JOBLOCATION." set progress='0', start_date='0000-00-00 00:00:00', completion_date='0000-00-00 00:00:00'");
+		}
+		
+		$this->objFunction->showMessage('Record has been updated successfully.',ISP :: AdminUrl('property/completed-properties')); 
+	}
+	public function property_report_jobHistory()
+	{
+		$strSql = "SELECT * FROM ".TBL_JOBSTATUS." js inner join ".TBL_JOBLOCATION." jl on js.job_id=jl.id where js.job_id='".$this->intId."' order by js.id desc";
+			$this->objSet = $this->objDatabase->dbQuery($strSql);
+
+		$strSql = "SELECT * FROM ".TBL_JOBLOCATION." where 1=1 and id='".$this->intId."'";
+			$this->objSet1 = $this->objDatabase->fetchRows($strSql);
+		  
+			parent :: admin_property_jobHistory($this->objSet, $this->objSet1);
+	}
 	public function report_details($pid) {
 	   
 	   $strSql = "SELECT * FROM ".TBL_JOBSTATUS." js inner join ".TBL_JOBLOCATION." jl on js.job_id=jl.id where js.job_id=".$pid." order by js.id desc";
@@ -1110,6 +1132,12 @@ switch($strTask)
   break;
   case 'piechartuserdetails':
     $objContent->piechartuserdetails($_GET['sid']);
+  break;
+   case 'reset-property':
+    $objContent->resetProperty($intId);
+  break;
+  case 'job-history':
+    $objContent->property_report_jobHistory();
   break;
   
 }

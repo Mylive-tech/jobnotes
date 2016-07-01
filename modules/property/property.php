@@ -234,6 +234,7 @@ class JOBLOCATION extends JOBLOCATION_HTML_CONTENT
       	     	   $this->objRecord=(object)$_POST;  // converion of Posted array to object message
       		   	   parent :: admin_Form($this->objRecord);
       	  	 }
+			  $this->objDatabase->dbQuery("INSERT ".TBL_PROPERTY_NOTES."(property_id, staff_id_or_admin, notes, date_added) values('".$this->intId."', '".$_SESSION['adminid']."', '".$_POST['md_importent_notes']."', '".date('Y-m-d h:i:s')."') ");
 	 else:
            $this->objDatabase->updateForm($tbl); //Update Exisiting content		  
 		       $msgAction='updated';
@@ -248,8 +249,8 @@ class JOBLOCATION extends JOBLOCATION_HTML_CONTENT
         $redirectUrl = ISP :: AdminUrl('property/edit-property/id/'.$this->intId);
      }
      
-     return '<h3>Record status has been '.$msgAction.' successfully.</h3>';
-	 //$this->objFunction->showMessage('Record status has been '.$msgAction.' successfully.',$redirectUrl);  //Function to show the message	 	  
+     //return '<h3>Record status has been '.$msgAction.' successfully.</h3>';
+	 $this->objFunction->showMessage('Record status has been '.$msgAction.' successfully.',$redirectUrl);  //Function to show the message	 	  
    } //end function   
    
   
@@ -560,6 +561,18 @@ class JOBLOCATION extends JOBLOCATION_HTML_CONTENT
     die();
    }
    
+   public function add_notes()
+   {
+	   $this->objDatabase->dbQuery("INSERT ".TBL_PROPERTY_NOTES."(property_id, staff_id_or_admin, notes, date_added) values('".$_POST['prop_id']."', '".$_POST['staff_id']."', '".$_POST['txt_note']."', '".date('Y-m-d h:i:s')."') ");
+   }
+   
+   public function getImportantNotes($tbl)
+   {
+	   	$strSql = "SELECT * FROM ".$tbl." where property_id=".$_GET['id']." order by date_added desc";
+		$this->objSet = $this->objDatabase->dbQuery($strSql);
+		return $this->objSet;
+		 
+   }
    public function removePhoto() {
      if ($_REQUEST['action'] =='staffgallery') {
      	$oldImages =  implode(",", $_POST['ex_staff_gallery']); 
@@ -679,6 +692,6 @@ switch($strTask)
   break;
    case 'direct':
     $objJobLocation->direct();
-  break;   	
+  break;
 }
 ?>

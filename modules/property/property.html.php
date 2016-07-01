@@ -66,6 +66,44 @@ var sm = new scribblemaps.ScribbleMap(document.getElementById('ScribbleMap'));
 protected function admin_joblocation_Form($objRs)
 {    
 ?>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('#add_more_note').click(function(){
+			$('#outer_overlay').show();
+			$('#add_note_form').show();
+			return false;
+			
+		});
+		$('#outer_overlay').click(function(){
+			$('#outer_overlay').hide();
+			$('#add_note_form').hide();
+			
+		});
+		$('#add_note').click(function(){
+			var not = $('#txt_note').val();
+			$('#md_importent_notes').val(not);
+			$('#outer_overlay').hide();
+			$('#add_note_form').hide();
+			return false;
+		});
+	});
+</script>
+<?php
+if(isset($_POST['add_note']))
+{
+	$this->add_notes();
+}
+?>
+<div class="outer_overlay" id="outer_overlay"></div>
+<div id="add_note_form" class="add_note_form">
+	<strong> Add Note:</strong><br/>
+	<form method="post" action="">
+		<input type="hidden" name="prop_id" id="prop_id" value="<?= $objRs->id; ?>" />
+		<input type="hidden" name="staff_id" id="staff_id" value="<?= $_SESSION['adminid'];?>" />
+		<textarea name="txt_note" id="txt_note"></textarea>
+		<input type="submit" name="add_note" value="Add" class="btn btn-default" <?php if($objRs->id == '') {echo 'id="add_note"';}?> />
+	</form>
+</div>
  <div id="content">			   
   <div class="container">	
   <div class="crumbs">
@@ -138,7 +176,7 @@ protected function admin_joblocation_Form($objRs)
                   <label for="exampleInputEmail1" class="full_width font-Bold">Additional Image(s)</label>                                      
                   <input type="file" accept="image/*" name="gallery[]" multiple class="form-control inline_button" id="gallery">
                   <small>You can select multipe images by holding Ctrl button and click on images.</small>                             
-                  <div class="clearfix"></div> 
+                  <div class="clearfix"></div>
                 <?php
                 if ($objRs->gallery <> '') {
                      $arrImg = explode(",", $objRs->gallery);
@@ -198,10 +236,45 @@ protected function admin_joblocation_Form($objRs)
                   </label>                                      
                   <input type="nomber" class="form-control" id="db_phn_no" name="db_phn_no" value="<?php echo $objRs->phn_no;?>" maxlength="10" placeholder="Display from associate DB">                                  
                 </div>                                 
-                <div class="form-group">                                     
-                  <label for="exampleInputPassword1" class="font-Bold">Important Note                   
-                  </label>                   
-                  <textarea class="form-control" rows="3" required name="md_importent_notes" id="md_importent_notes" placeholder="Enter detailed Special notes"><?php echo $objRs->importent_notes;?></textarea>                                  
+                <div class="form-group">  
+				                                
+                  <label for="exampleInputPassword1" class="font-Bold">Important Note</label> <br/>                  
+                  <!--textarea class="form-control" rows="3" required name="md_importent_notes" id="md_importent_notes" placeholder="Enter detailed Special notes"><?php echo $objRs->importent_notes;?></textarea-->                                  
+				  <input type="hidden" name="md_importent_notes" id="md_importent_notes" value="" />
+				  <?php if($objRs->id != '') {?>   
+				  <table class="table table-bordered">
+					<thead>
+						<tr>
+							<th>Staff Name</th>
+							<th>Note</th>
+							<th>Date</th>
+						</tr>
+					</thead>
+					<tbody>
+						<?php 
+						$i_notes = $this->getImportantNotes(TBL_PROPERTY_NOTES); 
+						//$numrows = mysqli_fetch_all($i_notes,MYSQLI_ASSOC); 
+						//if($i_notes){
+						while($notes = $i_notes->fetch_object())
+						{ ?>
+							<tr>
+								<td><?php 
+								$rowD = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$notes->staff_id_or_admin));
+								echo $rowD[0]->f_name.' '.$rowD[0]->l_name;?></td>
+								<td><?= $notes->notes;?></td>
+								<td><?= $notes->date_added;?></td>
+							</tr>
+							
+						<?php }
+						/*}
+						else
+						{
+							echo '<tr><td>No notes found...</td></tr>'
+						}*/
+					?>
+					</tbody>
+				  </table><?php } ?>
+				  <a href="" id="add_more_note">Add notes...</a>
                 </div>                                
                                                    
                 <div class="form-group inline_srarch2">
@@ -242,11 +315,11 @@ protected function admin_joblocation_Form($objRs)
                 <button type="submit" value="New" name="save_new" class="btn btn-default sumit_bottom">Save & Add New</button>                                 
                 <button type="submit" value="back" name="save_back" class="btn btn-default sumit_bottom pull-right">Save & Go Back                 
                 </button>                                 
-                <!--<input type="hidden" name="task" value="savejoblocationlisting" />-->
+                <input type="hidden" name="task" value="savejoblocationlisting" />
                 <input type="hidden" name="db_site_id" value="<?php echo $_SESSION['site_id'];?>">
                 </div>                                            
               </form>                     
-            </div>                 
+            </div>
           </div>                 
           <!-- /.container -->              
         </div>	        
@@ -412,7 +485,7 @@ $(document).ready(function() {
                     <th align="center" data-hide="phone">Address</th>                                     
                     <th align="center" data-hide="phone">Assigned To</th>                                     
                     <th align="center" data-hide="phone">Phone Number</th>                                     
-                    <th align="center" data-hide="phone">Important Notes</th>                                     
+                    <!--th align="center" data-hide="phone">Important Notes</th-->                                     
                     <th align="center" data-hide="phone">Assigned Location</th> 
                     <th align="center" data-hide="phone">Priority</th>                                    
                     <th align="center" data-hide="phone" class="hideexport">Status</th>                                     
@@ -441,7 +514,7 @@ $(document).ready(function() {
                   <td><?php echo $intI-1;?></td>
                       <td><?php echo $objRow->job_listing;?>
                       <br> <br>
-                      <a class="btn btn-danger btn-ms" href="<?php echo ISP :: AdminUrl('property/job-history/id/'.$objRow->id);?>">History</a>
+                      <a class="btn btn-danger btn-ms" href="<?php echo ISP :: AdminUrl('reports/job-history/id/'.$objRow->id);?>">History</a>
                       </td> 
                       <td><?php echo $objRow->location_address;?></td>
                       <td><?php
@@ -455,7 +528,7 @@ $(document).ready(function() {
                       ?>
                       </td>
                       <td><a href="tel:<?php echo $objRow->phn_no;?>"><?php echo $objRow->phn_no;?></a></td> 
-                      <td><?php echo $objRow->importent_notes;?></td>
+                      <!--td><?php echo $objRow->importent_notes;?></td-->
                       <td><?php
                       echo $this->objFunction->iFind(TBL_SERVICE,'name', array('id'=>$objRow->location_id));
                       //echo $rowD[0]->f_name.' '.$rowD[0]->l_name;
@@ -519,7 +592,7 @@ $(document).ready(function() {
 		</li>
     <li>
 			<i class="current"></i>
-			<a href="<?php echo ISP::AdminUrl('property/manage-properties/');?>">Manage Properties</a>
+			<a href="<?php echo ISP::AdminUrl('reports/property_report/');?>">Reports</a>
 		</li>
 		<li class="current">
 			<a href="#" title="">Job History</a>
@@ -549,7 +622,7 @@ $(document).ready(function() {
                     <th align="center" data-hide="phone">Address</th>                                     
                     <th align="center" data-hide="phone">Assigned To</th>                                     
                     <th align="center" data-hide="phone">Phone Number</th>                                     
-                    <th align="center" data-hide="phone">Important Notes</th>                                     
+					<!--th align="center" data-hide="phone">Important Notes</th-->                                     
                     <th align="center" data-hide="phone">Assigned Location</th>                                            
                     <th align="center" data-hide="phone" class="hideexport">Completion Date</th>                                                                                                                                                                                                                                                                                               
 				            <th align="center" data-hide="phone" class="hideexport">Action</th>       
@@ -571,7 +644,7 @@ $(document).ready(function() {
                       <td><?php echo $objRow->location_address;?></td>
                       <td><?php $rowD = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow->assigned_to)); echo $rowD[0]->f_name.' '.$rowD[0]->l_name;?></td>
                       <td><?php echo $objRow->phn_no;?></td> 
-                      <td><?php echo $objRow->importent_notes;?></td>
+                      <!--td><?php echo $objRow->importent_notes;?></td-->
                       <td><?php echo $this->objFunction->iFind(TBL_SERVICE,'name', array('id'=>$objRow->location_id));?>                      
                       </td>                                    
                      <td align="center" class="hideexport"><?php echo $objRow->completion_date;?></td>
@@ -939,7 +1012,45 @@ function reloadPage()
       <div class="col-md-6 bluebg">
   			<div class="col-md-12">
         <h4>Important Notes</h4>
-        <?php echo $objRecordSet->importent_notes;?>
+        <table class="table table-bordered">
+        <thead>
+        	<tr>
+        		<th>Staff Name</th>
+                <th>Note</th>
+                <th>Date</th>
+           	</tr>
+        </thead>
+        <tbody>
+        	<?php
+			if(isset($_POST['add_note']))
+			{
+				$this->add_notes();
+			}
+			 //echo $objRecordSet->importent_notes;
+			$i_notes = $this->getImportantNotes(TBL_PROPERTY_NOTES);
+			while($notes = $i_notes->fetch_object())
+			{ ?>
+            	<tr>
+                	<td><?php 
+					$rowD = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$notes->staff_id_or_admin));
+					echo $rowD[0]->f_name.' '.$rowD[0]->l_name;?></td>
+                	<td><?= $notes->notes;?></td>
+                	<td><?= $notes->date_added;?></td>
+                </tr>
+				
+			<?php }
+		?>
+        </tbody>
+        </table>
+		<?php if($this->objFunction->checkPermission('Add Property Notes', 'property')):?>
+		   <strong> Add Note:</strong><br/>
+			<form method="post" action="">
+				<input type="hidden" name="prop_id" id="prop_id" value="<?= $_GET['id']; ?>" />
+				<input type="hidden" name="staff_id" id="staff_id" value="<?= $_SESSION['adminid'];?>" />
+				<textarea name="txt_note" id="txt_note"></textarea>
+				<input type="submit" name="add_note" id="add_note" value="Add" class="btn btn-default" />
+			</form>
+		<?php endif;?>
         <div class="clearfix"></div>         
         </div>	
 			</div>

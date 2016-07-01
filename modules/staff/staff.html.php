@@ -1320,7 +1320,7 @@ function loadUsers(roleId)
 					{   
                                 ?>             <td>
                       <input type="checkbox" value="1" name="permission_<?php echo $roleId;?>_<?php echo $objPermission->id;?>" 
-                      <?php echo $this->objFunction->check_role_permission($roleId, $objPermission->id);?>></td>            
+                      <?php echo $this->objFunction->check_role_permission($roleId, $objPermission->id);?> <?php if( ($objPermission->module == 'staff') && ($roleId != 2) ) echo 'disabled="disabled"'; ?>></td>            
 <?php
 					}
                }
