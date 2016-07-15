@@ -1605,8 +1605,11 @@ public function getFormSubmissionValues($submission_id)
         $staff_array = json_decode($json_output, true);
         $staff_data = array();
         foreach($staff_array as $key => $val) {
-            if ($val['staff_id'] == $staff_id)
+            if ($staff_id != "" && $val['staff_id'] == $staff_id)
                 $staff_data[] = $val;
+			else
+				$staff_data[] = $val;
+			
         }        
         return array_reverse($staff_data);
     }

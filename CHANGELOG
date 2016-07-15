@@ -159,4 +159,7 @@
 	7. Created history/view screen under reports module
 	8. Created add notes module to add multiple notes for properties at front end and back end
 	
+## 2016-07-15
+	1. Added export button in IVR Log under reports manager and make it functional like individual log export
+	
 	

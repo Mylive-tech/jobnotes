@@ -563,7 +563,7 @@ class JOBLOCATION extends JOBLOCATION_HTML_CONTENT
    
    public function add_notes()
    {
-	   $this->objDatabase->dbQuery("INSERT ".TBL_PROPERTY_NOTES."(property_id, staff_id_or_admin, notes, date_added) values('".$_POST['prop_id']."', '".$_POST['staff_id']."', '".$_POST['txt_note']."', '".date('Y-m-d h:i:s')."') ");
+	   $this->objDatabase->dbQuery("INSERT INTO ".TBL_PROPERTY_NOTES."(property_id, staff_id_or_admin, notes, date_added) values('".$_POST['prop_id']."', '".$_POST['staff_id']."', '".$_POST['txt_note']."', '".date('Y-m-d h:i:s')."') ");
    }
    
    public function getImportantNotes($tbl)

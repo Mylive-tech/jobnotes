@@ -1051,6 +1051,23 @@ class REPORT extends REPORT_HTML_CONTENT
         $this->objFunction->showMessage('Zip file removed successfully.', ISP :: AdminUrl('reports/export-reports'));
         
     }
+	
+	public function export_ivr_log_report()
+	{
+		$array_log = $this->objFunction->getStaffIvrLog();
+		$filename = 'export_ivr_log_staff'.'.csv';
+		ob_start();
+		if (count($array_log) > 0) {
+			$strLines = 'Name, Date, Time, Status' . PHP_EOL;
+				foreach($array_log as $log) {
+					$strLines.= $log['staff_full_name'] . ', ' .strftime('%b %d %Y', $log['time_stamp']) . ', ' . $log['time_12_hour_clock'] . ', ' . ucfirst($log['clock_action_description']) . PHP_EOL;
+				}
+			echo $strLines;
+			header('Content-Type: application/csv');
+			header('Content-Disposition: attachment; filename="' . $filename . '";');
+			die();
+		}
+	}
   
 } // End of Class
 
@@ -1138,6 +1155,10 @@ switch($strTask)
   break;
   case 'job-history':
     $objContent->property_report_jobHistory();
+  break;
+  
+  case 'export_ivr_log_report':
+    $objContent->export_ivr_log_report();
   break;
   
 }

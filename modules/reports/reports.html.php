@@ -315,8 +315,8 @@ $(document).ready(function() {
                   </tbody>
                   </table>
                 <?php }
-				else { ?> 
-                 <form method="post" name="frmListing"> 
+				else { ?>
+               <div class="col-md-12 text-right" style="padding-bottom:10px"><a href="http://jobnotes.staging-box.net/webadmin/index.php?dir=reports&amp;task=export_ivr_log_report" class="btn btn-info">Export</a></div>
                 <table class="table table-striped table-bordered table-hover table-checkable table-responsive datatable" id="dataTables-example">                    
                   <thead class="cf">											
                     <tr>                          
