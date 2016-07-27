@@ -162,4 +162,8 @@
 ## 2016-07-15
 	1. Added export button in IVR Log under reports manager and make it functional like individual log export
 	
+## 2016-07-27
+	1. Added zipcode field in weather widget to display report as per the entered zipcode
+	2. Created getting started widget with toggle slide up/down effect
+	
 	

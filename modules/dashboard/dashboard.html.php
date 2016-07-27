@@ -44,12 +44,21 @@ class DSHBOARD_HTML_CONTENT
     <h4 class="text-left heding_6 dashboardheading">Dashboard</h4>				     
     <div class="col-md-12 nopadding">               
       <div class="welcome_message widget box drag">                  
-        <div class="widget-header">
-            <h4><i class="icon-reorder"></i> GETTING STARTED</h4>				          
-        </div>                        
-        <a class="welcome-panel-close" href="javascript: void(0);">          
+        <!--<div class="widget-header">-->
+         <div class="widget-header dragwidget_location_status_details">   
+         	<i class="icon-reorder"></i> <h4>GETTING STARTED</h4>				          
+        <!--</div>-->
+            <div class="toolbar no-padding">
+                <div class="btn-group">
+                    <span class="btn btn-xs widget-collapse">
+                        <i class="icon-angle-down"></i>
+                    </span>
+                </div>
+            </div> 
+        </div>                       
+        <!--<a class="welcome-panel-close" href="javascript: void(0);">          
           <i class="icon-remove-sign"></i> Dismiss
-        </a>                           
+        </a> -->                          
         <div class="inside_widget col-md-12 padding10 widget-content">Welcome to JobNotes, we've assembled links to get you started quickly. You can also use the navigation on left to use this system.                             
           <ul class="col-md-12">                               
             <li>            
@@ -87,9 +96,8 @@ class DSHBOARD_HTML_CONTENT
           </ul>                            
         </div>               
       </div> 
-    </div>     
-      <div class="col-md-12 nopadding" id="widgetsorting">
-        <?php
+    </div>
+     <?php
             $int_loop_counter=0;
             for($i=0; $i<count($this->objFunction->widgetContentArray); $i++) {
                 if($this->objFunction->widgetContentArray[$i]<>'') {
@@ -103,6 +111,18 @@ class DSHBOARD_HTML_CONTENT
                 }
             }
             ?>
+    <div class="col-md-12 nopadding clock-in-out-widget" id="widgetsorting">
+    <ul class="sortable nopadding col-md-12">
+            <?php $i=1;
+                foreach($even_content as $even_widget_value) {
+                    if($i == 1)
+                        echo '<li class="ui-state-default nopadding widget box col-md-12 col-sm-12 text-left">'.$even_widget_value.'</li>';                    
+                    $i++;	
+                }
+            ?>
+      </ul>
+      </div>     
+      <div class="col-md-12 nopadding" id="widgetsorting">
                 <div class="col-md-6 col-sm-12 nopadding">
                     <ul class="sortable nopadding col-md-12">
                     <?php
@@ -114,9 +134,11 @@ class DSHBOARD_HTML_CONTENT
                 </div>
                 <div class="col-md-6 col-sm-12 text-right rightsidewidget" style="padding-right:0px;">
                     <ul class="sortable nopadding col-md-12">
-                    <?php
+                    <?php $i=1;
                         foreach($even_content as $even_widget_value) {
-                            echo '<li class="ui-state-default nopadding widget box col-md-12 col-sm-12 text-left">'.$even_widget_value.'</li>';                    
+							if($i != 1)
+                            	echo '<li class="ui-state-default nopadding widget box col-md-12 col-sm-12 text-left">'.$even_widget_value.'</li>';                    
+							$i++;	
                         }
                     ?>
                     </ul>

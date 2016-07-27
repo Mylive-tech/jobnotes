@@ -89,3 +89,13 @@ h2.weather
     margin-right:auto;
 
 }
+/*zipcode weather css*/
+.widget-header form input[type="text"] {
+    border: 1px solid #ccc;
+    margin: 0 8px;
+    padding: 0 5px !important;
+    vertical-align: middle;
+}
+.widget-header form {
+    display: inline;
+}
