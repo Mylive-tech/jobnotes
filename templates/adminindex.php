@@ -29,6 +29,26 @@
     <!--=== JavaScript ===-->	
 <script type="text/javascript" src="<?php echo SITE_URL;?>assets/js/libs/jquery-1.10.2.min.js"></script>  
 <script src="<?php echo SITE_URL;?>dist/vendor/js/vendor.js"></script>  
+
+<script type="text/javascript">
+var alert_type=1;
+var SITE_URL = '<?php echo SITE_URL;?>'; 
+</script>      
+  </head>
+  <body<?php if($_SESSION['adminid']=='') echo ' class="login"';?>>        
+    <?php $objMainframe->mosFunction('top');?> 
+    <?php if($_SESSION['adminid']<>''){?> 
+    <div id="container">
+      <?php } ?>
+      <?php if($_SESSION['adminid']<>'') {?>
+      <?php $objMainframe->mosFunction('left');?> 
+      <?php } ?>  
+      <?php utf8_encode($objMainframe->mosBody()); ?> 
+      <?php if($_SESSION['adminid']<>''){?> 
+    </div>
+    <?php } ?>
+    <?php $objMainframe->mosFunction('footer');?>          
+    </body>
 <script src="<?php echo SITE_URL;?>dist/formbuilder.js"></script>   	
 <script type="text/javascript" src="<?php echo SITE_URL;?>bootstrap/js/bootstrap.min.js"></script> 	
 <script type="text/javascript" src="<?php echo SITE_URL;?>assets/js/libs/lodash.compat.min.js"></script> 	
@@ -90,23 +110,4 @@
 <script type="text/javascript" src="<?php echo SITE_JSURL;?>plugins/event.swipe/jquery.event.swipe.js"></script>      	
  
 <script type="text/javascript" src="<?php echo SITE_JSURL ?>validation.js"></script> 
-<script type="text/javascript">
-var alert_type=1;
-var SITE_URL = '<?php echo SITE_URL;?>'; 
-</script>      
-  </head>
-  <body<?php if($_SESSION['adminid']=='') echo ' class="login"';?>>        
-    <?php $objMainframe->mosFunction('top');?> 
-    <?php if($_SESSION['adminid']<>''){?> 
-    <div id="container">
-      <?php } ?>
-      <?php if($_SESSION['adminid']<>'') {?>
-      <?php $objMainframe->mosFunction('left');?> 
-      <?php } ?>  
-      <?php utf8_encode($objMainframe->mosBody()); ?> 
-      <?php if($_SESSION['adminid']<>''){?> 
-    </div>
-    <?php } ?>
-    <?php $objMainframe->mosFunction('footer');?>          
-    </body>
 </html>

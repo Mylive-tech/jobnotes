@@ -89,7 +89,6 @@ if($currentPageUrl== ISP::AdminUrl('reports/add-new-form/')){
  $manageForm='active';
 
 }
-
 if($currentPageUrl== ISP::AdminUrl('reports/listing/'))  {
 
   $formCurrent ='current';
@@ -97,7 +96,16 @@ if($currentPageUrl== ISP::AdminUrl('reports/listing/'))  {
 	$FormListingOpen='open';
   $manageFormListing='active';
 
-}if($currentPageUrl== ISP::AdminUrl('reports/export-reports/'))  {  $formCurrent ='current';  $reportsExports = 'active';}
+}
+if($currentPageUrl== ISP::AdminUrl('reports/reportsmanager/'))  {
+
+  $formCurrent ='current';
+
+	$FormListingOpen='open';
+  $manageFormListing='active';
+
+}
+if($currentPageUrl== ISP::AdminUrl('reports/export-reports/'))  {  $formCurrent ='current';  $manageFormListing = 'active';}
 
 if($currentPageUrl== ISP::AdminUrl('setting/general-settings/'))
 {
@@ -197,7 +205,7 @@ if($currentPageUrl== ISP::AdminUrl('staff/staff_ivr_log/'))
 	
 	$FormListingOpen ='open';
 
-    $manageIvrListing='active';
+    $manageFormListing='active';
 
  }
  
@@ -209,7 +217,7 @@ if($currentPageUrl== ISP::AdminUrl('staff/staff_ivr_log/'))
 	
 	$FormListingOpen ='open';
 
-    $managedriverListing='active';
+    $manageFormListing='active';
 
  }
  
@@ -221,7 +229,7 @@ if($currentPageUrl== ISP::AdminUrl('staff/staff_ivr_log/'))
 	
 	$FormListingOpen ='open';
 
-    $managedriverListing='active';
+    $manageFormListing='active';
 
  }
 
@@ -233,7 +241,30 @@ if($currentPageUrl== ISP::AdminUrl('staff/staff_ivr_log/'))
 	
 	$FormListingOpen ='open';
 
-    $managepropertyListing='active';
+    $manageFormListing='active';
+
+ }
+ if($currentPageUrl== ISP::AdminUrl('reports/season_reset/') )  
+
+ {  
+
+    $formCurrent ='current';
+	
+	$FormListingOpen ='open';
+
+    $manageFormListing='active';
+
+ }
+ 
+ if($currentPageUrl== ISP::AdminUrl('reports/session_season_reset/') )  
+
+ {  
+
+    $formCurrent ='current';
+	
+	$FormListingOpen ='open';
+
+    $manageFormListing='active';
 
  }
 
@@ -470,16 +501,34 @@ if($currentPageUrl== ISP::AdminUrl('staff/staff_ivr_log/'))
 	?>            
 
 							<li>
+                            	<a href="<?php echo ISP :: AdminUrl('reports/reportsmanager/');?>" class="<?php echo $manageFormListing;?>">
+                                <i class="icon-angle-right"></i>
+                                Reports Manager 
+                                </a>
+                            </li>
+                            <!--<li>
+                            	<a href="<?php echo ISP :: AdminUrl('reports/listing/');?>" class="<?php echo $manageFormListing;?>">
+                                <i class="icon-angle-right"></i>
+                                Reports Manager 
+                                </a>
+                            </li>-->
 
-								<a href="javascript:void(0);">
+								<!--<a href="javascript:void(0);">
 
                                     <i class="icon-edit"></i>
     
                                     	Reports Manager
     
-                                    </a>
-                                <ul class="sub-menu" <?php if($FormListingOpen == 'open') echo 'style="display:block;"';?>>
+                                    </a>-->
+                                    
+                                <!--<ul class="sub-menu" <?php if($FormListingOpen == 'open') echo 'style="display:block;"';?>>
                                 	<li>
+                                        <a href="<?php echo ISP :: AdminUrl('reports/listing/');?>"  class="<?php echo $manageAllListing;?>">
+                                        <i class="icon-angle-right"></i>
+                                        Reports Manager
+                                 		</a>
+                                    </li>
+                                    <li>
                                         <a href="<?php echo ISP :: AdminUrl('reports/listing/');?>"  class="<?php echo $manageFormListing;?>">
                                         <i class="icon-angle-right"></i>
                                         Custom Reports
@@ -503,9 +552,9 @@ if($currentPageUrl== ISP::AdminUrl('staff/staff_ivr_log/'))
                                         Properties Reports
                                  		</a>
                                     </li>
-                                </ul>
+                                </ul>-->
 
-							</li>                                                        <li>								<a href="<?php echo ISP :: AdminUrl('reports/export-reports/');?>" class="<?php echo $reportsExports;?>">								<i class="icon-angle-right"></i>								Export Reports								</a>							</li>
+							<!--</li>                                                        <li>								<a href="<?php echo ISP :: AdminUrl('reports/export-reports/');?>" class="<?php echo $reportsExports;?>">								<i class="icon-angle-right"></i>								Export Reports								</a>							</li>-->
 
 	<?php 
 
@@ -533,7 +582,6 @@ if($currentPageUrl== ISP::AdminUrl('staff/staff_ivr_log/'))
 
 						</ul>
 
-					</li>
 
  <?php } ?>       
 

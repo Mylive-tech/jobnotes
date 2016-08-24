@@ -12,12 +12,12 @@ function list_all_properties_reports($login_id=0, $auto_login='') {
         $array_data['property'][$key]= $objRow;     
     } 
     
-    $properties_reports = getAllReports();
+    $properties_reports = json_decode(getAllReports());
     if ($login_id >0) {
-        return json_encode(array("login_info"=>json_encode(array('id'=>$login_id, 'auto_login'=>$auto_login)), "properites"=>json_encode($array_data), "reports"=>$properties_reports));
+        return json_encode(array("status"=>true , "message"=>"Login Successfully","login_info"=>array('id'=>$login_id, 'auto_login'=>$auto_login), "properites"=>$array_data, "reports"=>$properties_reports));
     }
     else {
-        return json_encode(array("properites"=>json_encode($array_data), "reports"=>$properties_reports));
+        return json_encode(array("properites"=>$array_data, "reports"=>$properties_reports));
     }        
 }
 
@@ -41,24 +41,40 @@ function getAllPropertiesReports() {
                    if ($reptObj->id <> '')
                         $objRow->submission_date = date('m/d/Y', strtotime($reptObj->submission_date));
                     
-                    $array_data['property_reports'][$objProperty->id][$keyReport] = $objRow;
+                    //$array_data['property_reports'][$objProperty->id][$keyReport] = $objRow;
+					$array_data[$objProperty->id][$keyReport] = $objRow;
                 }
        
             }
         }
     }
     
-    return json_encode($array_data);
+    return json_encode(array("status"=>true , "message"=>"", "property_reports"=>$array_data));
 }
-
 function getAllReports() {
     global $objDatabase;
     $strsql = "SELECT * from ".TBL_REPORTS." where status=1";
     $objSet =  $objDatabase->dbFetch($strsql);
+	$rowValue = array();
     foreach ($objSet as $key => $objRow) {
-        $reportArray['report'][$key] = $objRow;
+		$rowValue = array(
+			'report_id' => $objRow->report_id,
+			'site_id' => $objRow->site_id,
+			'report_name' => $objRow->report_name,
+			'form_description' => $objRow->form_description,
+			'form_body' => json_decode($objRow->form_body),
+			'send_to' => $objRow->send_to,
+			'mail_subject' => $objRow->mail_subject,
+			'submit_button_text' => $objRow->submit_button_text,
+			'location_box_label' => $objRow->location_box_label,
+			'property_box_label' => $objRow->property_box_label,
+			'submissions' => $objRow->submissions,
+			'date_added' => $objRow->date_added,
+			'status' => $objRow->status,
+		);
+        $reportArray[$key] = $rowValue;
     }
-    return json_encode($reportArray);
+    return json_encode(array("status"=>true , "message"=>"", "report"=>$reportArray));
 }
 
 if($action == 'user_authentication') {
@@ -72,7 +88,7 @@ if($action == 'user_authentication') {
         //echo $objSet->id.','.$objSet->auto_login;
     }
     else {
-        echo json_encode(array('login_info'=>'failed'));
+        echo json_encode(array('status'=>false , 'message'=>'Invalid credential','login_info'=>'failed'));
     }
     
 }
@@ -81,16 +97,21 @@ elseif($action == 'updatejob') {
     if(intval($_GET['status'])==1) {
         $objDatabase->dbQuery("UPDATE ".TBL_JOBLOCATION." set progress='1', start_date='".date('Y-m-d H:i:s')."' where id='".$_GET['pid']."'");
         $objDatabase->dbQuery("INSERT INTO ".TBL_JOBSTATUS." (job_id, started_by, start_date) values('".$_GET['pid']."', '".$_GET['uid']."', '".date('Y-m-d H:i:s')."')");
-        echo date('Y-m-d H:i:s');
+        echo json_encode(array('status'=>true , 'message'=>'Job start','result'=>date('Y-m-d H:i:s')));
+		//echo date('Y-m-d H:i:s');
     }
     elseif(intval($_GET['status'])==2) {  
         $objDatabase->dbQuery("UPDATE ".TBL_JOBLOCATION." set progress='2', completion_date='".date('Y-m-d H:i:s')."' where id='".$_GET['pid']."'");
         $objDatabase->dbQuery("UPDATE ".TBL_JOBSTATUS." set closed_by='".$_GET['uid']."', closing_date='".date('Y-m-d H:i:s')."' where job_id='".$_GET['pid']."' and closed_by='' ");
-        echo date('Y-m-d H:i:s');
+        echo json_encode(array('status'=>true , 'message'=>'Job complete','result'=>date('Y-m-d H:i:s')));
+		//echo date('Y-m-d H:i:s');
     }
     elseif(intval($_GET['status'])==3) {
-        $objDatabase->dbQuery("UPDATE ".TBL_JOBLOCATION." set progress='0', start_date='0000-00-00 00:00:00', completion_date='0000-00-00 00:00:00' where id='".$_GET['pid']."'");
-        echo 'success';
+		$objDatabase->dbQuery("UPDATE ".TBL_JOBLOCATION." set progress='3', pause_date='".date('Y-m-d H:i:s')."' where id='".$_GET['pid']."'");
+         $objDatabase->dbQuery("UPDATE ".TBL_JOBSTATUS." set closed_by='".$_GET['uid']."', pausing_date='".date('Y-m-d H:i:s')."' where job_id='".$_GET['pid']."' and closed_by='' ");
+        //$objDatabase->dbQuery("UPDATE ".TBL_JOBLOCATION." set progress='0', start_date='0000-00-00 00:00:00', completion_date='0000-00-00 00:00:00' where id='".$_GET['pid']."'");
+        echo json_encode(array('status'=>true , 'message'=>'Job Paused','result'=>'success'));
+		//echo 'success';
     }
     
 }
@@ -100,9 +121,9 @@ elseif ($action == 'locations') {
 	$objSet = $objDatabase->dbFetch($strSql);
     
     foreach ($objSet as $key=>$objRow) {
-        $array_data['locations'][$key] = $objRow; 
+        $array_data[$key] = $objRow; 
     }
-    echo json_encode($array_data);
+    echo json_encode(array("status"=>true , "message"=>"", "locations"=>$array_data));
     
 }
 elseif ($action == 'dashboard') {
@@ -133,9 +154,9 @@ elseif($action == 'proplisting') {
     $strsql = "SELECT * from ".TBL_JOBLOCATION." where location_id= '".$_GET['lid']."' and site_id='".$_SESSION['site_id']."' and status=1 order by priority_status asc";
     $objSet =  $objDatabase->dbFetch($strsql);
     foreach ($objSet as $key => $objRow) {
-        $array_data['property'][$key] = $objRow;
+        $array_data[$key] = $objRow;
     }
-    echo json_encode($array_data);
+    echo json_encode(array("status"=>true , "message"=>"", "property"=>$array_data));
 }
 
 elseif($action == 'prop_view') {    
@@ -143,7 +164,7 @@ elseif($action == 'prop_view') {
     $objRs =  $objDatabase->dbFetch($strsql);
     foreach ($objRs as $key => $objRow)
     $array_data[$key]= $objRow;
-    echo json_encode($array_data);
+    echo json_encode(array("status"=>true , "message"=>"", "property_view"=>$array_data));
 }
 
 elseif($action == 'all_properties') {    
@@ -159,7 +180,7 @@ elseif($action == 'prop_reports') {
             $objRow->submission_date = date('d M Y', strtotime($reptObj->submission_date));
         $array_data['reports'][$key] = $objRow;
     }    
-    echo json_encode($array_data);
+    echo json_encode(array("status"=>true , "message"=>"", "reports"=>$array_data));
 }
 elseif($action == 'all_prop_reports') {  
     echo getAllPropertiesReports();
@@ -181,12 +202,13 @@ elseif($action == 'file_upload') {
     {     
         $name = $_FILES[0]['name'];
         
-        if(move_uploaded_file($_FILES[0]["tmp_name"], 'upload/'.$name))
+        if(move_uploaded_file($_FILES[0][tmp_name], 'upload/'.$name))
             $uploaded = TRUE; // Number of successfully uploaded file
 
         if ($uploaded == TRUE) {
             $objDatabase->dbQuery("UPDATE ".TBL_JOBLOCATION." set user_gallery= CONCAT(user_gallery,',', '".$name."') where id='".$_REQUEST['pid']."'");
-            echo 'success';   
+            echo json_encode(array("status"=>true , "message"=>"Image has been uploaded successfully", "result"=>"sucess"));
+			//echo 'success';   
         }
         else {
             echo 'Sorry, No file(s) uploaded.';
@@ -253,6 +275,36 @@ elseif($action == 'save_report') {
     mail($sendTo, $mailSubject, $message); 
     echo 'success';
 }
+elseif($action == 'add_note')
+{
+	 $msg = $objDatabase->dbQuery("INSERT INTO ".TBL_PROPERTY_NOTES."(property_id, staff_id_or_admin, notes, date_added) values('".$_GET['pid']."', '".$_GET['uid']."', '".$_GET['note']."', '".date('Y-m-d h:i:s')."') ");
+	 if($msg)
+	 {
+	  	echo json_encode(array("status"=>true , "message"=>"Note has been added successfully", "result"=>"sucess"));
+	 }
+	 else
+	 {
+		echo json_encode(array("status"=>false , "message"=>"", "result"=>"failed")); 
+	 }
+}
+elseif($action == 'display_notes')
+{
+	 $strsql ="SELECT * from ".TBL_PROPERTY_NOTES." where property_id = '".$_GET['pid']."'";
+	 $objSet =  $objDatabase->dbFetch($strsql);
+	$rowValue = array();
+    foreach ($objSet as $key => $objRow) {
+		$staffname = $objFunctions->iFindAll(TBL_STAFF, array('id'=>$objRow->staff_id_or_admin));
+		$name = $staffname[0]->f_name . ' ' . $staffname[0]->l_name;
+		$rowValue = array(
+			'staff_name' => $name,
+			'note' => $objRow->notes,
+			'date' => $objRow->date_added,
+		);
+        $reportArray[$key] = $rowValue;
+	}
+	echo json_encode(array("status"=>true , "message"=>"", "result"=>$reportArray));
+}
+
 
 die();   
 ?>

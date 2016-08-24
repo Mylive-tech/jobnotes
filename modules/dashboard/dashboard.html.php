@@ -112,7 +112,7 @@ class DSHBOARD_HTML_CONTENT
             }
             ?>
     <div class="col-md-12 nopadding clock-in-out-widget" id="widgetsorting">
-    <ul class="sortable nopadding col-md-12">
+    <ul class="sortable nopadding col-md-12 piechart_details">
             <?php $i=1;
                 foreach($even_content as $even_widget_value) {
                     if($i == 1)
@@ -120,6 +120,7 @@ class DSHBOARD_HTML_CONTENT
                     $i++;	
                 }
             ?>
+       <div class="overlay"></div><div class="loader"><img src="<?php echo SITE_URL.'assets/img/ajax-loading-input.gif'; ?>" /></div>
       </ul>
       </div>     
       <div class="col-md-12 nopadding" id="widgetsorting">

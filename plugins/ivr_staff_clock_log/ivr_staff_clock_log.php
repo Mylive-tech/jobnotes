@@ -50,8 +50,6 @@ class ivr_staff_clock_log
 			}
 		}
 	} 
-  //echo $b.'<pre>'; print_r($new_sa); echo '</pre>';
-  //echo 'dddd'; print_r(array_unique(array_reverse($staff_array)));
 	/*Subcontractor*/
 	foreach($subcontractor_array as $key => $val) {
      
@@ -92,20 +90,17 @@ class ivr_staff_clock_log
     foreach($new_sa as $key => $val) {
      
        if($val['clock_action_description'] == 'clock in') {
-           //if($val['clock_action_description'] == 'clock in')
               $this->staff_regular_login[$val['staff_id']]= 1;
        }
        elseif($val['clock_action_description'] == 'clock out') {
-           //if($val['clock_action_description'] == 'clock in')
                $this->staff_contractor_login[$val['staff_id']]= 1;
-              //$this->staff_contractor_login++;
        }  
     }
     $this->ivr_staff_clock_log_init();
   }
   
   function ivr_staff_clock_log_init()
-  {  
+  { 
     $widgetContent='
                 <div class="widget-header">
                   <i class="icon-reorder"></i>&nbsp;&nbsp;<h4>IVR - Clocked in / out</span></h4>
@@ -116,10 +111,10 @@ class ivr_staff_clock_log
     								</div>
                  </div>
      <div class="inside_widget widget-content no-padding">             
-          <div class="col-md-12 nopadding">
-			  <div id="visualization_clock_subcontactor" style="width: 100%; height: 230px; overflow:hidden;"></div>
-			  <div id="visualization_clock_driver" style="width: 100%; height: 230px; overflow:hidden;"></div>
-			  <div id="visualization_clock_sidewalk" style="width: 100%; height: 230px; overflow:hidden;"></div>
+          <div class="col-md-12 nopadding clearfix">
+			  <div class="col-lg-4 col-xs-12 col-sm-6 clk_graph" id="visualization_clock_subcontactor" style="height: 230px; overflow:hidden;"></div>
+			  <div class="col-lg-4 col-xs-12 col-sm-6 clk_graph" id="visualization_clock_driver" style="height: 230px; overflow:hidden;"></div>
+			  <div class="col-lg-4 col-xs-12 col-sm-6 clk_graph" id="visualization_clock_sidewalk" style="height: 230px; overflow:hidden;"></div><div id="piechartusers"></div>
           </div>
       </div>
 <script type="text/javascript" src="http://www.google.com/jsapi"></script>
@@ -142,15 +137,31 @@ class ivr_staff_clock_log
 					var str = data_sc.getValue(chart.getSelection()[0].row, 0);
 					var res_in = str.match(/Clocked in/g); 
 					var res_out = str.match(/Clocked out/g); 
-					//alert("You just selected:'.implode(',', $this->scsinid).' ");
-					//alert("You just selected:'.implode(',', $this->scsoutid).' ");
 					if(res_in == "Clocked in")
 					{
-						window.location.href="'.ISP::AdminUrl("reports/piechartuserdetails/?title=Sub-contractor Clocked In&sid=".implode(',', $this->scsinid)).'";
+						$(".overlay").show();$(".loader").show();
+						$.ajax({
+							url: "'.SITE_URL.'plugins/ivr_staff_clock_log/ivr_staff_clock_log_piechart.php",
+							method: "POST",
+							  data: { customerids: "'.implode(',', $this->scsinid).'"}
+							})
+							  .done(function( response ) {
+								  $("#piechartusers").html("<h3>Sub-contractor Clocked In</h3>"+response);
+								  $(".overlay").hide();$(".loader").hide();
+						});
 					}
 					else if(res_out == "Clocked out")
 					{
-						window.location.href="'.ISP::AdminUrl("reports/piechartuserdetails/?title=Sub-contractor Clocked Out&sid=".implode(',', $this->scsoutid)).'";
+						$(".overlay").show();$(".loader").show();
+						$.ajax({
+							url: "'.SITE_URL.'plugins/ivr_staff_clock_log/ivr_staff_clock_log_piechart.php",
+							method: "POST",
+							  data: { customerids: "'.implode(',', $this->scsoutid).'"}
+							})
+							  .done(function( response ) {
+								  $("#piechartusers").html("<h3>Sub-contractor Clocked Out</h3>"+response);
+								  $(".overlay").hide();$(".loader").hide();
+						});
 					}
 				});
 				
@@ -164,17 +175,33 @@ class ivr_staff_clock_log
 				
 				google.visualization.events.addListener(chart2, "select", function(){
 					var str = data_d.getValue(chart2.getSelection()[0].row, 0);
-					var res_in = str.match(/Clocked in/g); 
-					var res_out = str.match(/Clocked out/g); 
-					//alert("You just selected:'.implode(',', $this->drvinid).' ");
-					//alert("You just selected:'.implode(',', $this->drvoutid).' ");
-					if(res_in == "Clocked in")
+					var res_in2 = str.match(/Clocked in/g); 
+					var res_out2 = str.match(/Clocked out/g); 
+					if(res_in2 == "Clocked in")
 					{
-						window.location.href="'.ISP::AdminUrl("reports/piechartuserdetails/?title=Drivers Clocked In&sid=".implode(',', $this->drvinid)).'";
+						$(".overlay").show();$(".loader").show();
+						$.ajax({
+							url: "'.SITE_URL.'plugins/ivr_staff_clock_log/ivr_staff_clock_log_piechart.php",
+							method: "POST",
+							  data: { customerids: "'.implode(',', $this->drvinid).'"}
+							})
+							  .done(function( response ) {
+								  $("#piechartusers").html("<h3>Drivers Clocked In</h3>"+response);
+								  $(".overlay").hide();$(".loader").hide();
+						});
 					}
-					else if(res_out == "Clocked out")
+					else if(res_out2 == "Clocked out")
 					{
-						window.location.href="'.ISP::AdminUrl("reports/piechartuserdetails/?title=Drivers Clocked Out&sid=".implode(',', $this->drvoutid)).'";
+						$(".overlay").show();$(".loader").show();
+						$.ajax({
+							url: "'.SITE_URL.'plugins/ivr_staff_clock_log/ivr_staff_clock_log_piechart.php",
+							method: "POST",
+							  data: { customerids: "'.implode(',', $this->drvoutid).'"}
+							})
+							  .done(function( response ) {
+								  $("#piechartusers").html("<h3>Drivers Clocked Out</h3>"+response);
+								  $(".overlay").hide();$(".loader").hide();
+						});
 					}
 				});
 				
@@ -188,24 +215,40 @@ class ivr_staff_clock_log
 				
 				google.visualization.events.addListener(chart3, "select", function(){
 					var str = data_s.getValue(chart3.getSelection()[0].row, 0);
-					var res_in = str.match(/Clocked in/g); 
-					var res_out = str.match(/Clocked out/g); 
-					//alert("You just selected:'.implode(',', $this->sdwinid).' ");
-					//alert("You just selected:'.implode(',', $this->sdwoutid).' ");
-					if(res_in == "Clocked in")
+					var res_in3 = str.match(/Clocked in/g); 
+					var res_out3 = str.match(/Clocked out/g); 
+					if(res_in3 == "Clocked in")
 					{
-						window.location.href="'.ISP::AdminUrl("reports/piechartuserdetails/?title=Sidewalk Clocked In&sid=".implode(',', $this->sdwinid)).'";
+						$(".overlay").show();$(".loader").show();
+						$.ajax({
+							url: "'.SITE_URL.'plugins/ivr_staff_clock_log/ivr_staff_clock_log_piechart.php",
+							method: "POST",
+							  data: { customerids: "'.implode(',', $this->sdwinid).'"}
+							})
+							  .done(function( response ) {
+								  $("#piechartusers").html("<h3>Sidewalk Clocked In</h3>"+response);
+								  $(".overlay").hide();$(".loader").hide();
+						});
 					}
-					else if(res_out == "Clocked out")
+					else if(res_out3 == "Clocked out")
 					{
-						window.location.href="'.ISP::AdminUrl("reports/piechartuserdetails/?title=Sidewalk Clocked Out&sid=".implode(',', $this->sdwoutid)).'";
+						$(".overlay").show();$(".loader").show();
+						$.ajax({
+							url: "'.SITE_URL.'plugins/ivr_staff_clock_log/ivr_staff_clock_log_piechart.php",
+							method: "POST",
+							  data: { customerids: "'.implode(',', $this->sdwoutid).'"}
+							})
+							  .done(function( response ) {
+								  $("#piechartusers").html("<h3>Sidewalk Clocked Out</h3>"+response);
+								  $(".overlay").hide();$(".loader").hide();
+						});
 					}
 				});
             }  
             google.setOnLoadCallback(drawVisualization);
         </script>             
              ';                
-    $this->objFunction->widgetContentArray[] = $widgetContent;  
+    $this->objFunction->widgetContentArray[] = $widgetContent;
   }
 }
 ?>

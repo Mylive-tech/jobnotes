@@ -167,8 +167,7 @@
 
             if(is_dir(SITE_ABSPATH.'/plugins/'.$dirName)) {
               include_once SITE_ABSPATH.'/plugins/'.$dirName.'/'.$dirName.'.php';
-              $obj = new $dirName($objFunction);
-
+			  $obj = new $dirName($objFunction);  
             }             
 
           }
@@ -1097,7 +1096,7 @@ function showMessage($strMessage, $strUrl='')
 </div>
 <table width="50%" border="0" cellspacing="0" cellpadding="0" class="tableBorder" align="center">
   <tr>
-    <td class="headertext">Redirecting...</td>
+    <!--<td class="headertext">Redirecting...</td>-->
   </tr>
   <tr>
     <td>&nbsp;</td>
@@ -1631,7 +1630,7 @@ public function getFormSubmissionValues($submission_id)
         $staff_data = array();
         foreach($staff_array as $key => $val) {
                 //$staff_data[$val['staff_id']] = strftime('%b, %d %Y', $val['time_stamp']).' '.$val['clock_action_description'];
-				$staff_data[$val['staff_id']] = $val['date'].','.$val['time_24_hour_clock'].','.$val['clock_action_description'];
+				$staff_data[$val['staff_id']] = $val['date'].','.$val['time_24_hour_clock'].','.$val['clock_action_description'].','.$val['time_stamp'];
         }        
         return $staff_data;
     }

@@ -42,7 +42,7 @@ body {
 #container.fixed-header {
 	margin-top: 52px;
 }
-#container > #content > .container {
+#container > #content > .container, #container > form > #content > .container {
 	float: left;
 	width: 100%;
 }
@@ -2947,4 +2947,112 @@ body.modal-open {
 }
 .theme-dark #sidebar .notifications li a:hover {
 	color: #eaebee;
+}
+
+/*Tab css for reports manager */
+#content .container .tab_bar{padding:5px 0;}
+#content .container .tab_bar ul{padding:0px; margin:0;}
+#content .container .tab_bar ul li{list-style:none; display:inline-block; margin:0 5px 0 0; padding:0;}
+#content .container .tab_bar ul li a{ display:inline-block; padding:5px 10px; background:none #F1F1F1; border:1px solid #ddd; font-size:13px; color:#666; position: relative;}
+#content .container .tab_bar ul li a:hover{ background:none #fff; color:#666; text-decoration:none;}
+#content .container .tab_bar ul li a.active{ display:inline-block; padding:5px 10px; background:none #668EB0 !important; border:1px solid #668EB0; font-size:13px; color:#fff; text-decoration:none;}
+#content .container .tab_bar ul li a.active::after {
+    border-color: #668EB0 transparent transparent;
+    border-style: solid;
+    border-width: 8px;
+    content: "";
+    left: 42%;
+    position: absolute;
+    bottom: -17px;
+    z-index: 99;
+}
+.widget-content ul.sub_tab_nav { display: inline-block;}
+.widget-content ul.sub_tab_nav li{border-bottom:none !important;}
+.widget-content ul.sub_tab_nav li a {
+    background: #eee none repeat scroll 0 0;
+    border: 1px solid #ddd;
+    color: #666;
+    display: block;
+    font-size: 13px;
+    padding: 5px 12px;
+    white-space: nowrap;
+}
+.widget-content ul.sub_tab_nav li.active a {
+    background: #666 none repeat scroll 0 0 !important;
+    border: 1px solid #666;
+    color: #fff;
+    display: inline-block;
+    font-size: 13px;
+    padding: 5px 10px;
+}
+/*.widget-content ul.sub_tab_nav li.active a::after {
+    border-color: #666 transparent transparent;
+    border-style: solid;
+    border-width: 8px;
+    bottom: -17px;
+    content: "";
+    left: 42%;
+    position: absolute;
+    z-index: 99;
+}*/
+.widget-content ul.sub_tab_nav li:nth-child(2n){border-bottom:none !important;}
+
+/*report tabs*/
+/*.widget.box .widget-content form input[type="text"] {
+    border: 1px solid #ddd;
+    max-width: 135px;
+}
+.widget.box .widget-content form select {
+    border: 1px solid #ddd;
+    padding: 6px 6px 5px;
+}
+.widget-content input[type="button"] {
+    background-color: #4d7496;
+    border: medium none;
+    color: #fff;
+    margin-left: 22px;
+    padding: 7px 14px 6px;
+}
+.widget-content input[type="button"]:hover{background-color: #4d7496; color: #fff;}*/
+#report_content form input[type="text"] {
+    border: 1px solid #ddd;
+    max-width: 135px;
+}
+#report_content form select {
+    border: 1px solid #ddd;
+    padding: 6px 6px 5px;
+}
+#report_content form input[type="button"], #report_content form input[type="submit"] {
+    background-color: #4d7496;
+    border: medium none;
+    color: #fff;
+    margin-left: 22px;
+    padding: 7px 14px 6px;
+}
+#report_content form input[type="button"]:hover, #report_content form input[type="submit"]:hover{background-color: #4d7496; color: #fff;}
+.rpt_loader{text-align:center; margin-top:15%;}
+
+#content .container #custom_report_tabs.tab_bar ul li { margin: 0 2px 0 0; max-width: 10%;}
+#content .container #custom_report_tabs.tab_bar ul li:nth-child(2) { max-width: 12%;}
+#content .container #custom_report_tabs.tab_bar ul li a { min-height: 70px; vertical-align: top;}
+
+#content .container .tab_bar.navbar-collapse.collapse {
+    background-color: #f8f8f8;
+    border: 1px solid #e7e7e7;
+    border-radius: 4px;
+    padding: 8px 15px !important;
+}
+#content .container .tab_bar ul.dropdown-menu > li {margin-right: 0 !important;}
+#content .container .tab_bar ul.dropdown-menu li a {
+    background: rgba(0, 0, 0, 0) none repeat scroll 0 0;
+    border: medium none;
+    min-width: 220px;
+    padding-right: 0;
+}
+#content .container .tab_bar ul.dropdown-menu li a:hover {
+    background-color: #668eb0;
+    color: #fff;
+}
+#content .container .tab_bar ul.dropdown-menu li a.active::after {
+    border-style: none;
 }

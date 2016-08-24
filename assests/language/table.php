@@ -21,7 +21,7 @@
   define('TBL_JOBSTATUS' ,      		      $configArray->prefix.'jobstatus');
   define('TBL_PROPERTY_NOTES' ,      		      $configArray->prefix.'property_notes');
   define('TBL_STAFF_UPLOADED_PROPERTY_IMAGES' ,   $configArray->prefix.'staff_uploaded_property_images');
-  
-   
+  define('TBL_SESSION_RESET' ,   $configArray->prefix.'session_reset');
+  define('TBL_SEASON_RESET' ,   $configArray->prefix.'season_reset');
   
 ?>

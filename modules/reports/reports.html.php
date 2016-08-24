@@ -82,15 +82,301 @@ protected function listFormPostings($objRs)
 </div>
 <?php   
    }
-   
+protected function reportsmanager($objRs)
+   {
+?>
+<!--<link rel="stylesheet" type="text/css" href="<?php echo SITE_URL;?>assets/css/dp/jquery.datetimepicker.css"/>
+<script src="<?php echo SITE_URL;?>assets/js/dp/jquery.datetimepicker.full.js"></script>-->
+  <script type="text/javascript">
+  	$(document).ready(function() {
+        $('.otherreportstabs').click(function(){
+				title = $(this).attr('title');
+				$('.tab_bar a').removeClass('active');
+				$(this).addClass('active'); 
+				$('#custom_report_tabs').hide();
+			});
+		$('#customreportstab').click(function(){
+				$('.tab_bar a').removeClass('active');
+				$(this).addClass('active'); 
+				$('#custom_report_tabs ul li:first a').addClass('active');
+				$('#custom_report_tabs').show();
+			});
+		$('.customreportsubtabs').click(function(){
+				title = $(this).attr('title');
+				$('.tab_bar a').removeClass('active');
+				$('#custom_report_tabs a').removeClass('active');
+				$(this).addClass('active');	
+			});
+		//$('.datetimepicker').datetimepicker();
+		$('.datatable').dataTable( {} );
+    });
+  	function loadreportcontent(taburl)
+	{
+		$("#report_content").html('<div class="rpt_loader"><img src="<?php echo SITE_URL.'/assets/img/ajax-loader.gif' ?>" /></div>');
+		$.ajax({url: taburl, success: function(result){
+			if(title != '')
+          	 {	$("#report_content").html('<h2>'+title+'</h2>'+result);
+			 	$('.dropdown-toggle').dropdown();
+			}
+			 
+			else
+			 {	$("#report_content").html(result);
+			 	$('.dropdown-toggle').dropdown();
+			}
+       		}
+		});
+	}
+	function searchreportcontent(taburl)
+	{
+		var datefrom = $('#datetimepicker_from').val();
+		var dateto = $('#datetimepicker_to').val();
+		var staffid = $('#staff_id').val();
+		var fname = $('#fname').val();
+		var lname = $('#lname').val();
+		var reporttype = $('#reporttype').val();
+		var clockaction = $('#clock_action').val();
+		var propertyname = $('#propertyname').val();
+		var locationname = $('#locationname').val();
+		var assignedto = $('#assignedto').val();
+		$("#report_content").html('<div class="rpt_loader"><img src="<?php echo SITE_URL.'/assets/img/ajax-loader.gif' ?>" /></div>');
+		if(reporttype == 'driverlog')
+		{
+			$.ajax({url: taburl+'?date_from='+datefrom+ '&date_to='+dateto+'&staffid='+staffid+'&fname='+fname+'&lname='+lname+'&s=Search', success: function(result){
+          	 	$("#report_content").html(result);
+       			}
+			});
+		}
+		else if(reporttype == 'ivrlog')
+		{
+			$.ajax({url: taburl+'?date_from='+datefrom+ '&date_to='+dateto+'&staff_id='+staffid+'&fname='+fname+'&lname='+lname+'&clock_action='+clockaction+'&s=Search', success: function(result){
+          	 	$("#report_content").html(result);
+       			}
+			});
+		}
+		else if(reporttype == 'propertylog')
+		{
+			$.ajax({url: taburl+'?propertyname='+propertyname+ '&locationname='+locationname+'&assignedto='+assignedto+'&s=Search', success: function(result){
+          	 	$("#report_content").html(result);
+       			}
+			});
+		}
+	}
+	function viewlog(logurl)
+	{
+		$("#report_content").html('<div class="rpt_loader"><img src="<?php echo SITE_URL.'/assets/img/ajax-loader.gif' ?>" /></div>');
+		$.ajax({url: logurl, success: function(result){
+          	 	$("#report_content").html(result);
+       			}
+			});
+	}
+  </script>
+  <?php $reportnames = $this->reportNames(); ?>
+<div id="content">
+<div class="container">
+<h4 class="text-left heding_6">Reports Manager</h4> 
+<!--<div class="tab_bar">-->
+          <div id="navbar" class="tab_bar navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+            	<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Custom Reports<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                    <?php while($rname = $reportnames->fetch_object())
+                    { ?>
+                    <li><a href="#" onclick="loadreportcontent('<?php echo ISP :: AdminUrl('reports/listing/?rid='.$rname->report_id);?>')" class="customreportsubtabs" title="<?php echo $rname->report_name;?>"><?php echo $rname->report_name;?></a></li>
+                     <?php $i++; }?>
+                    </ul>
+              </li>
+              <li><a href="#" onclick="loadreportcontent('<?php echo ISP :: AdminUrl('reports/report_ivr_log/');?>')" class="otherreportstabs" title="IVR Log">IVR Log</a></li>
+    <li><a href="#" onclick="loadreportcontent('<?php echo ISP :: AdminUrl('reports/driver_report/');?>')"class="otherreportstabs" title="Driver Reports">Driver Reports</a></li>
+    <li><a href="#" onclick="loadreportcontent('<?php echo ISP :: AdminUrl('reports/property_report/');?>')" class="otherreportstabs" title="Properties Report">Properties Reports</a></li>
+    <li><a href="#" onclick="loadreportcontent('<?php echo ISP :: AdminUrl('reports/export-reports/');?>')" class="otherreportstabs" title="Export Reports">Export Reports</a></li>
+     <li><a href="#" onclick="loadreportcontent('<?php echo ISP :: AdminUrl('reports/session_season_reset/');?>')" class="otherreportstabs" title="Session and Season Reset">Session and Season Reset</a></li>
+            </ul>
+            
+          </div>
+	<?php //$defaultreportnames = $this->reportNames(); $rid = $defaultreportnames->fetch_object();?>
+    <!--<ul>
+    <li><a href="#" onclick="loadreportcontent('<?php echo ISP :: AdminUrl('reports/listing/?rid='.$rid->report_id);?>')" id="customreportstab" class="active">Custom Reports</a></li>
+    <li><a href="#" onclick="loadreportcontent('<?php echo ISP :: AdminUrl('reports/report_ivr_log/');?>')" class="otherreportstabs">IVR Log</a></li>
+    <li><a href="#" onclick="loadreportcontent('<?php echo ISP :: AdminUrl('reports/driver_report/');?>')"class="otherreportstabs">Driver Reports</a></li>
+    <li><a href="#" onclick="loadreportcontent('<?php echo ISP :: AdminUrl('reports/property_report/');?>')" class="otherreportstabs">Properties Reports</a></li>
+    <li><a href="#" onclick="loadreportcontent('<?php echo ISP :: AdminUrl('reports/export-reports/');?>')" class="otherreportstabs">Export Reports</a></li>
+     <li><a href="#" onclick="loadreportcontent('<?php echo ISP :: AdminUrl('reports/session_season_reset/');?>')" class="otherreportstabs">Session and Season Reset</a></li>
+    </ul>
+    </div> <hr/>
+    <div class="tab_bar" id="custom_report_tabs">
+	<?php $reportnames = $this->reportNames(); ?>
+    <ul>
+    <?php $i=1; while($rname = $reportnames->fetch_object())
+    { ?>
+    <li><a href="#" onclick="loadreportcontent('<?php echo ISP :: AdminUrl('reports/listing/?rid='.$rname->report_id);?>')" <?php if($i == 1) echo 'class="customreportsubtabs active"'; else echo 'class="customreportsubtabs"'; ?>><?php echo $rname->report_name;?></a></li>
+     <?php $i++; }?>
+    </ul>
+    </div>-->
+    <div id="report_content">
+        <?php 
+        //custom reports
+        $objRs = $this->reportListing_default(); $rname = $objRs->fetch_object() ?>
+<h2><?php echo $rname->report_name;?></h2>
+<div class="row">
+<div class="col-md-12">  
+<!--<h4 class="text-left heding_6">Custom Reports</h4>-->
+<div class="widget box box-vas">
+<div class="widget-content widget-content-vls">
+<div class="form_holder">
+	
+      <table class="table table-striped table-bordered table-hover table-checkable table-responsive datatable" id="dataTables-example">
+          <!--<thead class="cf">
+            <tr>  
+             <th data-class="expand">Location</th>
+             <th data-hide="phone">Property</th>
+             <th data-hide="phone">Emp No.</th>
+             <th data-hide="phone">Salt Used</th>
+             <th data-hide="phone">Calcium Used</th>
+             <th data-hide="phone">No. of Guys</th>
+             <th data-hide="phone">Total Man Hours</th>
+             <th data-hide="phone">Name</th>
+             <th data-hide="phone">Date</th>
+             
+            </tr>
+          </thead>
+          <tbody>-->
+          <?php $thead = 0;
+            while($objRow = $objRs->fetch_object())
+            {
+				$thead++; 
+				$locname = $this->objFunction->iFindAll(TBL_SERVICE, array('id'=>$objRow->location_id));
+				$propname = $this->objFunction->iFindAll(TBL_JOBLOCATION, array('id'=>$objRow->property_id));
+				$uname = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow->submitted_by));
+				$date = $objRow->submission_date;
+				$fdata = json_decode($objRow->form_values, true);
+				$fbody = json_decode($objRow->form_body);
+				if($thead == 1):
+				//print_r($fdata);
+				$fields = array('db_location','db_property','rid','user_id','timestamp');
+				?>
+                <thead class="cf">
+                    <tr>  
+                         <th data-class="expand">Location</th>
+                         <th data-hide="phone">Property</th>
+                         <?php foreach($fbody as $fb){ if($fb->label != ''){ ?>
+                             <th data-hide="phone"><?php if($fb->label == '') echo '&nbsp;'; else echo $fb->label;?></th>
+                         <?php } }?>
+                         <th data-hide="phone">Name</th>
+                         <th data-hide="phone">Date</th>
+                   </tr>
+				</thead>
+                <tbody>
+               <?php endif;?>
+                
+                <tr>
+                	 <td><?php echo $locname[0]->name; ?></td>
+                     <td><?php echo $propname[0]->job_listing; ?></td>
+                     <?php foreach($fdata as $key=>$val){
+						 if( in_array($key, $fields) === false ){ ?>
+                              <td><?php if(is_array($val)) echo implode(',', $val);  else echo $val; ?></td>
+                         <?php } }?>
+                    <!-- <td><?php echo $fdata->db_field_2; ?></td>
+                     <td><?php echo $fdata->db_field_3; ?></td>
+                     <td><?php echo $fdata->db_field_4; ?></td>
+                     <td><?php echo $fdata->db_field_5; ?></td>
+                     <td><?php echo $fdata->db_field_6; ?></td>-->
+                     <td><?php echo $uname[0]->f_name . ' ' .$uname[0]->l_name; ?></td>
+                     <td><?php echo $date; ?></td>
+                </tr>
+                
+            <?php }
+         ?>
+          </tbody>
+      </table> 
+      </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<?php   
+   }  
 protected function reportListing($objRs)
    {
 ?>
-<form method="post" name="frmListing">
+<div class="row">
+<div class="col-md-12">  
+<!--<h4 class="text-left heding_6">Custom Reports</h4>-->
+<div class="widget box box-vas">
+<div class="widget-content widget-content-vls">
+<div class="form_holder">
+      <table class="table table-striped table-bordered table-hover table-checkable table-responsive datatable" id="dataTables-example">
+          <!--<thead class="cf">
+            <tr>  
+             <th data-class="expand">Location</th>
+             <th data-hide="phone">Property</th>
+             <th data-hide="phone">Emp No.</th>
+             <th data-hide="phone">Salt Used</th>
+             <th data-hide="phone">Calcium Used</th>
+             <th data-hide="phone">No. of Guys</th>
+             <th data-hide="phone">Total Man Hours</th>
+             <th data-hide="phone">Name</th>
+             <th data-hide="phone">Date</th>
+             
+            </tr>
+          </thead>
+          <tbody>-->
+          <?php $thead = 0;
+            while($objRow = $objRs->fetch_object())
+            {
+				$thead++; 
+				$locname = $this->objFunction->iFindAll(TBL_SERVICE, array('id'=>$objRow->location_id));
+				$propname = $this->objFunction->iFindAll(TBL_JOBLOCATION, array('id'=>$objRow->property_id));
+				$uname = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow->submitted_by));
+				$date = $objRow->submission_date;
+				$fdata = json_decode($objRow->form_values, true);
+				$fbody = json_decode($objRow->form_body);
+				if($thead == 1):
+				$fields = array('db_location','db_property','rid','user_id','timestamp');
+				/*echo '<pre>'; print_r($fbody); echo '<br/>'; 
+				print_r($fdata); echo '</pre>';*/
+				?>
+                <thead class="cf">
+                    <tr>  
+                         <th data-class="expand">Location</th>
+                         <th data-hide="phone">Property</th>
+                         <?php foreach($fbody as $fb){ if($fb->label != ''){ ?>
+                             <th data-hide="phone"><?php echo $fb->label;?></th>
+                         <?php } }?>
+                         <th data-hide="phone">Name</th>
+                         <th data-hide="phone">Date</th>
+                   </tr>
+                  </thead>
+                  <tbody>
+               <?php endif;?>
+                <tr>
+                	 <td><?php echo $locname[0]->name; ?></td>
+                     <td><?php echo $propname[0]->job_listing; ?></td>
+                     <?php foreach($fdata as $key=>$val){
+						 if( in_array($key, $fields) === false){ ?>
+                              <td><?php if(is_array($val)) echo implode(',', $val);  else echo $val; ?></td>
+                         <?php } }?>
+                    <!-- <td><?php echo $fdata->db_field_2; ?></td>
+                     <td><?php echo $fdata->db_field_3; ?></td>
+                     <td><?php echo $fdata->db_field_4; ?></td>
+                     <td><?php echo $fdata->db_field_5; ?></td>
+                     <td><?php echo $fdata->db_field_6; ?></td>-->
+                     <td><?php echo $uname[0]->f_name . ' ' .$uname[0]->l_name; ?></td>
+                     <td><?php echo $date; ?></td>
+                </tr>
+                
+            <?php }
+         ?>
+          </tbody>
+      </table> 
+      </div>
+<!--<form method="post" name="frmListing">
 <div id="content">
 <div class="container">  
-  <div class="crumbs">
-	<ul id="breadcrumbs" class="breadcrumb">
+	<h4 class="text-left heding_6">Report Types</h4>-->
+	<!--<ul id="breadcrumbs" class="breadcrumb">
 		<li>
 			<i class="icon-home"></i>
 			<a href="<?php echo ISP::AdminUrl('dashboard/admin_dashboard/');?>">Dashboard</a>
@@ -108,10 +394,43 @@ protected function reportListing($objRs)
 			<a href="#">Custom Reports</a>
 		</li>
 		
-	</ul>
-</div>  
- 
-<div class="row">
+	</ul>-->
+    
+    <!--<div class="tab_bar">
+    <ul>
+        <li>
+            <a class="active" href="<?php echo ISP :: AdminUrl('reports/listing/');?>">
+            Custom Reports
+            </a>
+        </li>
+            <li>
+            <a href="<?php echo ISP :: AdminUrl('reports/report_ivr_log/');?>">
+            IVR Log
+            </a>
+        </li>
+        <li>
+            <a href="<?php echo ISP :: AdminUrl('reports/driver_report/');?>">
+            Driver Reports
+            </a>
+        </li>
+        <li>
+            <a href="<?php echo ISP :: AdminUrl('reports/property_report/');?>">
+            Properties Reports
+            </a>
+        </li>
+        <li>
+            <a href="<?php echo ISP :: AdminUrl('reports/export-reports/');?>">
+            Export Report
+            </a>
+        </li>
+        <li>
+            <a href="<?php echo ISP :: AdminUrl('reports/session_season_reset/');?>">
+            Session and Season Reset
+            </a>
+        </li>
+    </ul>
+    </div>--> 
+<!--<div class="row">
 <div class="col-md-12">  
 <h4 class="text-left heding_6">Reports Manager</h4>
 <div class="widget box box-vas">
@@ -142,13 +461,13 @@ protected function reportListing($objRs)
      <a href="<?php echo ISP :: AdminUrl('reports/form-postings/id/'.$objRow->report_id);?>">
      <?php echo $objRow->submissions;?>
      </a>
-     </td>
-     <td>
+     </td>-->
+     <!--<td>
      <a href="<?php echo ISP :: AdminUrl('reports/flush-data/id/'.$objRow->report_id);?>" onclick="return confirm('Are you sure to Flush the data?\n\n Once it is flushed, can not be recovered.');">
      Flush Data
      </a>
-     </td>
-     <td align="center" class="hideexport">
+     </td>-->
+     <!--<td align="center" class="hideexport">
             <a href="<?php echo ISP :: AdminUrl('reports/update-form-status/id/'.$objRow->report_id.'/status/'.$strStatus);?>" alt="Click to <?php echo ($objRow->status==1)?'Deactivate':'Activate';?>" title="Click to <?php echo ($objRow->status==1)?'Deactivate':'Activate';?>">
                   <i class="fa fa-toggle-<?php if($objRow->status==1) echo 'on'; else echo 'off';?>"></i>
             </a>
@@ -168,12 +487,12 @@ protected function reportListing($objRs)
     <option value="delete">Delete</option>
     <option value="flush">Flush Data</option>
     </select>
-    <input type="submit" value="Go" class="btn btn-info btn-ms" name="btn_go"></td>
+    <input type="submit" value="Go" class="btn btn-info btn-ms" name="btn_go"></td>-->
     
-    <td align="center" colspan="5">
+   <!-- <td align="center" colspan="5">
     <input type="checkbox" name="flush_staffimages" value="1"> Flush Staff Uploads &nbsp;&nbsp;&nbsp;&nbsp; 
     <input type="submit" class="btn btn-danger btn-ms" name="btn_backup_reset" value="Backup and Master Reset" onclick="return confirm('Are you sure to Reset all the reports data and properties status?');">
-    </td>
+    </td>-->
     
     <!--<td align="center" colspan="3">
     <input type="submit" class="btn btn-danger btn-ms" name="btn_reset" value="Master Reset" onclick="return confirm('Are you sure to Reset all the reports data and properties status?');">
@@ -182,18 +501,18 @@ protected function reportListing($objRs)
     <input type="submit" class="btn btn-info btn-ms" name="btn_delete" value="Delete Report" onclick="return confirm('Are you sure to Delete all the selected Report(s)? \n If you will confirm then Reports can not be recovered.');"></td>
     <td>
     <input type="submit" class="btn btn-warning btn-ms" name="btn_flush" value="Flush Data" onclick="return confirm('Are you sure to Flush the Data of all the selected Report(s)?');"></td>
-    -->
+    
     </tr>
   </tbody>
-  </table>
+  </table>-->
 </div>
 
 </div> 
 </div>
 </div> 
 </div>
-</div>
-</div>
+<!--</div>
+</div>-->
 <input type="hidden" name="task" value="flush-data">
 </form>
 <?php   
@@ -205,12 +524,12 @@ protected function admin_report_ivr_log($objRs) {
 <script type="text/javascript">
 $(document).ready(function() {
 	$('.datetimepicker').datetimepicker();
-    $('.datatable').dataTable( {} );
+   // $('.datatable').dataTable( {} );
 } ); 
 </script>         
-<div id="content">			
+<!--<div id="content">			
   <div class="container">               
-    <div class="crumbs">
+  <h4 class="text-left heding_6">Report Types</h4>
         <ul id="breadcrumbs" class="breadcrumb">
             <li>
                 <i class="icon-home"></i>
@@ -226,7 +545,40 @@ $(document).ready(function() {
             </li>
         
         </ul>
-    </div>  				
+    <div class="tab_bar">
+    <ul>
+        <li>
+            <a href="<?php echo ISP :: AdminUrl('reports/listing/');?>">
+            Custom Reports
+            </a>
+        </li>
+            <li>
+            <a class="active" href="<?php echo ISP :: AdminUrl('reports/report_ivr_log/');?>">
+            IVR Log
+            </a>
+        </li>
+        <li>
+            <a href="<?php echo ISP :: AdminUrl('reports/driver_report/');?>">
+            Driver Reports
+            </a>
+        </li>
+        <li>
+            <a href="<?php echo ISP :: AdminUrl('reports/property_report/');?>">
+            Properties Reports
+            </a>
+        </li>
+        <li>
+            <a href="<?php echo ISP :: AdminUrl('reports/export-reports/');?>">
+            Export Report
+            </a>
+        </li>
+        <li>
+            <a href="<?php echo ISP :: AdminUrl('reports/session_season_reset/');?>">
+            Session and Season Reset
+            </a>
+        </li>
+    </ul>
+    </div> 	-->			
     <!--=== Normal ===--> 				
     <div class="row">		
       <div class="col-md-12">
@@ -252,20 +604,22 @@ $(document).ready(function() {
 							<td width="50%">&nbsp;</td>
 						</tr>
 						</table>';
+						break;
 					}
 					
 					$array_log = $this->objFunction->getStaffIvrLog($_GET['staffid']);
 					//print_r($array_log);
 					?>
-                    <p>
+                    <!--<p>
                     <form action="" method="get">
                         <label> Date:  </label>
-                        <input type="text" class="datetimepicker" id="datetimepicker_from" name="ivr_date_from" placeholder="From" value="<?php if(isset($_GET['ivr_date_from'])) echo $_GET['ivr_date_from'];?>" />
-                        <input type="text" class="datetimepicker" id="datetimepicker_to" name="ivr_date_to" placeholder="To" value="<?php if(isset($_GET['ivr_date_to'])) echo $_GET['ivr_date_to'];?>" />
+                        <input type="text" class="datetimepicker" id="datetimepicker_from" name="date_from" placeholder="From" value="<?php if(isset($_GET['date_from'])) echo $_GET['date_from'];?>" />
+                        <input type="text" class="datetimepicker" id="datetimepicker_to" name="date_to" placeholder="To" value="<?php if(isset($_GET['date_to'])) echo $_GET['date_to'];?>" />
                         <input type="hidden" name="staffid" id="staffid" value="<?php echo $_GET['staffid'];?>" />
-                        <input type="submit" name="s" id="s" value="Search" />
+                        <input type="hidden" name="reporttype" id="reporttype" value="ivrlog" />
+                        <input type="button" name="s" id="s" value="Search" onclick="searchreportcontent('<?php echo ISP :: AdminUrl('reports/report_ivr_log/');?>')" />
                     </form>
-                    </p>
+                    </p>-->
                     <table class="table table-striped table-bordered table-hover table-checkable table-responsive datatable" id="dataTables-example">                    
                   <thead class="cf">											
                     <tr>                          
@@ -286,7 +640,7 @@ $(document).ready(function() {
 						else
 							$strCss='oddTr';
 						if(isset($_GET['s'])):
-							if($log['time_stamp'] >= strtotime($_GET['ivr_date_from']) && $log['time_stamp'] <= strtotime($_GET['ivr_date_to'])):
+							if($log['time_stamp'] >= strtotime($_GET['date_from']) && $log['time_stamp'] <= strtotime($_GET['date_to'])):
 							$rowCount++;
 						?>
                           <tr> 
@@ -317,6 +671,22 @@ $(document).ready(function() {
                 <?php }
 				else { ?>
                <div class="col-md-12 text-right" style="padding-bottom:10px"><a href="http://jobnotes.staging-box.net/webadmin/index.php?dir=reports&amp;task=export_ivr_log_report" class="btn btn-info">Export</a></div>
+               <p>
+                    <form action="" method="get">
+                        <label> Date:  </label>
+                        <input type="text" class="datetimepicker" id="datetimepicker_from" name="date_from" placeholder="From" value="<?php if(isset($_GET['date_from'])) echo $_GET['date_from'];?>" />
+                        <input type="text" class="datetimepicker" id="datetimepicker_to" name="date_to" placeholder="To" value="<?php if(isset($_GET['date_to'])) echo $_GET['date_to'];?>" />
+                        <input type="text" name="staff_id" id="staff_id" value="<?php if(isset($_GET['staff_id'])) echo $_GET['staff_id'];?>" placeholder="Username/StaffId" />
+        <input type="text" name="fname" id="fname" value="<?php if(isset($_GET['fname'])) echo $_GET['fname'];?>" placeholder="First Name" />
+        <input type="text" name="lname" id="lname" value="<?php if(isset($_GET['lname'])) echo $_GET['lname'];?>" placeholder="Last Name" />
+        <select name="clock_action" id="clock_action">
+        <option value="">Select Status</option>
+        <option value="clock in" <?php if(isset($_GET['clock_action']) && $_GET['clock_action'] == 'clock in') echo 'selected="selected"';?>>Clock In</option>
+        <option value="clock out" <?php if(isset($_GET['clock_action']) && $_GET['clock_action'] == 'clock out') echo 'selected="selected"';?>>Clock Out</option></select>
+                        <input type="hidden" name="reporttype" id="reporttype" value="ivrlog" />
+                        <input type="button" name="s" id="s" value="Search" onclick="searchreportcontent('<?php echo ISP :: AdminUrl('reports/report_ivr_log/');?>')" />
+                    </form>
+                    </p>
                 <table class="table table-striped table-bordered table-hover table-checkable table-responsive datatable" id="dataTables-example">                    
                   <thead class="cf">											
                     <tr>                          
@@ -354,10 +724,78 @@ $(document).ready(function() {
                         //if($lastUser <> $objRow->username) {
                             $lastUser = $objRow->username;
                             $rowCount++;
-							$ivrdatetimestatus = explode(',', $staff_log[$objRow->username])
-                        ?>
-                                  
-                            <tr> 
+							$ivrdatetimestatus = explode(',', $staff_log[$objRow->username]);
+						
+						if(isset($_GET['s'])){
+								//if($_GET['staffid'] != '') {$staff_id = $_GET['staffid'];}
+							if($_GET['date_from'] != '' && $_GET['date_to'] != '' && $_GET['clock_action'] != '')
+							{
+								if($ivrdatetimestatus[3] >= strtotime($_GET['date_from']) && $ivrdatetimestatus[3] <= strtotime($_GET['date_to']) && $ivrdatetimestatus[2] == $_GET['clock_action']){
+									?>
+								<tr> 
+									<td align="center"><?php echo $objRow->username;?></td>             
+									 <td align="center"><?php echo $objRow->f_name.' '.$objRow->l_name;?></td>              
+									<td align="center"><?php echo $ivrdatetimestatus[0];?></td>
+									<td align="center"><?php echo $ivrdatetimestatus[1];?></td>
+									<td align="center"><?php echo $ivrdatetimestatus[2]; ?></td> 
+									<!-- <td align="center"><a href="<?php echo ISP :: AdminUrl('index.php?dir=staff&task=edit-staff&id='.$objRow->id);?>">View</a></td>-->
+									<td align="center"><a href="#" onclick="viewlog('<?php echo ISP :: AdminUrl('reports/report_ivr_log/?staffid='.$objRow->username);?>')">View</a></td>
+									<td align="center"><a href="<?php echo ISP :: AdminUrl('index.php?dir=staff&task=import_ivr_log&user='.$objRow->username);?>" >Export</a></td>
+								</tr>
+							<?php
+								}
+							}
+							elseif($_GET['date_from'] != '' && $_GET['date_to'] != '')
+							{
+								if($ivrdatetimestatus[3] >= strtotime($_GET['date_from']) && $ivrdatetimestatus[3] <= strtotime($_GET['date_to'])){
+									?>
+								<tr> 
+									<td align="center"><?php echo $objRow->username;?></td>             
+									 <td align="center"><?php echo $objRow->f_name.' '.$objRow->l_name;?></td>              
+									<td align="center"><?php echo $ivrdatetimestatus[0];?></td>
+									<td align="center"><?php echo $ivrdatetimestatus[1];?></td>
+									<td align="center"><?php echo $ivrdatetimestatus[2]; ?></td> 
+									<!-- <td align="center"><a href="<?php echo ISP :: AdminUrl('index.php?dir=staff&task=edit-staff&id='.$objRow->id);?>">View</a></td>-->
+									<td align="center"><a href="#" onclick="viewlog('<?php echo ISP :: AdminUrl('reports/report_ivr_log/?staffid='.$objRow->username);?>')">View</a></td>
+									<td align="center"><a href="<?php echo ISP :: AdminUrl('index.php?dir=staff&task=import_ivr_log&user='.$objRow->username);?>" >Export</a></td>
+								</tr>
+							<?php
+								}
+							}
+							elseif($_GET['clock_action'] != '')
+							{
+								if($ivrdatetimestatus[2] == $_GET['clock_action']){
+									?>
+								<tr> 
+									<td align="center"><?php echo $objRow->username;?></td>             
+									 <td align="center"><?php echo $objRow->f_name.' '.$objRow->l_name;?></td>              
+									<td align="center"><?php echo $ivrdatetimestatus[0];?></td>
+									<td align="center"><?php echo $ivrdatetimestatus[1];?></td>
+									<td align="center"><?php echo $ivrdatetimestatus[2]; ?></td> 
+									<!-- <td align="center"><a href="<?php echo ISP :: AdminUrl('index.php?dir=staff&task=edit-staff&id='.$objRow->id);?>">View</a></td>-->
+									<td align="center"><a href="#" onclick="viewlog('<?php echo ISP :: AdminUrl('reports/report_ivr_log/?staffid='.$objRow->username);?>')">View</a></td>
+									<td align="center"><a href="<?php echo ISP :: AdminUrl('index.php?dir=staff&task=import_ivr_log&user='.$objRow->username);?>" >Export</a></td>
+								</tr>
+							<?php
+								}
+							}
+							else
+							{?>
+								<tr> 
+									<td align="center"><?php echo $objRow->username;?></td>             
+									 <td align="center"><?php echo $objRow->f_name.' '.$objRow->l_name;?></td>              
+									<td align="center"><?php echo $ivrdatetimestatus[0];?></td>
+									<td align="center"><?php echo $ivrdatetimestatus[1];?></td>
+									<td align="center"><?php echo $ivrdatetimestatus[2]; ?></td> 
+									<!-- <td align="center"><a href="<?php echo ISP :: AdminUrl('index.php?dir=staff&task=edit-staff&id='.$objRow->id);?>">View</a></td>-->
+									<td align="center"><a href="#" onclick="viewlog('<?php echo ISP :: AdminUrl('reports/report_ivr_log/?staffid='.$objRow->username);?>')">View</a></td>
+									<td align="center"><a href="<?php echo ISP :: AdminUrl('index.php?dir=staff&task=import_ivr_log&user='.$objRow->username);?>" >Export</a></td>
+								</tr>
+							<?php }
+							?> 
+	<?php       
+						}else{ ?>
+                        	<tr> 
                                 <td align="center"><?php echo $objRow->username;?></td>             
                                  <td align="center"><?php echo $objRow->f_name.' '.$objRow->l_name;?></td>              
                                 <td align="center"><?php echo $ivrdatetimestatus[0];?></td>
@@ -368,10 +806,10 @@ $(document).ready(function() {
                                 //echo strftime('%b, %d %Y', $log['time_stamp']);?> <?php //echo ucfirst($log['clock_action_description']);?>
                                 </td> 
                                 <!-- <td align="center"><a href="<?php echo ISP :: AdminUrl('index.php?dir=staff&task=edit-staff&id='.$objRow->id);?>">View</a></td>-->
-                                <td align="center"><a href="<?php echo ISP::AdminUrl('reports/report_ivr_log/?staffid='.$objRow->username);?>">View</a></td>
+                                <td align="center"><a href="#" onclick="viewlog('<?php echo ISP :: AdminUrl('reports/report_ivr_log/?staffid='.$objRow->username);?>')">View</a></td>
                                 <td align="center"><a href="<?php echo ISP :: AdminUrl('index.php?dir=staff&task=import_ivr_log&user='.$objRow->username);?>">Export</a></td>
-                            </tr> 
-<?php               
+                            </tr>
+						<?php }       
                         //}
                     //}
                 }                     
@@ -394,27 +832,26 @@ $(document).ready(function() {
       </div>
     </div>				
     <!-- /Normal -->			
-  </div>
- </div>			
+  <!--</div>
+ </div>-->			
 <?php    
 } 
 protected function admin_driver_report($objRs) {
 ?>
 <link rel="stylesheet" type="text/css" href="<?php echo SITE_URL;?>assets/css/dp/jquery.datetimepicker.css"/>
-<!--<script src="<?php echo SITE_URL;?>assets/js/dp/jquery.js"></script>-->
 <script src="<?php echo SITE_URL;?>assets/js/dp/jquery.datetimepicker.full.js"></script>
 
 <script type="text/javascript">
 
 $(document).ready(function() {
 	$('.datetimepicker').datetimepicker();
-    $('.datatable').dataTable( {} );
+    //$('.datatable').dataTable( {} );
 } ); 
 </script>         
-<div id="content">			
+<!--<div id="content">			
   <div class="container">               
-    <div class="crumbs">
-        <ul id="breadcrumbs" class="breadcrumb">
+  <h4 class="text-left heding_6">Report Types</h4>-->
+        <!--<ul id="breadcrumbs" class="breadcrumb">
             <li>
                 <i class="icon-home"></i>
                 <a href="<?php echo ISP::AdminUrl('dashboard/admin_dashboard/');?>">Dashboard</a>
@@ -433,7 +870,40 @@ $(document).ready(function() {
             </li>
         
         </ul>
-    </div>  				
+    <div class="tab_bar">
+    <ul>
+        <li>
+            <a href="<?php echo ISP :: AdminUrl('reports/listing/');?>">
+            Custom Reports
+            </a>
+        </li>
+            <li>
+            <a href="<?php echo ISP :: AdminUrl('reports/report_ivr_log/');?>">
+            IVR Log
+            </a>
+        </li>
+        <li>
+            <a class="active" href="<?php echo ISP :: AdminUrl('reports/driver_report/');?>">
+            Driver Reports
+            </a>
+        </li>
+        <li>
+            <a href="<?php echo ISP :: AdminUrl('reports/property_report/');?>">
+            Properties Reports
+            </a>
+        </li>
+        <li>
+            <a href="<?php echo ISP :: AdminUrl('reports/export-reports/');?>">
+            Export Report
+            </a>
+        </li>
+        <li>
+            <a href="<?php echo ISP :: AdminUrl('reports/session_season_reset/');?>">
+            Session and Season Reset
+            </a>
+        </li>
+    </ul>
+    </div> -->				
     <!--=== Normal ===--> 				
     <div class="row">		
       <div class="col-md-12">
@@ -441,7 +911,11 @@ $(document).ready(function() {
       <label> Date:  </label>
       	<input type="text" class="datetimepicker" id="datetimepicker_from" name="date_from" placeholder="From" value="<?php if(isset($_GET['date_from'])) echo $_GET['date_from'];?>" />
 		<input type="text" class="datetimepicker" id="datetimepicker_to" name="date_to" placeholder="To" value="<?php if(isset($_GET['date_to'])) echo $_GET['date_to'];?>" />
-        <input type="submit" name="s" id="s" value="Search" />
+        <input type="text" name="staff_id" id="staff_id" value="<?php if(isset($_GET['staffid'])) echo $_GET['staffid'];?>" placeholder="Username/StaffId" />
+        <input type="text" name="fname" id="fname" value="<?php if(isset($_GET['fname'])) echo $_GET['fname'];?>" placeholder="First Name" />
+        <input type="text" name="lname" id="lname" value="<?php if(isset($_GET['lname'])) echo $_GET['lname'];?>" placeholder="Last Name" />
+        <input type="hidden" name="reporttype" id="reporttype" value="driverlog" />
+        <input type="submit" name="s" id="s" value="Search" onclick="searchreportcontent('<?php echo ISP :: AdminUrl('reports/driver_report/');?>')" />
       </form></p>
         <div class="tabbable tabbable-custom">						
           <div class="widget box box-vas">							 							
@@ -460,13 +934,13 @@ $(document).ready(function() {
                     </tr>									
                   </thead>									
                   <tbody>                                                                                                    					                         
-<?php
+<?php  //print_r($objRs->fetch_object()); 
 			if($objRs): // Check for the resource exists or not
                 $intI=1;
                 $staff_log = $this->objFunction->getAllStaffLastLog();
             //print_r($staff_log);    
 			while($objRow = $objRs->fetch_object())  // Fetch the result in the object array
-			{ //print_r($objRow);
+			{
 			    $strStatus = ($objRow->status)?'0':'1';
 				
 				if($intI++%2==0)  // Condition for alternate rows color
@@ -498,7 +972,7 @@ $(document).ready(function() {
 								echo round($diff1/3600, 2);
                                 //echo strftime('%b, %d %Y', $log['time_stamp']);?> <?php //echo ucfirst($log['clock_action_description']);?>
                                 </td>                             
-                                <td align="center"><a href="<?php echo ISP :: AdminUrl('reports/driver_report_log/?driver_id='.$objRow->id);?>">View</a><!--a href="<?php //echo ISP :: AdminUrl('index.php?dir=staff&task=edit-staff&id='.$objRow->id);?>">View</a--></td>
+                                <td align="center"><a href="#" onclick="viewlog('<?php echo ISP :: AdminUrl('reports/driver_report_log/?driver_id='.$objRow->id);?>')">View</a><!--a href="<?php //echo ISP :: AdminUrl('index.php?dir=staff&task=edit-staff&id='.$objRow->id);?>">View</a--></td>
                             </tr> 
 <?php               
             endif;                       
@@ -519,20 +993,20 @@ $(document).ready(function() {
       </div>
     </div>				
     <!-- /Normal -->			
-  </div>
- </div>			
+ <!-- </div>
+ </div>	-->		
 <?php    
 }
 protected function admin_driver_report_log($objRs) {
 ?>
-<script type="text/javascript">
+<!--<script type="text/javascript">
 $(document).ready(function() {
     $('.datatable').dataTable( {} );
 } ); 
 </script>         
 <div id="content">			
   <div class="container">               
-    <div class="crumbs">
+  <h4 class="text-left heding_6">Report Types</h4>
         <ul id="breadcrumbs" class="breadcrumb">
             <li>
                 <i class="icon-home"></i>
@@ -556,7 +1030,40 @@ $(document).ready(function() {
             </li>
         
         </ul>
-    </div>  				
+    <div class="tab_bar">
+    <ul>
+        <li>
+            <a href="<?php echo ISP :: AdminUrl('reports/listing/');?>">
+            Custom Reports
+            </a>
+        </li>
+            <li>
+            <a href="<?php echo ISP :: AdminUrl('reports/report_ivr_log/');?>">
+            IVR Log
+            </a>
+        </li>
+        <li>
+            <a class="active" href="<?php echo ISP :: AdminUrl('reports/driver_report/');?>">
+            Driver Reports
+            </a>
+        </li>
+        <li>
+            <a href="<?php echo ISP :: AdminUrl('reports/property_report/');?>">
+            Properties Reports
+            </a>
+        </li>
+        <li>
+            <a href="<?php echo ISP :: AdminUrl('reports/export-reports/');?>">
+            Export Report
+            </a>
+        </li>
+        <li>
+            <a href="<?php echo ISP :: AdminUrl('reports/session_season_reset/');?>">
+            Session and Season Reset
+            </a>
+        </li>
+    </ul>
+    </div> --> 				
     <!--=== Normal ===--> 				
     <div class="row">		
       <div class="col-md-12">
@@ -597,7 +1104,7 @@ $(document).ready(function() {
                             <tr> 
                                 <td align="center"><?php echo $i;?></td>             
                                 <td align="center"><?php echo $objRow->job_listing;?></td>              
-                                <td align="center"><?php echo $objRow->start_date;?></td>              
+                                <td align="center"><?php echo $objRow->starting_date;?></td>              
                                  <td align="center"><?php echo $objRow->closing_date;?></td>              
                                 <td align="center">
                                 <?php $diff1 = strtotime($objRow->closing_date) - strtotime($objRow->start_date);
@@ -625,21 +1132,21 @@ $(document).ready(function() {
       </div>
     </div>				
     <!-- /Normal -->			
-  </div>
- </div>			
+  <!--</div>
+ </div>	-->		
 <?php    
 }
 protected function admin_property_report($objRs)
    {
    ?> 
-<script type="text/javascript">
+<!--<script type="text/javascript">
 $(document).ready(function() {
     $('.datatable').dataTable( {} );
 } );
 </script>      
 <div id="content">			   
   <div class="container">	
-  <div class="crumbs">
+  <h4 class="text-left heding_6">Report Types</h4>
 	<ul id="breadcrumbs" class="breadcrumb">
             <li>
                 <i class="icon-home"></i>
@@ -658,11 +1165,83 @@ $(document).ready(function() {
                 <a href="#">Properties Reports</a>
             </li>
         </ul>
-</div>
+    <div class="tab_bar">
+    <ul>
+        <li>
+            <a href="<?php echo ISP :: AdminUrl('reports/listing/');?>">
+            Custom Reports
+            </a>
+        </li>
+            <li>
+            <a href="<?php echo ISP :: AdminUrl('reports/report_ivr_log/');?>">
+            IVR Log
+            </a>
+        </li>
+        <li>
+            <a href="<?php echo ISP :: AdminUrl('reports/driver_report/');?>">
+            Driver Reports
+            </a>
+        </li>
+        <li>
+            <a class="active" href="<?php echo ISP :: AdminUrl('reports/property_report/');?>">
+            Properties Reports
+            </a>
+        </li>
+        <li>
+            <a href="<?php echo ISP :: AdminUrl('reports/export-reports/');?>">
+            Export Report
+            </a>
+        </li>
+        <li>
+            <a href="<?php echo ISP :: AdminUrl('reports/session_season_reset/');?>">
+            Session and Season Reset
+            </a>
+        </li>
+    </ul>
+    </div>-->
 			     
-    <!--=== Normal ===--> 				     
+    <!--=== Normal ===--> 
+    <p>
+    <form action="" method="get">
+        <select name="propertyname" id="propertyname">
+        	<option value="">Select Property</option>
+            <?php  $reportdetails = $this->property_report_details();
+			while($rd = $reportdetails->fetch_object())  // Fetch the result in the object array
+			  {
+				 if($rd->job_listing == $_GET['propertyname']){$sel = 'selected="selected"';} 
+				 else {$sel='';}
+				 echo '<option value="'.$rd->job_listing.'" '.$sel.'>'.$rd->job_listing.'</option>'; 
+			  }
+			?>
+        </select>
+        <select name="locationname" id="locationname">
+        	<option value="">Select Location</option>
+             <?php  $reportdetails = $this->property_report_details();
+			while($rd = $reportdetails->fetch_object())  // Fetch the result in the object array
+			  {
+				  if($rd->location_id == $_GET['locationname']) {$sel = 'selected="selected"';}
+				  else {$sel='';}
+				 echo '<option value="'.$rd->location_id.'" '.$sel.'>'.$this->objFunction->iFind(TBL_SERVICE,'name', array('id'=>$rd->location_id)).'</option>'; 
+			  }
+			?>
+        </select>
+        <select name="assignedto" id="assignedto">
+        	<option value="">Assigned to</option>
+             <?php $reportdetails = $this->property_report_details();
+			while($rd = $reportdetails->fetch_object())  // Fetch the result in the object array
+			  {
+				  $staffname = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$rd->assigned_to));
+				  if($rd->assigned_to == $_GET['assignedto']) {$sel = 'selected="selected"';}
+				  else {$sel='';}
+				 echo '<option value="'.$rd->assigned_to.'" '.$sel.'>'.$staffname[0]->f_name.' '.$staffname[0]->l_name.'</option>'; 
+			  }
+			?>
+        </select>
+        <input type="hidden" name="reporttype" id="reporttype" value="propertylog" />
+        <input type="submit" name="s" id="s" value="Search" onclick="searchreportcontent('<?php echo ISP :: AdminUrl('reports/property_report/');?>')" />
+      </form></p>				     
     <div class="row">					       
-      <div class="col-md-12">						         
+      <div class="col-md-12">					         
         <!--<h4 class="text-left heding_6">Manage Properties</h4>-->
         <div class="widget box box-vas">							 							           
           <div class="widget-content widget-content-vls">
@@ -756,7 +1335,7 @@ $(document).ready(function() {
                     
                     <i class="fa fa-pencil-square-o"></i></a>
                     </td>-->
-                    <td align="center" class="hideexport"> <a class="btn btn-danger btn-ms" href="<?php echo ISP :: AdminUrl('reports/job-history/id/'.$objRow->id);?>">View</a></td>
+                    <td align="center" class="hideexport"> <a class="btn btn-danger btn-ms" href="#" onclick="viewlog('<?php echo ISP :: AdminUrl('reports/job-history/id/'.$objRow->id);?>')">View</a></td>
                     <td align="center" class="hideexport"><a href="<?php echo ISP :: AdminUrl('reports/direct/?jid='.$objRow->id);?>" class="btn btn-info">Export</a></td>                               
                    <!-- <td align="center" class="hideexport divchecker"><input type="checkbox" class="uniform" name="delete[]" value="<?php echo $objRow->id;?>"  /></td> -->                            
                   </tr>                            
@@ -779,16 +1358,16 @@ $(document).ready(function() {
       </div>				     
     </div>				     
     <!-- /Normal --> 			   
-  </div>			   
-  <!-- /.container --> 		 
-</div>
+  <!--</div>			   
+   /.container  		 
+</div>-->
 <?php 
    }  // End of Function 
 
 protected function admin_property_jobHistory($objRs1, $objRow)
 {
    ?> 
-<script type="text/javascript">
+<!--<script type="text/javascript">
 $(document).ready(function() {
     $('.datatable').dataTable( {} );
 } );
@@ -810,7 +1389,7 @@ $(document).ready(function() {
 		</li>
 	</ul>
 </div>
-			     
+-->			     
     <!--=== Normal ===--> 				     
     <div class="row">					       
       <div class="col-md-12">						         
@@ -921,9 +1500,9 @@ $(document).ready(function() {
       </div>				                                       
     </div>				     
     <!-- /Normal --> 			   
-  </div>			   
-  <!-- /.container --> 		 
-</div>
+   <!--</div>			   
+  /.container  		 
+</div>-->
 <?php 
    }  // End of Function 
    protected function admin_piechartuserdetails($objRs)
@@ -1482,16 +2061,49 @@ protected function showFormSubmission($objRow, $formControls, $form_token, $post
  protected function exportReports($export_file) {
 ?>
 <form method="post">
-<div id="content">      
+<!--<div id="content">      
 	 <div class="container"> 
-		<div class="crumbs"> 
+     <h4 class="text-left heding_6">Report Types</h4>
 			<ul id="breadcrumbs" class="breadcrumb">
 				<li><i class="icon-home"></i> <a href="<?php echo ISP::AdminUrl('dashboard/admin_dashboard/'); ?>">Dashboard</a>
 				</li>
 				<li><i class="current"></i><a href="#">Reporting</a></li>
 				<li><i class="current"></i><a href="#">Export Reports</a></li>
 			</ul>
-		</div>
+    <div class="tab_bar">
+    <ul>
+        <li>
+            <a href="<?php echo ISP :: AdminUrl('reports/listing/');?>">
+            Custom Reports
+            </a>
+        </li>
+            <li>
+            <a href="<?php echo ISP :: AdminUrl('reports/report_ivr_log/');?>">
+            IVR Log
+            </a>
+        </li>
+        <li>
+            <a href="<?php echo ISP :: AdminUrl('reports/driver_report/');?>">
+            Driver Reports
+            </a>
+        </li>
+        <li>
+            <a href="<?php echo ISP :: AdminUrl('reports/property_report/');?>">
+            Properties Reports
+            </a>
+        </li>
+        <li>
+            <a class="active" href="<?php echo ISP :: AdminUrl('reports/export-reports/');?>">
+            Export Report
+            </a>
+        </li>
+        <li>
+            <a href="<?php echo ISP :: AdminUrl('reports/session_season_reset/');?>">
+            Session and Season Reset
+            </a>
+        </li>
+    </ul>
+    </div>-->
 		<div class="row">
 			<div class="col-md-12">
 				<h4 class="text-left heding_6">Export Reports Wizard</h4>
@@ -1656,9 +2268,251 @@ protected function showFormSubmission($objRow, $formControls, $form_token, $post
 				</div>                   
 			</div>            		
 		</div>         
-	</div>
-</div>
+	<!--</div>
+</div>-->
 </form>
+<?php      
+    }
+protected function SessionSeasonReset($objRs) {
+?>
+<!--<div id="content">      
+	 <div class="container"> 
+     <h4 class="text-left heding_6">Report Types</h4>
+            <div class="tab_bar">
+    		<ul>
+                <li>
+                	<a href="<?php echo ISP :: AdminUrl('reports/listing/');?>">
+                Custom Reports
+                </a>
+                </li>
+                <li>
+                	<a href="<?php echo ISP :: AdminUrl('reports/report_ivr_log/');?>">
+                IVR Log
+                </a>
+                </li>
+                <li>
+                	<a href="<?php echo ISP :: AdminUrl('reports/driver_report/');?>">
+                Driver Reports
+                </a>
+                </li>
+                <li>
+                	<a href="<?php echo ISP :: AdminUrl('reports/property_report/');?>">
+                Properties Reports
+                </a>
+                </li>
+                <li>
+                	<a href="<?php echo ISP :: AdminUrl('reports/export-reports/');?>">
+                Export Report
+                </a>
+                </li>
+                <li>
+                	<a class="active" href="<?php echo ISP :: AdminUrl('reports/session_season_reset/');?>">
+                Session and Season Reset
+                </a>
+                </li>
+            </ul>
+            </div>-->
+		<div class="row">
+			<div class="col-md-12">
+				<h4 class="text-left heding_6">Session Reset</h4>
+				<div class="widget box box-vas">
+					<div class="widget-content widget-content-vls">
+                        <ul class="sub_tab_nav">
+                           <li class="active">
+                            	<a onclick="loadreportcontent('<?php echo ISP :: AdminUrl('reports/session_season_reset/');?>')" href="#">
+                            Session Reset
+                            </a>
+                            </li>
+                            <li>
+                           		<a onclick="loadreportcontent('<?php echo ISP :: AdminUrl('reports/season_reset/');?>')" href="#">
+                            Season Reset 
+                            </a>
+                            </li>
+                        </ul>
+                        <table class="table table-striped table-bordered table-hover table-checkable table-responsive datatable">	 	
+                        	<thead class="cf">							                   
+                        		<tr>
+                                    <th align="center"  data-class="expand">File Name</th>
+                                    <th align="center" data-hide="phone">Creation Date</th>
+                                    <th align="center" data-hide="phone">Download File</th>
+                                    <th align="center" data-hide="phone">Remove File</th>					                   
+                        		</tr>						                 
+                        	</thead>						                 
+                        	<tbody>
+								<?php  
+                                if($objRs): // Check for the resource exists or not
+                                $intI=1;
+                                
+                                while($objRow = $objRs->fetch_object())  // Fetch the result in the object array
+                                {
+                                if($intI++%2==0)  // Condition for alternate rows color
+                                $strCss='evenTr';
+                                else
+                                $strCss='oddTr';
+                                ?>         			                   
+                                <tr>
+                                <td><?php echo $objRow->filename; ?></td>
+                                <td><?php echo $objRow->creation_date; ?></td>
+                                <td><a target="_blank" href="<?php echo SITE_URL; ?>sessionzip/<?php echo $objRow->filename;?>">Download</a></td>
+                                <td><a href="<?php echo ISP :: AdminUrl();?>/index.php?dir=reports&task=removesessionzip&file=<?php echo $objRow->filename; ?>" onclick="return confirm('Are you sure to Delete the file permanently?');">Remove</a></td>                        
+                                </tr>                            
+                                <?php  
+                                }
+                                else:
+                                echo '<tr><td colspan="5" class="errNoRecord">No Record Found!</td></tr>';
+                                endif;  
+                                ?>
+                            </tbody>                       
+                        </table> 
+                        <a class="btn btn-info" href="<?php echo ISP :: AdminUrl();?>index.php?dir=reports&task=sessionzip">Reset Session</a>
+                     <!--<form method="post" action="">
+                     <input type="hidden" name="task" value="sessionzip" / >
+                     <input type="submit" name="session_reset" id="session_reset" value="Reset Session" />
+                     </form>-->
+                    </div>                         
+				</div>                   
+			</div>            		
+		</div>         
+	<!--</div>
+</div>-->
+<?php      
+    }
+protected function SeasonReset($objRs) {
+	?>
+	<!--<link rel="stylesheet" type="text/css" href="<?php echo SITE_URL;?>assets/css/dp/jquery.datetimepicker.css"/>
+<script src="<?php echo SITE_URL;?>assets/js/dp/jquery.datetimepicker.full.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+	$('.datetimepicker').datetimepicker();
+    $('.datatable').dataTable( {} );
+} ); 
+</script> 
+<div id="content">      
+	 <div class="container"> 
+     <h4 class="text-left heding_6">Report Types</h4>
+            <div class="tab_bar">
+    		<ul>
+                <li>
+                	<a href="<?php echo ISP :: AdminUrl('reports/listing/');?>">
+                Custom Reports
+                </a>
+                </li>
+                <li>
+                	<a href="<?php echo ISP :: AdminUrl('reports/report_ivr_log/');?>">
+                IVR Log
+                </a>
+                </li>
+                <li>
+                	<a href="<?php echo ISP :: AdminUrl('reports/driver_report/');?>">
+                Driver Reports
+                </a>
+                </li>
+                <li>
+                	<a href="<?php echo ISP :: AdminUrl('reports/property_report/');?>">
+                Properties Reports
+                </a>
+                </li>
+                <li>
+                	<a href="<?php echo ISP :: AdminUrl('reports/export-reports/');?>">
+                Export Report
+                </a>
+                </li>
+                <li>
+                	<a class="active" href="<?php echo ISP :: AdminUrl('reports/session_season_reset/');?>">
+                Session and Season Reset
+                </a>
+                </li>
+            </ul>
+            </div>-->
+		<div class="row">
+			<div class="col-md-12">
+				<h4 class="text-left heding_6">Season Reset</h4>
+				<div class="widget box box-vas">
+					<div class="widget-content widget-content-vls">
+                        <ul class="sub_tab_nav">
+                            <li>
+                            	<a onclick="loadreportcontent('<?php echo ISP :: AdminUrl('reports/session_season_reset/');?>')" href="#">
+                            Session Reset
+                            </a>
+                            </li>
+                            <li class="active">
+                           		<a onclick="loadreportcontent('<?php echo ISP :: AdminUrl('reports/season_reset/');?>')" href="#">
+                            Season Reset 
+                            </a>
+                            </li>
+                        </ul>
+                        <p>
+                   <!-- <form action="" method="get">
+                        <label> Date:  </label>
+                        <input type="text" class="datetimepicker" id="datetimepicker_from" name="date_from" placeholder="From" value="<?php if(isset($_GET['date_from'])) echo $_GET['date_from'];?>" />
+                        <input type="text" class="datetimepicker" id="datetimepicker_to" name="date_to" placeholder="To" value="<?php if(isset($_GET['date_to'])) echo $_GET['date_to'];?>" />
+                        <input type="submit" name="s" id="s" value="Search" onclick="searchreportcontent('<?php echo ISP :: AdminUrl('reports/season_reset/');?>')" />
+                    </form>-->
+                    </p>
+                    <?php
+					/*if(isset($_POST['btn_season']))
+					{
+						$this->seasonzip();
+						echo '<h2>Zip file created successfully...</h2>';	
+					}*/
+					?>
+                        <table class="table table-striped table-bordered table-hover table-checkable table-responsive datatable">	 	
+                        	<thead class="cf">							                   
+                        		<tr>
+                                    <th align="center"  data-class="expand">File Name</th>
+                                    <th align="center" data-hide="phone">Creation Date</th>
+                                    <th align="center" data-hide="phone">Download File</th>
+                                    <th align="center" data-hide="phone">Remove File</th>					                   
+                        		</tr>						                 
+                        	</thead>						                 
+                        	<tbody>
+								<?php  
+                                if($objRs): // Check for the resource exists or not
+                                $intI=1;
+                                
+                                while($objRow = $objRs->fetch_object())  // Fetch the result in the object array
+                                {
+                                if($intI++%2==0)  // Condition for alternate rows color
+                                $strCss='evenTr';
+                                else
+                                $strCss='oddTr';
+								if(isset($_GET['s'])){
+									if(strtotime($objRow->creation_date) >= strtotime($_GET['date_from']) && strtotime($objRow->creation_date) <= strtotime($_GET['date_to'])):
+                                ?>         			                   
+                                <tr>
+                                <td><?php echo $objRow->filename; ?></td>
+                                <td><?php echo $objRow->creation_date; ?></td>
+                                <td><a target="_blank" href="<?php echo SITE_URL; ?>seasonzip/<?php echo $objRow->filename;?>">Download</a></td>
+                                <td><a href="<?php echo ISP :: AdminUrl();?>/index.php?dir=reports&task=removeseasonzip&file=<?php echo $objRow->filename; ?>" onclick="return confirm('Are you sure to Delete the file permanently?');">Remove</a></td>                        
+                                </tr>                            
+                                <?php endif;
+								}
+								else
+								{ ?>
+									<tr>
+                                <td><?php echo $objRow->filename; ?></td>
+                                <td><?php echo $objRow->creation_date; ?></td>
+                                <td><a target="_blank" href="<?php echo SITE_URL; ?>seasonzip/<?php echo $objRow->filename;?>">Download</a></td>
+                                <td><a href="<?php echo ISP :: AdminUrl();?>/index.php?dir=reports&task=removeseasonzip&file=<?php echo $objRow->filename; ?>" onclick="return confirm('Are you sure to Delete the file permanently?');">Remove</a></td>                        
+                                </tr> 
+								<? }
+                                }
+                                else:
+                                echo '<tr><td colspan="5" class="errNoRecord">No Record Found!</td></tr>';
+                                endif;  
+                                ?>
+                            </tbody>                       
+                        </table> 
+                       <!-- <form action="" method="post" name="frmSeason">
+                        	<input type="submit" class="btn btn-info" name="btn_season" value="Reset Season" onclick="document.frmSeason.status.value='season';"> 
+                         </form>-->
+                        <a class="btn btn-info" href="<?php echo ISP :: AdminUrl();?>index.php?dir=reports&task=seasonzip">Reset Season</a>
+                    </div>                        
+				</div>                   
+			</div>            		
+		</div>         
+	<!--</div>
+</div>-->
 <?php      
     }
    

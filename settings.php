@@ -1,5 +1,5 @@
 <?php
-error_reporting(0);
+//error_reporting(0);
 
 session_start();
 ob_start();
@@ -85,5 +85,5 @@ if($_REQUEST['site_id']=='' && $_SESSION['site_id']=='')
   
 if ($_REQUEST['site_id']<>'')
  $_SESSION['site_id'] = $_REQUEST['site_id']; 
-?>
 
+?>
