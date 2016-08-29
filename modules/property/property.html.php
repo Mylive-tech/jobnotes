@@ -1090,10 +1090,10 @@ function reloadPage()
           elseif($objRecordSet->progress==2)
           { 
          ?>
-         Completed on <?php echo $objRecordSet->completion_date;?><br/>
          <a href="<?php echo SITE_URL;?>index.php?dir=property&task=restart-job&s=1&id=<?php echo intval($_GET['id']);?>">
            <button type="button" class="btn btn-info">Restart</button>
-          </a>
+          </a><br/><br/>
+          Completed on <?php echo $objRecordSet->completion_date;?>
          <!--button type="button" class="btn btn-info">Completed on <?php echo $objRecordSet->completion_date;?></button>-->
          <?php
           }
@@ -1113,6 +1113,31 @@ function reloadPage()
 	          </a>
 	           <input type="file" onchange="attachPhotos();" id="ajggallery" accept="image/*" multiple name="gallery[]" style="opacity:0; position:absolute; top:0; right:0; height:200px; width:100%;">          </form>
           <iframe id="uploadframe" action="<?php echo SITE_URL;?>index.php?dir=property&task=uploadphotos" name="uploadframe" style="display:none;"></iframe>
+          </div>
+          <div class="col-md-12 nopadding text-center startbutton jobstatus">
+			<?php $jobstatus = $this->getJobStatusDetails($_GET['id']); ?>
+            <table id="rt1" class="table table-striped table-bordered table-hover cf">
+                <thead class="cf">
+                    <tr>
+                    <th>Started By </th>
+                    <th> Starting Date </th>
+                    <th> Closed By </th>
+                    <th> Closing Date </th>
+                    </tr>
+                </thead>
+                <tbody>
+				<?php while($objRow = $jobstatus->fetch_object()) { ?>
+					<tr>
+						<td><?php $uname = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow->started_by));
+						echo $uname[0]->f_name . ' ' . $uname[0]->l_name;?></td>
+						<td><?php echo $objRow->starting_date; ?></td>
+						<td><?php $uname = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow->closed_by));
+						echo $uname[0]->f_name . ' ' . $uname[0]->l_name;?></td>
+						<td><?php echo $objRow->closing_date; ?></td>
+					</tr>
+				<?php } ?>
+                </tbody>
+              </table>
           </div>
         </div>
         <div class="col-md-6 nopadding propertygallery item">

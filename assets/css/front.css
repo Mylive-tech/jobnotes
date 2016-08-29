@@ -230,3 +230,6 @@ ul.content-slider {
 height:100px;
 overflow:hidden;
 }
+
+/**/
+.propertystatus div.startbutton.jobstatus {height: auto; padding-top: 0 !important;}

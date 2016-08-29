@@ -594,6 +594,13 @@ class JOBLOCATION extends JOBLOCATION_HTML_CONTENT
         echo 'Done';
         die();
    }
+   
+   public function getJobStatusDetails($pid)
+   {
+		$strSql = "SELECT * from ".TBL_JOBSTATUS." where job_id='".$pid."' order by id desc limit 1, 5";
+		$this->objSet = $this->objDatabase->dbQuery($strSql);
+		return $this->objSet;
+   }
   
 } // End of Class
 

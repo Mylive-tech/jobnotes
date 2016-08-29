@@ -5,13 +5,29 @@ $action = $_REQUEST['action'];
 
 function list_all_properties_reports($login_id=0, $auto_login='') {
     global $objDatabase, $objFunctions;
-    $strsql = "SELECT s.name as location_name,s.show_locations_home, p.*, DATE_FORMAT(p.start_date,'%d %b %Y') as start_date,DATE_FORMAT(p.completion_date,'%d %b %Y') as completion_date from ".TBL_JOBLOCATION." p inner join ".TBL_SERVICE." s on s.id = p.location_id where p.status=1 and p.site_id='".$_SESSION['site_id']."' order by p.priority_status desc";    
+    //$strsql = "SELECT s.name as location_name,s.show_locations_home, p.*, DATE_FORMAT(p.start_date,'%d %b %Y') as start_date,DATE_FORMAT(p.completion_date,'%d %b %Y') as completion_date from ".TBL_JOBLOCATION." p inner join ".TBL_SERVICE." s on s.id = p.location_id where p.status=1 and p.site_id='".$_SESSION['site_id']."' order by p.priority_status desc";    
+	$strsql = "SELECT s.name as location_name,s.show_locations_home, p.*, pn.notes, DATE_FORMAT(p.start_date,'%d %b %Y') as start_date,DATE_FORMAT(p.completion_date,'%d %b %Y') as completion_date from tbl_joblocation p inner join tbl_service s on s.id = p.location_id left join tbl_property_notes pn on p.id = pn.property_id where p.status=1 and p.site_id='1' order by p.priority_status desc";    
     $objRs =  $objDatabase->dbFetch($strsql);    
+	$notes=array();
+	foreach($objRs as $objRow){
+		$notes[$objRow->id][]=$objRow->notes;
+	}
+	$prop_id = array();
     foreach ($objRs as $key => $objRow) {
+		if(!in_array($objRow->id, $prop_id))
+		{
+			$objRow->gallery = $objRow->gallery.",".$objRow->user_gallery;
+			$array_data1['property'][$key]= $objRow;
+			$objRow->notes = $notes[$objRow->id];
+			$prop_id[] = $objRow->id;
+		}
+			
+    }
+	$array_data = array('property'=>array_values($array_data1['property']));
+    /*foreach ($objRs as $key => $objRow) {
         $objRow->gallery = $objRow->gallery.",".$objRow->user_gallery;        
         $array_data['property'][$key]= $objRow;     
-    } 
-    
+    } */
     $properties_reports = json_decode(getAllReports());
     if ($login_id >0) {
         return json_encode(array("status"=>true , "message"=>"Login Successfully","login_info"=>array('id'=>$login_id, 'auto_login'=>$auto_login), "properites"=>$array_data, "reports"=>$properties_reports));
