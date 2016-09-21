@@ -248,7 +248,7 @@ if ($objRow->show_locations_home == 1) {
         <div class="widget_staff">        
 <?php          
        //$PriorityLocationRs = $this->objFunction->iFindAll(TBL_JOBLOCATION, array('status'=>1, 'priority_status'=>1)); 
-           $PriorityLocationRs = $this->objDatabase->dbFetch("Select * FROM ".TBL_JOBLOCATION." where status=1 and priority_status=1 and site_id='".$_SESSION['site_id']."'");
+           $PriorityLocationRs = $this->objDatabase->dbFetch("Select * FROM ".TBL_JOBLOCATION." where status=1 and priority_status=1 and site_id='".$_SESSION['site_id']."' and assigned_to='".$_SESSION['adminid']."'");
            foreach($PriorityLocationRs as $objRecordSet)
            {
               ?>						           

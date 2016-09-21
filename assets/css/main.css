@@ -3056,3 +3056,9 @@ body.modal-open {
 #content .container .tab_bar ul.dropdown-menu li a.active::after {
     border-style: none;
 }
+
+/*Multi user select box*/
+.form-group.inline_srarch #susr_dropdown {
+    min-height: 150px;
+    padding: 7px 5px;
+}

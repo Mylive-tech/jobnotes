@@ -217,8 +217,10 @@ $(document).ready(function() {
                 <div class="col-md-12 text-right" style="padding-bottom:10px">
 
                  <a href="<?php echo ISP::AdminUrl('setting/addplugin/');?>"><input type="button" class="btn btn-success btn-ms" name="btn_Publish" value="Add New Plugin"/></a>
+                 
+                 <a href="<?php echo ISP::AdminUrl('dashboard/admin_dashboard/');?>"><input type="button" class="btn btn-ms" name="btn_dashboard" value="View Dashboard"/></a>
 
-                 <input type="submit" class="btn  btn-ms" name="btn_UnPublish" value="View Dashboard"/>
+                <!-- <input type="submit" class="btn  btn-ms" name="btn_UnPublish" value="View Dashboard"/>-->
 
                
 

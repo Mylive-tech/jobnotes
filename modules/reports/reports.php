@@ -211,11 +211,11 @@ class REPORT extends REPORT_HTML_CONTENT
 			$this->objDatabase->dbQuery("UPDATE ".TBL_JOBLOCATION." set progress='0', start_date='0000-00-00 00:00:00', completion_date='0000-00-00 00:00:00'");
 		}
 		
-		$this->objFunction->showMessage('Record has been updated successfully.',ISP :: AdminUrl('property/completed-properties')); 
+		$this->objFunction->showMessage('Record has been updated successfully.',ISP :: AdminUrl('reports/completed-properties')); 
 	}
 	public function property_report_jobHistory()
 	{
-		$strSql = "SELECT * FROM ".TBL_JOBSTATUS." js inner join ".TBL_JOBLOCATION." jl on js.job_id=jl.id where js.job_id='".$this->intId."' order by js.id desc";
+		$strSql = "SELECT * FROM ".TBL_JOBSTATUS." js inner join ".TBL_JOBLOCATION." jl on js.job_id=jl.id  left join ".TBL_STAFF_UPLOADED_PROPERTY_IMAGES." si on jl.id=si.prop_id where js.job_id='".$this->intId."' order by js.id desc";
 			$this->objSet = $this->objDatabase->dbQuery($strSql);
 
 		$strSql = "SELECT * FROM ".TBL_JOBLOCATION." where 1=1 and id='".$this->intId."'";
@@ -253,7 +253,7 @@ class REPORT extends REPORT_HTML_CONTENT
 		return $propdetails;
    }
    public function direct($pids)
-   { 
+   {  //print_r(explode(',', $_GET['cjid']));echo '1111'; die;
    		require_once 'PHPExcel/Classes/PHPExcel.php';
 		$objPHPExcel = new PHPExcel(); 
 		$objPHPExcel->getProperties()
@@ -269,8 +269,172 @@ class REPORT extends REPORT_HTML_CONTENT
 			$objPHPExcel->getActiveSheet()->getColumnDimension($columnID)
 				->setAutoSize(true);
 		}
-   if(!empty($pids))
+   //if(!empty($pids))
+   if(isset($_GET['cjid']))
+   {
+	    $pids = explode(',', $_GET['cjid']);
+		$row=1;
+		foreach($pids as $pid)
+		{
+			if($row != 1){$row = $row+2;}
+			$jobdata = $this->report_details($pid);
+			
+			// Set the active Excel worksheet to sheet 0
+			$objPHPExcel->setActiveSheetIndex(0); 
+			// Initialise the Excel row number
+			$rowCount = 0; 
+			$propname = $this->propname($pid);
+			$objPHPExcel->getActiveSheet()->getRowDimension($row)->setRowHeight(25);
+			$objPHPExcel->getActiveSheet()->setCellValue('A'.$row, $propname->job_listing);
+			
+			$objPHPExcel->getActiveSheet()->mergeCells('A'.$row.':E'.$row);
+			$objPHPExcel->getActiveSheet()
+			->getStyle('A'.$row.':E'.$row)
+			->getAlignment()
+			->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+			$objPHPExcel->getActiveSheet()->getStyle('A'.$row)->getFont()->setBold(true)->setSize(16);
+			
+			$row = $row+2;
+			$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $row, 'Staff #');
+			$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $row, 'Started By');
+			$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $row, 'Job Start (or unpause)');
+			$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $row, 'Pause');
+			$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(4, $row, 'Job End');
+			$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(5, $row, 'Completed By');
+			
+			$objPHPExcel->getActiveSheet()->getStyle('A'.$row)->getFont()->setBold(true)->setSize(12);
+			$objPHPExcel->getActiveSheet()->getStyle('B'.$row)->getFont()->setBold(true)->setSize(12);
+			$objPHPExcel->getActiveSheet()->getStyle('C'.$row)->getFont()->setBold(true)->setSize(12);
+			$objPHPExcel->getActiveSheet()->getStyle('D'.$row)->getFont()->setBold(true)->setSize(12);
+			$objPHPExcel->getActiveSheet()->getStyle('E'.$row)->getFont()->setBold(true)->setSize(12);
+			$objPHPExcel->getActiveSheet()->getStyle('F'.$row)->getFont()->setBold(true)->setSize(12);
+			// Build cells
+			$row++;
+			$count =1;
+			while( $objRow = $jobdata->fetch_object() )
+			{ 
+				$col=0;
+				$startdate = date('Y-m-d h:i:s a', strtotime($objRow->starting_date));
+				if($objRow->pausing_date != '0000-00-00 00:00:00')
+					$pausedate = date('Y-m-d h:i:s a', strtotime($objRow->pausing_date));
+				else
+					$pausedate = '00:00 Null';
+				if($objRow->closing_date != '0000-00-00 00:00:00')
+					$enddate = date('Y-m-d h:i:s a', strtotime($objRow->closing_date));
+				else
+					$enddate = '00:00 Null';
+				$closedate = strtotime($objRow->closing_date);
+				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $count);$col++;
+				$rowD = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow->started_by));
+				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $rowD[0]->f_name.' '.$rowD[0]->l_name);$col++; 
+				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $startdate);$col++;
+				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $pausedate);$col++;
+				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $enddate);$col++;
+				$rowD = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow->closed_by));
+				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $rowD[0]->f_name.' '.$rowD[0]->l_name);$row++; $count++;
+				 
+			}
+			
+			$staffuploadsdata = $this->staffuploads($pid);
+			$row = $row + 3	;
+			$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $row, 'StaffName');
+			$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $row, 'Date');
+			$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $row, 'Images');
+			
+			$objPHPExcel->getActiveSheet()
+			->getStyle('B'.$row)
+			->getAlignment()
+			->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+			$objPHPExcel->getActiveSheet()
+			->getStyle('C'.$row)
+			->getAlignment()
+			->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+			$objPHPExcel->getActiveSheet()
+			->getStyle('D'.$row)
+			->getAlignment()
+			->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+			$objPHPExcel->getActiveSheet()->getStyle('B'.$row)->getFont()->setBold(true)->setSize(12);
+			$objPHPExcel->getActiveSheet()->getStyle('C'.$row)->getFont()->setBold(true)->setSize(12);
+			$objPHPExcel->getActiveSheet()->getStyle('D'.$row)->getFont()->setBold(true)->setSize(12);
+			
+			$row++;
+			$supload = array();
+			while($objRow = $staffuploadsdata->fetch_object())  // Fetch the result in the object array
+			{	
+				$supload[] = get_object_vars($objRow);	
+			}
+			foreach($supload as $objRow1)
+			{
+				$col = 1;
+				foreach($objRow1 as $key=>$value) {
+					if($key == 'images')
+					{
+						$objPHPExcel->getActiveSheet()->getRowDimension($row)->setRowHeight(95);
+						$col = $row;
+						if (strpos($value, ',') !== false)
+						{
+							$imgcell = 'D';
+							$img = explode(',', $value);
+							foreach($img as $pimg)
+							{
+								$objPHPExcel->getActiveSheet()->getColumnDimension($imgcell)->setWidth(30);
+								$objDrawing = new PHPExcel_Worksheet_Drawing();
+								$objDrawing->setName('Customer Signature');
+								$objDrawing->setDescription('Customer Signature');
+								//Path to signature .jpg file
+								$signature = $_SERVER['DOCUMENT_ROOT'].'/upload/'.$pimg;     
+								$objDrawing->setPath($signature);
+								$objDrawing->setOffsetX(25);                     //setOffsetX works properly
+								$objDrawing->setOffsetY(10);                     //setOffsetY works properly
+								$objDrawing->setCoordinates($imgcell.$col);             //set image to cell 
+								$objDrawing->setWidth(100);  
+								$objDrawing->setHeight(90);                     //signature height  
+								$objDrawing->setWorksheet($objPHPExcel->getActiveSheet());
+								++$imgcell;
+							}
+						}
+						else
+						{
+							$imgcell = 'D';
+							$objPHPExcel->getActiveSheet()->getColumnDimension($imgcell)->setWidth(30);
+							$image = $value;
+							$objDrawing = new PHPExcel_Worksheet_Drawing();
+							$objDrawing->setName('Customer Signature');
+							$objDrawing->setDescription('Customer Signature');
+							//Path to signature .jpg file
+							$signature = $_SERVER['DOCUMENT_ROOT'].'/upload/'.$image;     
+							$objDrawing->setPath($signature);
+							$objDrawing->setOffsetX(25);                     //setOffsetX works properly
+							$objDrawing->setOffsetY(10);                     //setOffsetY works properly
+							$objDrawing->setCoordinates($imgcell.$col);             //set image to cell 
+							$objDrawing->setWidth(100);  
+							$objDrawing->setHeight(90);                     //signature height  
+							$objDrawing->setWorksheet($objPHPExcel->getActiveSheet());
+						}
+						
+					}
+					elseif($key == 'staff_id')
+					{
+						$staffname = $this->staffname($value);
+						$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $staffname->f_name.' '.$staffname->l_name);
+					}
+					else
+					{
+						$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $value);
+					}
+					$col++;
+				}
+				$row++;
+			}
+		}
+	}
+   elseif(!isset($_GET['jid']))
 	{
+		$strSql = "select id from ".TBL_JOBLOCATION;
+		$propids = $this->objDatabase->dbQuery($strSql);
+		$pids = array();
+		foreach($propids as $propid){ $pids[] = $propid['id'];}
+		//print_r($pids); die;
 		$row=1;
 		foreach($pids as $pid)
 		{
@@ -925,6 +1089,7 @@ class REPORT extends REPORT_HTML_CONTENT
              if($flag == 1){ 
                 $export_file = '';
                 echo "<script type=\"text/javascript\">window.alert('There are no reports matching your criteria');</script>";
+				$this->objFunction->showMessage('There are no reports to export.', ISP :: AdminUrl('reports/reportsmanager'));
              }
              else{
                 fileZip($export_reports, $export_file);
@@ -1001,6 +1166,7 @@ class REPORT extends REPORT_HTML_CONTENT
                if($flag == 1){
                   $export_file = '';
                   echo "<script type=\"text/javascript\">window.alert('There are no reports matching your criteria');</script>";
+				  $this->objFunction->showMessage('There are no reports to export.', ISP :: AdminUrl('reports/reportsmanager'));
                }
                else{
                   fileZip($export_reports, $export_file);
@@ -1064,6 +1230,7 @@ class REPORT extends REPORT_HTML_CONTENT
                    if($flag == 1) {
                       $export_file = '';
                       echo "<script type=\"text/javascript\">window.alert('There are no reports matching your criteria');</script>";
+					  $this->objFunction->showMessage('There are no reports to export.', ISP :: AdminUrl('reports/reportsmanager'));
                    }
                    else{
                       fileZip($export_reports, $export_file);
@@ -1127,19 +1294,360 @@ class REPORT extends REPORT_HTML_CONTENT
                if($flag == 1){
                   $export_file = '';
                   echo "<script type=\"text/javascript\">window.alert('There are no reports matching your criteria');</script>";
+				  $this->objFunction->showMessage('There are no reports to export.', ISP :: AdminUrl('reports/reportsmanager'));
                }else{
                   fileZip($export_reports, $export_file);
                }
            }  
-       } 
+       }
+	   $this->objFunction->showMessage('Zip file created successfully.', ISP :: AdminUrl('reports/reportsmanager'));
  }
     
     parent::exportReports($export_file); 
+ }
+  public function exportReport() 
+ {  
+    $export_file = '';
+    if (isset($_POST['export_btn']))
+    {
+        $export_reports = array();
+        $export_file = 'upload/zip/export-reports-'.date('Y-m-d').'.zip';
+		$status = '';
+        
+       foreach ($_POST['export'] as $exportReport)
+       {
+           if ($exportReport == 'all_state_reports')
+           {              
+              $duration = $_POST['duration_allstate_report'];
+              $objRsReport = $this->objDatabase->dbQuery("SELECT * FROM ".TBL_REPORTS_SUBMISSION."");
+              $flag = 0;
+              $num = mysqli_num_rows($objRsReport);
+              if($num > 0){
+                while ($objReport = $objRsReport->fetch_object())
+                 {
+                     if($duration != '' && $duration != 'as-rep-date'){
+                      $objRs = $this->objDatabase->dbQuery("SELECT * FROM ".TBL_REPORTS_SUBMISSION." where report_id = '".$objReport->report_id."' and submission_date between date_sub(now(),INTERVAL " . $duration ." day) and now()");
+					  $num = mysqli_num_rows($objRs);
+                      if($num == 0){
+                        $flag=1;
+                        break 1;
+                      }
+					 }
+					 elseif($_POST['asdate_from'] != '' && $_POST['asdate_to'] != '')
+					 {
+						 $objRs = $this->objDatabase->dbQuery("SELECT * FROM ".TBL_REPORTS_SUBMISSION." where report_id = '".$objReport->report_id."' and UNIX_TIMESTAMP(submission_date) >= UNIX_TIMESTAMP('".$_POST['asdate_from']."') and UNIX_TIMESTAMP(submission_date) <= UNIX_TIMESTAMP('".$_POST['asdate_to']."')");
+						 $num = mysqli_num_rows($objRs);
+						  if($num == 0){
+							$flag=1;
+							break 1;
+						  }
+                     }
+					 else{
+                      $objRs = $this->objDatabase->dbQuery("SELECT * FROM ".TBL_REPORTS_SUBMISSION." where report_id = '".$objReport->report_id."'");
+                      $num = mysqli_num_rows($objRs);
+                      if($num == 0){
+                        $flag=1;
+                        break 1;
+                      }
+                     }
+                     $reportKeys = FALSE;
+                     $lastReport = 0;
+                     $report_data = array();
+
+                     $reportName = $this->objFunction->iFind(TBL_REPORTS, 'report_name', array('report_id'=>$objReport->report_id));
+                     $fileName = $this->objFunction->removeUnsed($reportName).'-'.date('Y-m-d').'.csv';
+                     
+                     while ($objRow = $objRs->fetch_object())
+                     {
+                       $form_data = $this->objFunction->getFormSubmissionValues($objRow->id);
+                       if ($reportKeys == FALSE)
+                       {
+                           $headings = array_keys($form_data);
+                       }
+                       $reportKeys = TRUE; 
+                       $report_data[] =  $form_data;
+                     }
+                     $this->objFunction->write2excel($headings, $report_data, $fileName);   
+                     $export_reports[] = $fileName;
+                 }   
+              }
+              else{
+                $flag=1;
+              }
+             
+             if($flag == 1){ 
+                $export_file = '';
+                echo "<script type=\"text/javascript\">window.alert('There are no reports matching your criteria');</script>";
+             }
+             else{
+                fileZip($export_reports, $export_file);
+				$status = 1;
+             } 
+           }
+           
+           if ($exportReport == 'single_location_reports')
+           {
+               $duration = $_POST['duration_singlelocation_report'];
+               $location_id = $_POST['location_singlelocation_report'];
+               
+               $objRsReport = $this->objDatabase->fetchRows("SELECT enabled_reports from ".TBL_JOBLOCATION." where location_id='".$location_id."'");
+               $reportsArray = explode(",", $objRsReport->enabled_reports);
+               $flag = 0;
+
+               foreach ($reportsArray  as $objReportId)
+               {
+                  if($duration != '' && $duration != 'sl-rep-date'){
+                    if($objReportId == ''){
+                      $flag=1;
+                      break 1;
+                    }else{
+                      if($location_id == ''){
+                        $objRs = $this->objDatabase->dbQuery("SELECT * FROM ".TBL_REPORTS_SUBMISSION." where report_id = '".$objReportId."' and submission_date between date_sub(now(),INTERVAL " . $duration ." day) and now() order by submission_date desc");
+                      }else{
+                        $objRs = $this->objDatabase->dbQuery("SELECT * FROM ".TBL_REPORTS_SUBMISSION." where report_id = '".$objReportId."' and location_id='".$location_id."' and submission_date between date_sub(now(),INTERVAL " . $duration ." day) and now() order by submission_date desc");
+                      }
+                      $num_rows = mysqli_num_rows($objRs);
+                      if($num_rows == 0){
+                      //if (!$objRs) {
+                        $flag=1;
+                        break 1;
+                      }
+                    }
+                  }elseif($_POST['sldate_from'] != '' && $_POST['sldate_to'] != ''){
+					  if($objReportId == ''){
+                      $flag=1;
+                      break 1;
+                    }else{
+                      if($location_id == ''){
+                        $objRs = $this->objDatabase->dbQuery("SELECT * FROM ".TBL_REPORTS_SUBMISSION." where report_id = '".$objReportId."' and UNIX_TIMESTAMP(submission_date) >= UNIX_TIMESTAMP('".$_POST['asdate_from']."') and UNIX_TIMESTAMP(submission_date) <= UNIX_TIMESTAMP('".$_POST['asdate_to']."') order by submission_date desc");
+                      }else{
+                        $objRs = $this->objDatabase->dbQuery("SELECT * FROM ".TBL_REPORTS_SUBMISSION." where report_id = '".$objReportId."' and location_id='".$location_id."' and UNIX_TIMESTAMP(submission_date) >= UNIX_TIMESTAMP('".$_POST['sldate_from']."') and UNIX_TIMESTAMP(submission_date) <= UNIX_TIMESTAMP('".$_POST['sldate_to']."') order by submission_date desc");
+                      }
+                      $num_rows = mysqli_num_rows($objRs);
+                      if($num_rows == 0){
+                     // if (!$objRs) {
+                        $flag=1;
+                        break 1;
+                      }
+                    }
+				}else{
+                    if($objReportId == ''){
+                      $flag=1;
+                      break 1;
+                    }else{
+                      if($location_id == ''){
+                        $objRs = $this->objDatabase->dbQuery("SELECT * FROM ".TBL_REPORTS_SUBMISSION." where report_id = '".$objReportId."' order by submission_date desc");
+                      }else{
+                        $objRs = $this->objDatabase->dbQuery("SELECT * FROM ".TBL_REPORTS_SUBMISSION." where report_id = '".$objReportId."' and location_id='".$location_id."' order by submission_date desc");
+                      }
+                      $num_rows = mysql_num_rows($objRs);
+					  if($num_rows == 0){
+                      //if(!$objRs){  /*$objRs == 0*/
+                        $flag=1;
+                        break 1;
+                      }
+                    }
+                  }
+
+                   $reportKeys = FALSE;
+                   $lastReport = 0;
+                   $report_data = array();
+
+                   $reportName = $this->objFunction->iFind(TBL_REPORTS, 'report_name', array('report_id'=>$objReportId));
+                   $fileName = $this->objFunction->removeUnsed($reportName).'-'.date('Y-m-d').'.csv';
+                   
+                   while ($objRow = $objRs->fetch_object())
+                   {
+                     $form_data = $this->objFunction->getFormSubmissionValues($objRow->id);
+                     
+                     if ($reportKeys == FALSE)
+                     {
+                         $headings = array_keys($form_data);
+                     }
+                     $reportKeys = TRUE; 
+                     $report_data[] =  $form_data;
+                   }
+                   $this->objFunction->write2excel($headings, $report_data, $fileName);   
+                   $export_reports[] = $fileName;
+               }   
+               if($flag == 1){
+                  $export_file = '';
+                  echo "<script type=\"text/javascript\">window.alert('There are no reports matching your criteria');</script>";
+               }
+               else{
+                  fileZip($export_reports, $export_file);
+				  $status = 1;
+               }
+           }
+           
+           if ($exportReport == 'individual_reports')
+           {
+               $duration = $_POST['duration_individual_report'];
+               $objReportId = $_POST['report_individual_report'];
+               $flag = 0;
+               if($duration != '' && $duration != 'i-rep-date'){
+                  if($objReportId != ''){
+                    $objRs = $this->objDatabase->dbQuery("SELECT * FROM ".TBL_REPORTS_SUBMISSION." where report_id = '".$objReportId."' and submission_date between date_sub(now(),INTERVAL " . $duration ." day) and now() order by submission_date desc");
+                    $num_rows = mysqli_num_rows($objRs);
+                    if($num_rows == 0){
+                      $flag=1;
+                    }
+                  }else{
+                    $objRs = $this->objDatabase->dbQuery("SELECT * FROM ".TBL_REPORTS_SUBMISSION." where submission_date between date_sub(now(),INTERVAL " . $duration ." day) and now() order by submission_date desc");
+                    $num_rows = mysqli_num_rows($objRs);
+                    if($num_rows == 0){
+                      $flag=1;
+                    }
+                  }
+               }elseif($_POST['idate_from'] != '' && $_POST['idate_to'] != ''){
+                  if($objReportId != ''){
+                    $objRs = $this->objDatabase->dbQuery("SELECT * FROM ".TBL_REPORTS_SUBMISSION." where report_id = '".$objReportId."' and UNIX_TIMESTAMP(submission_date) >= UNIX_TIMESTAMP('".$_POST['idate_from']."') and UNIX_TIMESTAMP(submission_date) <= UNIX_TIMESTAMP('".$_POST['idate_to']."') order by submission_date desc");
+                    $num_rows = mysqli_num_rows($objRs);
+                    if($num_rows == 0){
+                      $flag=1;
+                    }
+                  }else{
+                    $objRs = $this->objDatabase->dbQuery("SELECT * FROM ".TBL_REPORTS_SUBMISSION." where UNIX_TIMESTAMP(submission_date) >= UNIX_TIMESTAMP('".$_POST['idate_from']."') and UNIX_TIMESTAMP(submission_date) <= UNIX_TIMESTAMP('".$_POST['idate_to']."') order by submission_date desc");
+                    $num_rows = mysqli_num_rows($objRs);
+                    if($num_rows == 0){
+                      $flag=1;
+                    }
+                  }
+               }
+			   else{
+                  if($objReportId != ''){
+                    $objRs = $this->objDatabase->dbQuery("SELECT * FROM ".TBL_REPORTS_SUBMISSION." where report_id = '".$objReportId."' order by submission_date desc");
+                    $num_rows = mysqli_num_rows($objRs);
+                    if($num_rows == 0){
+                      $flag=1;
+                    }
+                  }else{
+                    $objRs = $this->objDatabase->dbQuery("SELECT * FROM ".TBL_REPORTS_SUBMISSION." order by submission_date desc");
+                    $num_rows = mysqli_num_rows($objRs);
+                    if($num_rows == 0){
+                      $flag=1;
+                    }
+                  }
+               }
+                   $reportKeys = FALSE;
+                   $lastReport = 0;
+                   $report_data = array();
+
+                   $reportName = $this->objFunction->iFind(TBL_REPORTS, 'report_name', array('report_id'=>$objReportId));
+                   $fileName = $this->objFunction->removeUnsed($reportName).'-'.date('Y-m-d').'.csv';
+                   
+                   while ($objRow = $objRs->fetch_object())
+                   {
+                     $form_data = $this->objFunction->getFormSubmissionValues($objRow->id);
+                     
+                     if ($reportKeys == FALSE)
+                     {
+                         $headings = array_keys($form_data);
+                     }
+                     $reportKeys = TRUE; 
+                     $report_data[] =  $form_data;
+                   }
+                   $this->objFunction->write2excel($headings, $report_data, $fileName);   
+                   $export_reports[] = $fileName;
+                   if($flag == 1) {
+                      $export_file = '';
+                      echo "<script type=\"text/javascript\">window.alert('There are no reports matching your criteria');</script>";
+                   }
+                   else{
+                      fileZip($export_reports, $export_file);
+					  $status = 1;
+                   }
+           }
+          if ($exportReport == 'manager_reports')
+           {
+               $duration = $_POST['duration_manager_report'];
+               $assigned_to_id = $_POST['staff_manager_id'];
+
+               $objRsReport = $this->objDatabase->fetchRows("SELECT enabled_reports from ".TBL_JOBLOCATION." where assigned_to='".$assigned_to_id."'");
+               $reportsArray = explode(",", $objRsReport->enabled_reports);
+               $flag = 0;
+               foreach ($reportsArray  as $objReportId)
+               {
+                  if($duration != '' && $duration != 'm-rep-date'){
+                   if($objReportId == ''){
+                      $flag=1;
+                      break 1;
+                   }else{
+                      $objRs = $this->objDatabase->dbQuery("SELECT * FROM ".TBL_REPORTS_SUBMISSION." where report_id = '".$objReportId."' and submission_date between date_sub(now(),INTERVAL " . $duration ." day) and now() order by submission_date desc");
+                      $num_rows = mysqli_num_rows($objRs);
+                      if($num_rows == 0){
+                        $flag=1;
+                        break 1;
+                      }
+                   }
+                  }elseif($_POST['mdate_from'] != '' && $_POST['mdate_to'] != '')
+				  {
+					  
+                   if($objReportId == ''){
+                      $flag=1;
+                      break 1;
+                   }else{
+                      $objRs = $this->objDatabase->dbQuery("SELECT * FROM ".TBL_REPORTS_SUBMISSION." where report_id = '".$objReportId."' and UNIX_TIMESTAMP(submission_date) >= UNIX_TIMESTAMP('".$_POST['mdate_from']."') and UNIX_TIMESTAMP(submission_date) <= UNIX_TIMESTAMP('".$_POST['mdate_to']."') order by submission_date desc");
+                      $num_rows = mysqli_num_rows($objRs);
+                      if($num_rows == 0){
+                        $flag=1;
+                        break 1;
+                      }
+                   }
+                  
+				  }else{
+                    if($objReportId == ''){
+                      $flag=1;
+                      break 1;
+                    }else{
+                      $objRs = $this->objDatabase->dbQuery("SELECT * FROM ".TBL_REPORTS_SUBMISSION." where report_id = '".$objReportId."' order by submission_date desc");
+                      if($num_rows == 0){
+                        $flag=1;
+                        break 1;
+                      }
+                    }
+                  }
+                   $reportKeys = FALSE;
+                   $lastReport = 0;
+                   $report_data = array();
+
+                   $reportName = $this->objFunction->iFind(TBL_REPORTS, 'report_name', array('report_id'=>$objReportId));
+                   $fileName = $this->objFunction->removeUnsed($reportName).'-'.date('Y-m-d').'.csv';
+                   
+                   while ($objRow = $objRs->fetch_object())
+                   {
+                     $form_data = $this->objFunction->getFormSubmissionValues($objRow->id);
+                     
+                     if ($reportKeys == FALSE)
+                     {
+                         $headings = array_keys($form_data);
+                     }
+                     $reportKeys = TRUE; 
+                     $report_data[] =  $form_data;
+                   }
+                   $this->objFunction->write2excel($headings, $report_data, $fileName);   
+                   $export_reports[] = $fileName;
+               }  
+               if($flag == 1){
+                  $export_file = '';
+                  echo "<script type=\"text/javascript\">window.alert('There are no reports matching your criteria');</script>";
+               }else{
+                  fileZip($export_reports, $export_file);
+				  $status = 1;
+               }
+           }  
+       } 
+	   if($status == 1)
+	   		$this->objFunction->showMessage('Zip file created successfully.', ISP :: AdminUrl('reports/reportsmanager'));
+	   else
+			$this->objFunction->showMessage('There are no reports to export.', ISP :: AdminUrl('reports/reportsmanager'));
+ }
  } 
     public function removeZip() {
         $file = $_GET['file'];
         unlink('upload/zip/'.$file);
-        $this->objFunction->showMessage('Zip file removed successfully.', ISP :: AdminUrl('reports/export-reports'));
+        //$this->objFunction->showMessage('Zip file removed successfully.', ISP :: AdminUrl('reports/export-reports'));
+		$this->objFunction->showMessage('Zip file removed successfully.', ISP :: AdminUrl('reports/reportsmanager'));
         
     }
 	
@@ -1346,14 +1854,18 @@ class REPORT extends REPORT_HTML_CONTENT
 		ob_clean();
 		$objWriter->save(str_replace(__FILE__,"export_property_report.xlsx",__FILE__));	
 		/*export images*/
-		$strsql = "SELECT Images FROM ".TBL_STAFF_UPLOADED_PROPERTY_IMAGES;
-		$objRs = $this->objDatabase->dbQuery($strsql);
+		$strsql = "select group_concat(user_gallery) as staffuploads from ".TBL_JOBLOCATION." where user_gallery != ''";
+		$objRow = $this->objDatabase->fetchRows($strsql);
+		//$strsql = "SELECT Images FROM ".TBL_STAFF_UPLOADED_PROPERTY_IMAGES;
+		//$objRs = $this->objDatabase->dbQuery($strsql);
 		$filesarr = array();
-		while($objRow = $objRs->fetch_object())
+		$pimg = explode(',', $objRow->staffuploads);
+		//while($objRow = $objRs->fetch_object())
 		{
-			$pimg = explode(',', $objRow->Images);
+			//$pimg = explode(',', $objRow->Images);
 			foreach($pimg as $img){
-				$filesarr[] = $img;
+				if($img != '')
+					$filesarr[] = $img;
 			}
 		}
 		/*export custom report*/
@@ -1504,7 +2016,17 @@ class REPORT extends REPORT_HTML_CONTENT
 			$fl_name = 'session_'.date('Y-m-d h:i:s').'.zip';
 			copy($zip_name, $_SERVER['DOCUMENT_ROOT'].'/sessionzip/'.$fl_name);
 			$this->objDatabase->insertQuery("insert into ".TBL_SESSION_RESET." (filename, creation_date) values('".$fl_name."', '".date('Y-m-d h:i:s')."')");
-			$this->objFunction->showMessage('Zip file created successfully.', ISP :: AdminUrl('reports/session_season_reset/'));
+			
+			//
+			foreach($pimg as $img){
+				unlink('upload/'.$img);
+			}
+			$this->objDatabase->dbQuery("Update ".TBL_JOBLOCATION." set user_gallery = ''");
+			$this->objDatabase->dbQuery("Update ".TBL_STAFF_UPLOADED_PROPERTY_IMAGES." set Images = ''");
+			$this->objDatabase->dbQuery("Truncate ".TBL_REPORTS_SUBMISSION);
+			//
+			
+			$this->objFunction->showMessage('Zip file created successfully.', ISP :: AdminUrl('reports/reportsmanager/'));
 			/*if(file_exists($zip_name)){
 				header('Content-type: application/zip');
 				header('Content-Disposition: attachment; filename="'.$zip_name.'"');
@@ -1524,7 +2046,7 @@ class REPORT extends REPORT_HTML_CONTENT
         $file = $_GET['file'];
         unlink('sessionzip/'.$file);
 		$this->objDatabase->dbQuery("DELETE FROM ".TBL_SESSION_RESET." where filename = '".$file."'");
-        $this->objFunction->showMessage('Zip file removed successfully.', ISP :: AdminUrl('reports/session_season_reset/'));   
+        $this->objFunction->showMessage('Zip file removed successfully.', ISP :: AdminUrl('reports/reportsmanager/'));   
     }
 	public function seasonzip()
 	{
@@ -1572,7 +2094,7 @@ class REPORT extends REPORT_HTML_CONTENT
 				$this->objDatabase->dbQuery("DELETE FROM ".TBL_SESSION_RESET." where filename = '".$fa."'");
 			}
 			chdir($curdir);
-			$this->objFunction->showMessage('Zip file created successfully.', ISP :: AdminUrl('reports/season_reset/'));
+			$this->objFunction->showMessage('Zip file created successfully.', ISP :: AdminUrl('reports/reportsmanager/'));
 		}
 	}
 	
@@ -1587,7 +2109,7 @@ class REPORT extends REPORT_HTML_CONTENT
         $file = $_GET['file'];
         unlink('seasonzip/'.$file);
 		$this->objDatabase->dbQuery("DELETE FROM ".TBL_SEASON_RESET." where filename = '".$file."'");
-        $this->objFunction->showMessage('Zip file removed successfully.', ISP :: AdminUrl('reports/season_reset/'));   
+        $this->objFunction->showMessage('Zip file removed successfully.', ISP :: AdminUrl('reports/reportsmanager/'));   
     }
 	
 	public function season_reset()
@@ -1596,7 +2118,18 @@ class REPORT extends REPORT_HTML_CONTENT
 		$this->obj = $this->objDatabase->dbQuery($strsql);
 		parent::SeasonReset($this->obj); 
 	}
-  
+	
+	public function propexport()
+	{
+		echo $_POST['uid']; die;
+	}
+  	
+	public function admin_completedProperties()
+	{
+		 $strSql = "SELECT * FROM ".TBL_JOBLOCATION." where 1=1 and progress=2  and site_id='".$_SESSION['site_id']."'";
+		$this->objSet = $this->objDatabase->dbQuery($strSql);
+		parent :: admin_completedProperties($this->objSet ,'joblocation');
+	} 
 } // End of Class
 
 
@@ -1668,6 +2201,10 @@ switch($strTask)
      $objContent->exportReports();    
    break;
    
+   case 'export-report':        
+     $objContent->exportReport();    
+   break;
+   
    case 'zipbackup':
         $objContent->zipbackup();
    break;
@@ -1689,9 +2226,6 @@ switch($strTask)
   break;
   case 'piechartuserdetails':
     $objContent->piechartuserdetails($_GET['sid']);
-  break;
-   case 'reset-property':
-    $objContent->resetProperty($intId);
   break;
   case 'job-history':
     $objContent->property_report_jobHistory();
@@ -1715,6 +2249,22 @@ switch($strTask)
   
   case 'seasonzip':
     $objContent->seasonzip();
+  break;
+  
+  case 'propexport':
+    $objContent->propexport();
+  break;
+  
+  case 'completed-properties':
+       $objContent->admin_completedProperties();
+   break;
+   
+   case 'reset-property':
+    $objContent->resetProperty($intId);
+  break;
+  
+  case 'reset-all-property':
+      $objContent->resetProperty(-1);
   break;
   
 }

@@ -100,9 +100,17 @@ class media extends HTML_MEDIA
         }
         elseif(isset($_POST['rmselected'])) {
             foreach($_POST['imgdownload'] as $imgName) {
+				
+				$this->objDatabase->dbQuery("UPDATE ".TBL_JOBLOCATION." SET gallery = TRIM(BOTH ',' FROM REPLACE(CONCAT(',', gallery, ','), ',".$imgName.",', ',')) WHERE FIND_IN_SET('".$imgName."', gallery)");
+				
+				$this->objDatabase->dbQuery("UPDATE ".TBL_STAFF_UPLOADED_PROPERTY_IMAGES." SET Images = TRIM(BOTH ',' FROM REPLACE(CONCAT(',', Images, ','), ',".$imgName.",', ',')) WHERE FIND_IN_SET('".$imgName."', Images)");
+
                 unlink('upload/tablet/'.$imgName);
                 unlink('upload/mobile/'.$imgName);
                 unlink('upload/'.$imgName);
+				//$this->objDatabase->dbQuery("UPDATE ".TBL_JOBLOCATION." SET gallery = '' where gallery = 0");
+				
+					
             }
             $this->objFunction->showMessage('Selected Images removed successfully.', ISP :: AdminUrl('media/list'));  //Function to show the message            
         }

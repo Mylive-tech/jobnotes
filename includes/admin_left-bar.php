@@ -89,6 +89,13 @@ if($currentPageUrl== ISP::AdminUrl('reports/add-new-form/')){
  $manageForm='active';
 
 }
+if($currentPageUrl== ISP::AdminUrl('reports/completed-properties/')){  
+
+ $formCurrent ='current';   
+
+ $completeProp='active';
+
+}
 if($currentPageUrl== ISP::AdminUrl('reports/listing/'))  {
 
   $formCurrent ='current';
@@ -428,7 +435,7 @@ if($currentPageUrl== ISP::AdminUrl('staff/staff_ivr_log/'))
 
               
 
-              <li>
+              <!--li>
 
 								<a href="<?php echo ISP :: AdminUrl('property/completed-properties/');?>" class="<?php echo $completeProp;?>">
 
@@ -438,7 +445,7 @@ if($currentPageUrl== ISP::AdminUrl('staff/staff_ivr_log/'))
 
 								</a>
 
-							</li>
+							</li-->
 
               
 
@@ -573,6 +580,17 @@ if($currentPageUrl== ISP::AdminUrl('staff/staff_ivr_log/'))
 								<i class="icon-angle-right"></i>
 
 								Reporting Editor
+
+								</a>
+
+							</li>
+                            <li>
+
+								<a href="<?php echo ISP :: AdminUrl('reports/completed-properties/');?>" class="<?php echo $completeProp;?>">
+
+								<i class="icon-angle-right"></i>
+
+								Completed Jobs
 
 								</a>
 

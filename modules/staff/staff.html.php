@@ -83,6 +83,16 @@ if(isset($_POST['save']))
 	}
 	$objRs = $this->get_admin_Staff_details();
 }
+if(isset($_POST['save_new']))
+{
+	$sdata = $this->saveContent(TBL_STAFF);
+	if($sdata)
+	{
+		//echo $sdata;
+		$this->objFunction->showMessage('User has been added successfully.', ISP :: AdminUrl('staff/add-staff/'));
+	}
+	//$objRs = $this->get_admin_Staff_details();
+}
 ?>
               <form name="frmContent" class="form_holder" method="post" onsubmit="return validateFrm(this);" enctype="multipart/form-data">  
                 <div class="form-group">    
@@ -150,8 +160,8 @@ foreach($this->objFunction->staff_job_title as $key=>$value) {
                 <!--<input type="hidden" name="task" value="savestaff" /> -->   
                 <input type="hidden" name="id" value="<?php echo $objRs->id;?>" />     
                 <input type="hidden" name="db_site_id" value="<?php echo $_SESSION['site_id'];?>">  
-                <button type="submit" name="save" class="btn btn-default">Save Staff
-                </button>  
+                <button type="submit" name="save" class="btn btn-default">Save Staff</button>  
+                <button type="submit" name="save_new" class="btn btn-default pull-right">Save & Add New</button>
                 <div class="clearfix">
                 </div>  	
               </form>  
@@ -164,7 +174,7 @@ foreach($this->objFunction->staff_job_title as $key=>$value) {
     <?php 
     $array_log = $this->objFunction->getStaffIvrLog($objRs->username);
 
-    if (intval($objRs->username) > 0 && count($array_log) >0 ) { ?>
+    if (intval($objRs->username) > 0 && count($array_log) >0 ) {/* ?>
         <div class="col-md-12">
             <h4 class="text-left heding_6">IVR Time Log</h4> 
             <div class="col-md-12 no-padding">
@@ -177,7 +187,7 @@ foreach($this->objFunction->staff_job_title as $key=>$value) {
                     $rowCount++;
                 ?>
                 <div class="col-md-2" style="min-height: auto;"><?php echo $rowCount;?>.</div>
-                <div class="col-md-4" style="min-height: auto;"><?php echo strftime('%b, %d %Y', $log['time_stamp']);?></div>
+                <div class="col-md-4" style="min-height: auto;"><?php echo date('M, d Y', strtotime($log['date']));//strftime('%b, %d %Y', $log['time_stamp']);?></div>
                 <div class="col-md-3" style="min-height: auto;"><?php echo $log['time_12_hour_clock'];?></div>
                 <div class="col-md-3" style="min-height: auto;"><?php echo ucfirst($log['clock_action_description']);?></div>
                 <div class="col-md-12 no-padding" style="height: 1px; background: #ccc; margin: 10px 0px;"></div>
@@ -187,7 +197,7 @@ foreach($this->objFunction->staff_job_title as $key=>$value) {
             ?>
             </div>
         </div>
-    <?php } ?>
+    <?php */} ?>
           </div> 
         </div>    
       </div>
@@ -372,7 +382,7 @@ if(strstr($_SERVER['REQUEST_URI'],ADMIN_FOLDER))
                     $rowCount++;
                 ?>
                 <div class="col-md-2" style="min-height: auto;"><?php echo $rowCount;?>.</div>
-                <div class="col-md-4" style="min-height: auto;"><?php echo strftime('%b, %d %Y', $log['time_stamp']);?></div>
+                <div class="col-md-4" style="min-height: auto;"><?php echo date('M, d Y', strtotime($log['date']));//strftime('%b, %d %Y', $log['time_stamp']);?></div>
                 <div class="col-md-3" style="min-height: auto;"><?php echo $log['time_12_hour_clock'];?></div>
                 <div class="col-md-3" style="min-height: auto;"><?php echo ucfirst($log['clock_action_description']);?></div>
                 <div class="col-md-12 no-padding" style="height: 1px; background: #ccc; margin: 10px 0px;"></div>

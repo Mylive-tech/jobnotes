@@ -23,5 +23,6 @@
   define('TBL_STAFF_UPLOADED_PROPERTY_IMAGES' ,   $configArray->prefix.'staff_uploaded_property_images');
   define('TBL_SESSION_RESET' ,   $configArray->prefix.'session_reset');
   define('TBL_SEASON_RESET' ,   $configArray->prefix.'season_reset');
+  define('TBL_ASSIGN_PROPERTY' ,   $configArray->prefix.'assign_property');
   
 ?>

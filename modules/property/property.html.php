@@ -68,6 +68,17 @@ protected function admin_joblocation_Form($objRs)
 ?>
 <script type="text/javascript">
 	$(document).ready(function(){
+		$('#priority_status').click(function(){
+				//alert($('#priority_status').prop('checked'));
+				if($('#priority_status').prop('checked') == true) $('#priority_status').val('1');
+				else $('#priority_status').val('0');
+			});
+		$('#tag').click(function(){
+				if($('#tag').val() == 'specific_user')
+					$('#susr_dropdown').show();
+				else
+					$('#susr_dropdown').hide();
+			});
 		$('#add_more_note').click(function(){
 			$('#outer_overlay').show();
 			$('#add_note_form').show();
@@ -87,21 +98,34 @@ protected function admin_joblocation_Form($objRs)
 			return false;
 		});
 	});
+	function edit_note(nid, note)
+	{
+		$('#notefrm').append('<input type="hidden" name="note_edit" id="note_edit" value="'+nid+'" />');
+		$('#txt_note').html(note);
+		$('#outer_overlay').show();
+		$('#add_note_form').show();
+		return false;
+	}
 </script>
 <?php
 if(isset($_POST['add_note']))
 {
-	$this->add_notes();
+	if(isset($_POST['note_edit']) && $_POST['note_edit'] != ''){
+		$this->edit_notes();
+	}
+	else{
+		$this->add_notes();
+	}
 }
 ?>
 <div class="outer_overlay" id="outer_overlay"></div>
 <div id="add_note_form" class="add_note_form">
 	<strong> Add Note:</strong><br/>
-	<form method="post" action="">
+	<form method="post" action="" id="notefrm">
 		<input type="hidden" name="prop_id" id="prop_id" value="<?= $objRs->id; ?>" />
 		<input type="hidden" name="staff_id" id="staff_id" value="<?= $_SESSION['adminid'];?>" />
 		<textarea name="txt_note" id="txt_note"></textarea>
-		<input type="submit" name="add_note" value="Add" class="btn btn-default" <?php if($objRs->id == '') {echo 'id="add_note"';}?> />
+		<input type="submit" name="add_note" value="Save" class="btn btn-default" <?php if($objRs->id == '') {echo 'id="add_note"';}?> />
 	</form>
 </div>
  <div id="content">			   
@@ -223,8 +247,20 @@ if(isset($_POST['add_note']))
                   <label class="font-Bold">Assigned To                   
                   </label>                                 
                   <select name="db_assigned_to" id="tag" onchange="showUser(this.value)" class="form-control">   
-                    <?php echo $this->objFunction->staffDropDown($objRs->assigned_to); ?>                                
-                  </select>                                                    
+                    <?php //echo $this->objFunction->staffDropDown($objRs->assigned_to); ?>
+						<option value="">Select</option>
+						<option value="Drivers" <?php if($objRs->assigned_to == "Drivers") echo 'selected="selected"'; ?>>All Drivers</option>
+						<option value="Staff" <?php if($objRs->assigned_to == "Staff") echo 'selected="selected"'; ?>>All Staff</option>
+						<option value="specific_user" <?php if($objRs->assigned_to == "specific_user") echo 'selected="selected"'; ?>>Specific User</option>
+                        <option value="assign_to_all" <?php if($objRs->assigned_to == "assign_to_all") echo 'selected="selected"'; ?>>Assign to Everyone</option>
+                  </select>
+				  <br/>
+				  <select name="db_assigned_to_spcl[]" multiple onchange="showUser(this.value)" class="form-control" id="susr_dropdown" <?php if($objRs->assigned_to != 'specific_user') echo 'style="display:none;"'; ?>>   
+                    <?php echo $this->objFunction->staffDropDownSpecificUser($objRs->id, $objRs->assigned_to);
+					$usrids = $this->objDBCon->dbQuery("select user_id from ".TBL_ASSIGN_PROPERTY." where property_id = '".$objRs->id."'");
+					//print_r($usrids);
+					//echo $this->objFunction->staffDropDown($objRs->assigned_to); ?>                                
+                  </select>				  
                 </div>
                 <div class="form-group inline_srarch2">                                     
                   <label for="exampleInputEmail1" class="font-Bold">Onsite Contact Person                   
@@ -248,6 +284,7 @@ if(isset($_POST['add_note']))
 							<th>Staff Name</th>
 							<th>Note</th>
 							<th>Date</th>
+							<th>Action</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -263,6 +300,7 @@ if(isset($_POST['add_note']))
 								echo $rowD[0]->f_name.' '.$rowD[0]->l_name;?></td>
 								<td><?= $notes->notes;?></td>
 								<td><?= $notes->date_added;?></td>
+								<td><a href="javascript: void(0);" onclick="edit_note('<?php echo $notes->id;?>','<?php echo $notes->notes;?>')">Edit</a> / <a href="<?php echo ISP::AdminUrl('property/removenote/?pid='.$objRs->id.'&nid='.$notes->id);?>" onclick="return confirm('Are you sure?')">Delete</a></td>
 							</tr>
 							
 						<?php }
@@ -302,7 +340,7 @@ if(isset($_POST['add_note']))
                  ?>
                   <div class="col-md-4">
                     <label class="checkbox">
-						<input name="reports[]" type="checkbox" <?php if(in_array($repId, $reportEnabledArray)) echo 'checked';?> class="uniform" value="<?php echo $repId;?>"> <?php echo $repName;?>
+						<input name="reports[]" type="checkbox" <?php if(!empty($reportEnabledArray[0]) && in_array($repId, $reportEnabledArray)) echo 'checked'; elseif(empty($reportEnabledArray[0])) echo 'checked';?> class="uniform" value="<?php echo $repId;?>"> <?php echo $repName;?>
 					</label>                   
                  </div>
                   <?php   
@@ -310,7 +348,16 @@ if(isset($_POST['add_note']))
                   ?>
                   </div>
                 <div class="clearfix"></div> 
-                </div>                    
+                </div> 
+				<div class="form-group">                                     
+                  <label for="Priority" class="full_width font-Bold">Priority Status</label>
+                  <br/>
+				  <div class="col-md-4">
+					  <label class="checkbox">
+						<input id="priority_status" name="md_priority_status" type="checkbox" <?php if($objRs->priority_status == 1) echo 'checked'; ?> class="uniform" value="<?php echo $objRs->priority_status; ?>"> Enable
+					  </label>
+				  </div>
+				</div>
                <div class="form-group">                                 
                 <button type="submit" value="New" name="save_new" class="btn btn-default sumit_bottom">Save & Add New</button>                                 
                 <button type="submit" value="back" name="save_back" class="btn btn-default sumit_bottom pull-right">Save & Go Back                 
@@ -447,7 +494,7 @@ $(document).ready(function() {
       <div class="col-md-12">						         
         <h4 class="text-left heding_6">Manage Properties</h4>						         
         <div class="widget box box-vas">							 							           <?php
-            if( (isset($_POST['btn_Publish'])) || (isset($_POST['btn_UnPublish'])) || (isset($_POST['btn_delete'])) || (isset($_POST['btn_export'])) )
+            if( (isset($_POST['btn_Publish'])) || (isset($_POST['btn_UnPublish'])) || (isset($_POST['btn_delete'])) || (isset($_POST['btn_export'])) || (isset($_POST['btn_enable_p'])) || (isset($_POST['btn_disable_p'])) )
             {
 				$sdata = $this->modifyContent(TBL_JOBLOCATION);
 				if($sdata)
@@ -469,7 +516,11 @@ $(document).ready(function() {
                 <input type="submit" class="btn btn-warning btn-ms" name="btn_UnPublish" value="Unpublish" onclick="document.frmListing.status.value='0';" />                           
                 <input type="submit" class="btn btn-danger btn-ms" name="btn_delete" value="Delete" onclick="document.frmListing.status.value='-1';" />                 
               
-             	<input type="submit" class="btn btn-info" name="btn_export" value="Export" onclick="document.frmListing.status.value='export';">	
+             	<input type="submit" class="btn btn-info" name="btn_export" value="Export" onclick="document.frmListing.status.value='export';">
+                
+                <input type="submit" class="btn btn-success btn-ms" name="btn_enable_p" value="Enable Priority" onclick="document.frmListing.status.value='ep';" />
+                
+                <input type="submit" class="btn btn-warning btn-ms" name="btn_disable_p" value="Disable Priority" onclick="document.frmListing.status.value='dp';" />	
 
 
 
@@ -481,12 +532,13 @@ $(document).ready(function() {
                 <thead class="cf">							                   
                   <tr>                                     
                     <th align="center">S.N.</th>								                     
-                    <th align="center"  data-class="expand">Job Location</th>								                     
+                    <th align="center"  data-class="expand">Job Location</th>
+					<th align="center" data-hide="phone">Assigned Location</th> 						
                     <th align="center" data-hide="phone">Address</th>                                     
                     <th align="center" data-hide="phone">Assigned To</th>                                     
                     <th align="center" data-hide="phone">Phone Number</th>                                     
-                    <!--th align="center" data-hide="phone">Important Notes</th-->                                     
-                    <th align="center" data-hide="phone">Assigned Location</th> 
+                    <!--th align="center" data-hide="phone">Important Notes</th                                     
+                    <th align="center" data-hide="phone">Assigned Location</th>--> 
                     <th align="center" data-hide="phone">Priority</th>                                    
                     <th align="center" data-hide="phone" class="hideexport">Status</th>                                     
                     <th align="center" data-hide="phone" class="hideexport">Edit</th>                                                                                                                                                                                                                                                                                               
@@ -516,11 +568,13 @@ $(document).ready(function() {
                       <br> <br>
                       <a class="btn btn-danger btn-ms" href="<?php echo ISP :: AdminUrl('reports/job-history/id/'.$objRow->id);?>">History</a>
                       </td> 
+					  <td><?php echo $this->objFunction->iFind(TBL_SERVICE,'name', array('id'=>$objRow->location_id)); ?></td>
                       <td><?php echo $objRow->location_address;?></td>
                       <td><?php
-                      if($objRow->assigned_to >0) {
-                        $rowD = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow->assigned_to));
-                        echo $rowD[0]->f_name.' '.$rowD[0]->l_name;  
+                      if($objRow->assigned_to >0 || $objRow->assigned_to != '') {
+                        //$rowD = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow->assigned_to));
+                        //echo $rowD[0]->f_name.' '.$rowD[0]->l_name; 
+						echo ucfirst(str_replace('_', ' ', $objRow->assigned_to)) ;
                       }
                       else{
                         echo 'Unassigned';    
@@ -529,11 +583,11 @@ $(document).ready(function() {
                       </td>
                       <td><a href="tel:<?php echo $objRow->phn_no;?>"><?php echo $objRow->phn_no;?></a></td> 
                       <!--td><?php echo $objRow->importent_notes;?></td-->
-                      <td><?php
+                      <!--td><?php
                       echo $this->objFunction->iFind(TBL_SERVICE,'name', array('id'=>$objRow->location_id));
                       //echo $rowD[0]->f_name.' '.$rowD[0]->l_name;
                       ?>                      
-                      <?php //echo $objRow->assigned_under_1;?></td>                                    
+                      <?php //echo $objRow->assigned_under_1;?></td-->                                    
                     
                     <td align="cente"><a href="<?php echo ISP :: AdminUrl('property/modifyjoblocation/priority_status/'.(($objRow->priority_status==1)?"0":"1").'/delete/'.$objRow->id);?>" class="<?php echo ($objRow->priority_status==1)?'high_priority':'normal_priority';?>"><?php echo ($objRow->priority_status==1)?'High':'Normal';?></a></td>
                     <td align="center" class="hideexport">
@@ -1058,6 +1112,7 @@ function reloadPage()
        <div class="col-md-12 nopadding">
         <div class="col-md-6 nopadding propertystatus">
           <div class="col-md-6 nopadding text-center startbutton">
+          <h3 style="margin-top:0px;">Plowing Status</h3>
          <?php
           if($objRecordSet->progress==0)
           {

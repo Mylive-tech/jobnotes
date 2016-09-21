@@ -243,12 +243,12 @@
                     {
                     ?>                            
                     <p id="p_<?php echo $objProperty->id;?>" class="<?php if($fistUntouch==$objProperty->id) echo 'show'; else echo 'hide';?>  insidewidget_locationdetails">
-                    <b>Name: </b><?php echo $objProperty->job_listing;?><br>
+                    <!--b>Name: </b><?php echo $objProperty->job_listing;?><br-->
                     <b>Address: </b><?php echo $objProperty->location_address;?><br>
                     <b>Section: </b><?php echo $objProperty->section_name;?><br>
                     <b>Territory: </b><?php echo $objProperty->territory;?><br>
-                    <b>Assigned To: </b><?php  $rowD = $this->iFindAll(TBL_STAFF, array('id'=>$objProperty->assigned_to)); echo $rowD[0]->f_name.' '.$rowD[0]->l_name;?><br>
-                    <b>Phone: </b><?php echo $rowD[0]->phone;?><br>                           
+                    <b>Assigned To: </b><?php  echo ucfirst(str_replace('_', ' ', $objProperty->assigned_to));/*$rowD = $this->iFindAll(TBL_STAFF, array('id'=>$objProperty->assigned_to)); echo $rowD[0]->f_name.' '.$rowD[0]->l_name;*/?><br>
+                    <b>Phone: </b><?php echo $objProperty->phn_no;?><br>                           
                     </p>         
                     <?php
                     }
@@ -286,8 +286,8 @@
                 <b>Address: </b><?php echo $objProperty->location_address;?><br>
                 <b>Section: </b><?php echo $objProperty->section_name;?><br>        
                 <b>Territory: </b><?php echo $objProperty->territory;?><br>
-                <b>Assigned To: </b><?php $rowD = $this->iFindAll(TBL_STAFF, array('id'=>$objProperty->assigned_to)); echo $rowD[0]->f_name.' '.$rowD[0]->l_name;?><br>
-                <b>Phone: </b><?php echo $rowD[0]->phone;?><br> 
+                <b>Assigned To: </b><?php  echo ucfirst(str_replace('_', ' ', $objProperty->assigned_to));/*$rowD = $this->iFindAll(TBL_STAFF, array('id'=>$objProperty->assigned_to)); echo $rowD[0]->f_name.' '.$rowD[0]->l_name;*/?><br>
+                <b>Phone: </b><?php echo $objProperty->phn_no;?><br> 
                 <b>Started On: </b> <?php echo strftime("%m/%d/%Y %I:%M %p", strtotime($objProperty->start_date));?><br>        
                 </p>         
                 <?php
@@ -326,8 +326,8 @@
                         <b>Address: </b><?php echo $objProperty->location_address;?><br>
                         <b>Section: </b><?php echo $objProperty->section_name;?><br>
                         <b>Territory: </b><?php echo $objProperty->territory;?><br>
-                        <b>Assigned To: </b><?php $rowD = $this->iFindAll(TBL_STAFF, array('id'=>$objProperty->assigned_to));  echo $rowD[0]->f_name.' '.$rowD[0]->l_name;?><br>
-                        <b>Phone: </b><?php echo $rowD[0]->phone;?><br>  
+                        <b>Assigned To: </b><?php  echo ucfirst(str_replace('_', ' ', $objProperty->assigned_to));/*$rowD = $this->iFindAll(TBL_STAFF, array('id'=>$objProperty->assigned_to)); echo $rowD[0]->f_name.' '.$rowD[0]->l_name;*/?><br>
+                        <b>Phone: </b><?php echo $objProperty->phn_no;?><br>  
                         <b>Completed On: </b><?php echo strftime("%m/%d/%Y %I:%M %p", strtotime($objProperty->completion_date));?><br>
                         </p>         
                     <?php
@@ -366,8 +366,8 @@
                         <b>Address: </b><?php echo $objProperty->location_address;?><br>
                         <b>Section: </b><?php echo $objProperty->section_name;?><br>
                         <b>Territory: </b><?php echo $objProperty->territory;?><br>
-                        <b>Assigned To: </b><?php $rowD = $this->iFindAll(TBL_STAFF, array('id'=>$objProperty->assigned_to));  echo $rowD[0]->f_name.' '.$rowD[0]->l_name;?><br>
-                        <b>Phone: </b><?php echo $rowD[0]->phone;?><br>  
+                        <b>Assigned To: </b><?php  echo ucfirst(str_replace('_', ' ', $objProperty->assigned_to));/*$rowD = $this->iFindAll(TBL_STAFF, array('id'=>$objProperty->assigned_to)); echo $rowD[0]->f_name.' '.$rowD[0]->l_name;*/?><br>
+                        <b>Phone: </b><?php echo $objProperty->phn_no;?><br>  
                         <b>Paused On: </b><?php echo strftime("%m/%d/%Y %I:%M %p", strtotime($objProperty->pause_date));?><br>
                         </p>         
                     <?php
@@ -1453,6 +1453,28 @@ public function staffDropDown($default_id = 0  )
     return $option;
 } 
 
+public function staffDropDownSpecificUser($prop_id = 0, $assigned_to  )
+{
+    $res = $this->objDBCon->dbQuery("select * from ".TBL_STAFF." where site_id = '".$_SESSION['site_id']."' and status='1' and user_type>1 order by f_name");
+	$usrids = $this->objDBCon->dbQuery("select user_id from ".TBL_ASSIGN_PROPERTY." where property_id = '".$prop_id."'");
+	$uidarr = array();
+	foreach($usrids as $uid)
+	{
+		$uidarr[] = $uid['user_id'];
+	}
+    $option = '<option value="">Select Staff</option>';
+    $option .= '<option value="0" '.(($prop_id==0)?"selected":"").'>Unassigned</option>';
+    while($objRow = $res->fetch_object()) {
+        if (in_array($objRow->id, $uidarr) && $assigned_to == 'specific_user' ) 
+            $selected = 'selected';
+        else   
+            $selected = '';
+        
+        $option .= '<option value="'.$objRow->id.'" '.$selected.'>'.$objRow->f_name.' '.$objRow->l_name.'</option>';;
+    }
+    return $option;
+}
+
 public function getPropertiesByLocation($location_id=0)
 {
    $res = $this->objDBCon->dbQuery("select * from ".TBL_JOBLOCATION." where site_id = '".$_SESSION['site_id']."' and location_id ='".$location_id."'");
@@ -1607,10 +1629,13 @@ public function getFormSubmissionValues($submission_id)
             if ($staff_id != "" && $val['staff_id'] == $staff_id)
                 $staff_data[] = $val;
 			else
-				$staff_data[] = $val;
+				$staff_data1[] = $val;
 			
-        }        
-        return array_reverse($staff_data);
+        }
+		if ($staff_id != "")        
+        	return array_reverse($staff_data);
+		else
+			 return array_reverse($staff_data1);
     }
     
     public function storeIVRLog() {
@@ -1685,9 +1710,11 @@ public function getFormSubmissionValues($submission_id)
 		return $data;
 	
 	}
+	/*Get system notification email*/
+	public function getSystemNotificationEmail() {
+		$strsql = "SELECT * FROM ".TBL_CONFIGURATION." where config_key = 'notification_email'";
+		$objSet =  $this->objDBCon->fetchRows($strsql);
+		return $objSet;
+	}
 }
 ?>
-
-
-
-  

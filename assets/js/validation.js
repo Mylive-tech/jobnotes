@@ -652,6 +652,9 @@ return false;  // date is valid
 					else if(field.name == 'md_job_title') {
 						return true;
 					}
+					else if(field.name == 'md_importent_notes'){
+						return true;
+					}
 					else
 					{
 						strMessage = 'Required field can not be left blank.';

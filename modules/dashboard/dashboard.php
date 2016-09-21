@@ -37,8 +37,14 @@ class dashboard extends DSHBOARD_HTML_CONTENT
   
    public function show_Dashboard()
   {
-       
-			$strSql = "SELECT s.*,j.location_id, j.assigned_to, j.map_widget, j.lat, j.lag FROM ".TBL_SERVICE." s inner join ".TBL_JOBLOCATION. " j on(s.id=j.location_id) where 1=1 and j.site_id='".$_SESSION['site_id']."' and j.status=1 and s.status=1 group by s.name";
+       if($_SESSION['adminid']>1)
+	   {
+			$strSql = "SELECT s.*,j.location_id, j.assigned_to, j.map_widget, j.lat, j.lag FROM ".TBL_SERVICE." s inner join ".TBL_JOBLOCATION. " j on(s.id=j.location_id) inner join ".TBL_ASSIGN_PROPERTY." ap on(j.id=ap.property_id) where 1=1 and j.site_id='".$_SESSION['site_id']."' and ap.user_id='".$_SESSION['adminid']."' and j.status=1 and s.status=1 group by s.name";
+	   }
+	   else
+	   {
+			$strSql = "SELECT s.*,j.location_id, j.assigned_to, j.map_widget, j.lat, j.lag FROM ".TBL_SERVICE." s inner join ".TBL_JOBLOCATION. " j on(s.id=j.location_id) where 1=1 and j.site_id='".$_SESSION['site_id']."' and j.status=1 and s.status=1 group by s.name";	
+	   }
 				
 				$this->objSet = $this->objDatabase->dbQuery($strSql);
 				parent :: show_staff_dashboard($this->objSet);

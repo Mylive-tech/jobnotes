@@ -220,10 +220,31 @@ class JOBLOCATION extends JOBLOCATION_HTML_CONTENT
    $_POST['db_user_gallery'] = implode(",", $fileStaffArray);
    
    $_POST['db_enabled_reports'] = implode(",", $_POST['reports']);
-                
+   if($_POST['db_assigned_to'] == 'assign_to_all')
+   {
+		$usrids = $this->objDatabase->dbQuery("select id from ".TBL_STAFF." where site_id = '".$_SESSION['site_id']."' and status='1' and user_type>1");
+   }
+   elseif($_POST['db_assigned_to_spcl'] != '')
+   { 
+		foreach ($_POST['db_assigned_to_spcl'] as $selectedOption){
+			$usrids[] = array('id'=>$selectedOption);
+			}
+   }
+   else
+   {
+		$stafftypeid = $this->objFunction->iFind(TBL_STAFFTYPE, 'id', array('label' => $_POST['db_assigned_to']));
+		$usrids = $this->objDatabase->dbQuery("SELECT id from ".TBL_STAFF." where user_type = '".$stafftypeid."'");     
+   }
      if($this->intId==''):  //Check for content posted is "New" or "Existing"	 
 	    $this->intId= $this->objDatabase->insertForm($tbl) ;  //Insert new content in table
-     
+		//
+		$this->objDatabase->dbQuery("UPDATE ".TBL_JOBLOCATION." set priority status = '".$_POST['md_priority_status']."' where id='".$this->intId."'");
+		$locationid = $this->objFunction->iFind(TBL_JOBLOCATION, 'location_id', array('id' => $this->intId));
+		foreach($usrids as $uid)
+		{
+			$this->objDatabase->dbQuery("insert into ".TBL_ASSIGN_PROPERTY." (location_id, property_id, user_id) values('".$locationid."', '".$this->intId."', '".$uid['id']."')");
+		}
+		//
            if($this->intId)
       	 	 {   		    
                 $msgAction='added';
@@ -236,7 +257,16 @@ class JOBLOCATION extends JOBLOCATION_HTML_CONTENT
       	  	 }
 			  $this->objDatabase->dbQuery("INSERT ".TBL_PROPERTY_NOTES."(property_id, staff_id_or_admin, notes, date_added) values('".$this->intId."', '".$_SESSION['adminid']."', '".$_POST['md_importent_notes']."', '".date('Y-m-d h:i:s')."') ");
 	 else:
-           $this->objDatabase->updateForm($tbl); //Update Exisiting content		  
+           $this->objDatabase->updateForm($tbl); //Update Exisiting content	
+			//
+			$this->objDatabase->dbQuery("UPDATE ".TBL_JOBLOCATION." set priority_status = '".$_POST['md_priority_status']."' where id='".$this->intId."'");
+			$locationid = $this->objFunction->iFind(TBL_JOBLOCATION, 'location_id', array('id' => $this->intId));
+			$this->objDatabase->dbQuery("delete from ".TBL_ASSIGN_PROPERTY." where property_id = '".$this->intId."'");
+			foreach($usrids as $uid)
+			{
+			$this->objDatabase->dbQuery("insert into ".TBL_ASSIGN_PROPERTY." (location_id, property_id, user_id) values('".$locationid."', '".$this->intId."', '".$uid['id']."')");
+			}
+			//
 		       $msgAction='updated';
 	 endif;
     
@@ -273,7 +303,17 @@ class JOBLOCATION extends JOBLOCATION_HTML_CONTENT
        }
       else
       {
-          if ($intStatus <> 'export') {
+		  if($intStatus == 'ep')
+			{
+				$strSql = 'Update '.$tbl.' set priority_status=1 where id in ('.$this->intId.')';
+				 $this->objDatabase->dbQuery($strSql);
+			}
+		elseif($intStatus == 'dp')
+			{
+				$strSql = 'Update '.$tbl.' set priority_status=0 where id in ('.$this->intId.')';
+				 $this->objDatabase->dbQuery($strSql);
+			}
+          elseif ($intStatus <> 'export') {
   	     $strSql = 'Update '.$tbl.' set status=\''.$intStatus.'\' where id in ('.$this->intId.')';
              $this->objDatabase->dbQuery($strSql);
           }
@@ -299,7 +339,8 @@ class JOBLOCATION extends JOBLOCATION_HTML_CONTENT
          if ($intStatus <> 'export') {
 		  return '<h3>Record has been '.$strWord.' successfully.</h3>';
 	     //$this->objFunction->showMessage('Record has been '.$strWord.' successfully.',ISP :: AdminUrl('property/manage-properties'));  
-         }    
+         } 
+		   
 	 
    } //end function
    
@@ -316,7 +357,12 @@ class JOBLOCATION extends JOBLOCATION_HTML_CONTENT
    
    public function loadLocationProperties()
    {
-     $row = $this->objDatabase->dbQuery('Select * FROM '.TBL_JOBLOCATION.' where location_id ='.$this->intId.' and status=1 order by priority_status desc');
+	   if($_SESSION['adminid'] > 1)
+	   		$row = $this->objDatabase->dbQuery('Select * FROM '.TBL_JOBLOCATION.' j inner join '.TBL_ASSIGN_PROPERTY.' ap ON(j.id=ap.property_id) where status=1 order by priority_status desc');
+		else
+     		$row = $this->objDatabase->dbQuery('Select * FROM '.TBL_JOBLOCATION.' where location_id ='.$this->intId.' and status=1 order by priority_status desc');
+	 
+	 
       
      parent :: loadLocationProperties($row, $this->intId);
    }
@@ -352,10 +398,10 @@ class JOBLOCATION extends JOBLOCATION_HTML_CONTENT
    public function resetProperty($id)
    {
         if ($id >0) {
-            $this->objDatabase->dbQuery("UPDATE ".TBL_JOBLOCATION." set progress='0', start_date='0000-00-00 00:00:00', completion_date='0000-00-00 00:00:00' where id='".$id."'");
+            $this->objDatabase->dbQuery("UPDATE ".TBL_JOBLOCATION." set progress='0', start_date='0000-00-00 00:00:00', pause_date='0000-00-00 00:00:00', completion_date='0000-00-00 00:00:00' where id='".$id."'");
         }
         else {
-            $this->objDatabase->dbQuery("UPDATE ".TBL_JOBLOCATION." set progress='0', start_date='0000-00-00 00:00:00', completion_date='0000-00-00 00:00:00'");
+            $this->objDatabase->dbQuery("UPDATE ".TBL_JOBLOCATION." set progress='0', start_date='0000-00-00 00:00:00', pause_date='0000-00-00 00:00:00', completion_date='0000-00-00 00:00:00'");
         }
         
         $this->objFunction->showMessage('Record has been updated successfully.',ISP :: AdminUrl('property/completed-properties')); 
@@ -566,6 +612,15 @@ class JOBLOCATION extends JOBLOCATION_HTML_CONTENT
 	   $this->objDatabase->dbQuery("INSERT INTO ".TBL_PROPERTY_NOTES."(property_id, staff_id_or_admin, notes, date_added) values('".$_POST['prop_id']."', '".$_POST['staff_id']."', '".$_POST['txt_note']."', '".date('Y-m-d h:i:s')."') ");
    }
    
+   public function edit_notes()
+   {
+	   $this->objDatabase->dbQuery("UPDATE ".TBL_PROPERTY_NOTES." set notes='".$_POST['txt_note']."' where id='".$_POST['note_edit']."'");
+   }
+   public function removenote($pid, $nid)
+   {
+	   $this->objDatabase->dbQuery("delete from ".TBL_PROPERTY_NOTES." where id = '".$nid."' and property_id='".$pid."'");
+	   $this->objFunction->showMessage('Note has been deleted successfully.',ISP :: AdminUrl('property/edit-property/id/'.$pid));
+   }
    public function getImportantNotes($tbl)
    {
 	   	$strSql = "SELECT * FROM ".$tbl." where property_id=".$_GET['id']." order by date_added desc";
@@ -699,6 +754,9 @@ switch($strTask)
   break;
    case 'direct':
     $objJobLocation->direct();
+  break;
+  case 'removenote':
+    $objJobLocation->removenote($_GET['pid'], $_GET['nid']);
   break;
 }
 ?>

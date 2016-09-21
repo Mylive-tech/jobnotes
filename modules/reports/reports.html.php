@@ -281,7 +281,7 @@ protected function reportsmanager($objRs)
                      <td><?php echo $fdata->db_field_5; ?></td>
                      <td><?php echo $fdata->db_field_6; ?></td>-->
                      <td><?php echo $uname[0]->f_name . ' ' .$uname[0]->l_name; ?></td>
-                     <td><?php echo $date; ?></td>
+                     <td><?php echo date('Y-m-d h:i A', strtotime($date)); ?></td>
                 </tr>
                 
             <?php }
@@ -670,7 +670,7 @@ $(document).ready(function() {
                   </table>
                 <?php }
 				else { ?>
-               <div class="col-md-12 text-right" style="padding-bottom:10px"><a href="http://jobnotes.staging-box.net/webadmin/index.php?dir=reports&amp;task=export_ivr_log_report" class="btn btn-info">Export</a></div>
+               <div class="col-md-12 text-right" style="padding-bottom:10px"><a href="<?php echo ISP::AdminUrl('index.php?dir=reports&amp;task=export_ivr_log_report');?>" class="btn btn-info">Export</a></div>
                <p>
                     <form action="" method="get">
                         <label> Date:  </label>
@@ -736,7 +736,7 @@ $(document).ready(function() {
 									<td align="center"><?php echo $objRow->username;?></td>             
 									 <td align="center"><?php echo $objRow->f_name.' '.$objRow->l_name;?></td>              
 									<td align="center"><?php echo $ivrdatetimestatus[0];?></td>
-									<td align="center"><?php echo $ivrdatetimestatus[1];?></td>
+									<td align="center"><?php echo date('h:i A',strtotime($ivrdatetimestatus[1]));?></td>
 									<td align="center"><?php echo $ivrdatetimestatus[2]; ?></td> 
 									<!-- <td align="center"><a href="<?php echo ISP :: AdminUrl('index.php?dir=staff&task=edit-staff&id='.$objRow->id);?>">View</a></td>-->
 									<td align="center"><a href="#" onclick="viewlog('<?php echo ISP :: AdminUrl('reports/report_ivr_log/?staffid='.$objRow->username);?>')">View</a></td>
@@ -753,7 +753,7 @@ $(document).ready(function() {
 									<td align="center"><?php echo $objRow->username;?></td>             
 									 <td align="center"><?php echo $objRow->f_name.' '.$objRow->l_name;?></td>              
 									<td align="center"><?php echo $ivrdatetimestatus[0];?></td>
-									<td align="center"><?php echo $ivrdatetimestatus[1];?></td>
+									<td align="center"><?php echo date('h:i A',strtotime($ivrdatetimestatus[1]));?></td>
 									<td align="center"><?php echo $ivrdatetimestatus[2]; ?></td> 
 									<!-- <td align="center"><a href="<?php echo ISP :: AdminUrl('index.php?dir=staff&task=edit-staff&id='.$objRow->id);?>">View</a></td>-->
 									<td align="center"><a href="#" onclick="viewlog('<?php echo ISP :: AdminUrl('reports/report_ivr_log/?staffid='.$objRow->username);?>')">View</a></td>
@@ -770,7 +770,7 @@ $(document).ready(function() {
 									<td align="center"><?php echo $objRow->username;?></td>             
 									 <td align="center"><?php echo $objRow->f_name.' '.$objRow->l_name;?></td>              
 									<td align="center"><?php echo $ivrdatetimestatus[0];?></td>
-									<td align="center"><?php echo $ivrdatetimestatus[1];?></td>
+									<td align="center"><?php echo date('h:i A',strtotime($ivrdatetimestatus[1]));?></td>
 									<td align="center"><?php echo $ivrdatetimestatus[2]; ?></td> 
 									<!-- <td align="center"><a href="<?php echo ISP :: AdminUrl('index.php?dir=staff&task=edit-staff&id='.$objRow->id);?>">View</a></td>-->
 									<td align="center"><a href="#" onclick="viewlog('<?php echo ISP :: AdminUrl('reports/report_ivr_log/?staffid='.$objRow->username);?>')">View</a></td>
@@ -785,7 +785,7 @@ $(document).ready(function() {
 									<td align="center"><?php echo $objRow->username;?></td>             
 									 <td align="center"><?php echo $objRow->f_name.' '.$objRow->l_name;?></td>              
 									<td align="center"><?php echo $ivrdatetimestatus[0];?></td>
-									<td align="center"><?php echo $ivrdatetimestatus[1];?></td>
+									<td align="center"><?php echo date('h:i A',strtotime($ivrdatetimestatus[1]));?></td>
 									<td align="center"><?php echo $ivrdatetimestatus[2]; ?></td> 
 									<!-- <td align="center"><a href="<?php echo ISP :: AdminUrl('index.php?dir=staff&task=edit-staff&id='.$objRow->id);?>">View</a></td>-->
 									<td align="center"><a href="#" onclick="viewlog('<?php echo ISP :: AdminUrl('reports/report_ivr_log/?staffid='.$objRow->username);?>')">View</a></td>
@@ -799,10 +799,10 @@ $(document).ready(function() {
                                 <td align="center"><?php echo $objRow->username;?></td>             
                                  <td align="center"><?php echo $objRow->f_name.' '.$objRow->l_name;?></td>              
                                 <td align="center"><?php echo $ivrdatetimestatus[0];?></td>
-                                <td align="center"><?php echo $ivrdatetimestatus[1];?></td>
+                                <td align="center"><?php echo date('h:i A',strtotime($ivrdatetimestatus[1]));?></td>
                                 <td align="center">
                                 <?php
-                                echo $ivrdatetimestatus[2];
+                               echo $ivrdatetimestatus[2];
                                 //echo strftime('%b, %d %Y', $log['time_stamp']);?> <?php //echo ucfirst($log['clock_action_description']);?>
                                 </td> 
                                 <!-- <td align="center"><a href="<?php echo ISP :: AdminUrl('index.php?dir=staff&task=edit-staff&id='.$objRow->id);?>">View</a></td>-->
@@ -1139,12 +1139,37 @@ $(document).ready(function() {
 protected function admin_property_report($objRs)
    {
    ?> 
-<!--<script type="text/javascript">
-$(document).ready(function() {
-    $('.datatable').dataTable( {} );
-} );
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('.export_props').click(function(){
+				var pids = $('.propcheck:checked').map(function() {
+    			return this.value;
+				}).get().join(',');
+				//alert(pids + "ddd");
+				if(pids != ''){
+					$('.export_props').attr('href', '<?php echo ISP :: AdminUrl('reports/direct/');?>?cjid='+pids); 
+				}
+				return true;
+			});
+	});	
+    /*$('.datatable').dataTable( {} );
+	} );
+	function exportmultipleproperties()
+	{
+		alert("in");
+		var uid = $('#propexp').val();
+		alert("ddd" + uid);
+		$.ajax({
+				method: "POST",
+				url: "<?php echo ISP :: AdminUrl('reports/propexport/');?>",
+				data: { uid: uid }
+			 })
+		  .done(function(response) { alert(response + "done!");
+		});
+		return false;
+	}*/
 </script>      
-<div id="content">			   
+<!--<div id="content">			   
   <div class="container">	
   <h4 class="text-left heding_6">Report Types</h4>
 	<ul id="breadcrumbs" class="breadcrumb">
@@ -1245,7 +1270,7 @@ $(document).ready(function() {
         <!--<h4 class="text-left heding_6">Manage Properties</h4>-->
         <div class="widget box box-vas">							 							           
           <div class="widget-content widget-content-vls">
-          <?php  if(isset($_POST['btn_export'])) {//print_r($_POST['delete']); die;
+          <?php  if(isset($_POST['btn_export'])) {print_r($_POST['delete']); die;
 			   	$this->direct($_POST['delete']);
 		  }?>                                             
             <form method="post" name="frmListing" action=""> 
@@ -1259,7 +1284,8 @@ $(document).ready(function() {
                 <input type="submit" class="btn btn-warning btn-ms" name="btn_UnPublish" value="Unpublish" onclick="document.frmListing.status.value='0';" />                           
                 <input type="submit" class="btn btn-danger btn-ms" name="btn_delete" value="Delete" onclick="document.frmListing.status.value='-1';" />-->                
               
-             	<input type="submit" class="btn btn-info" name="btn_export" value="Export" onclick="document.frmListing.status.value='export';">
+             	<!--<input type="submit" class="btn btn-info" name="btn_export" value="Export" onclick="exportmultipleproperties()">-->
+                <a href="<?php echo ISP :: AdminUrl('reports/direct/');?>" class="btn btn-info export_props">Export</a>	
              	<!--<a href="javascript: void(0);" onclick="exportTableToCSV.apply(this, [$('#dataTables-example'), 'export-joblocations.csv']);" class="btn btn-info">Export</a>-->									               
                
             </div>                                                 
@@ -1300,7 +1326,7 @@ $(document).ready(function() {
                                     			?>         			                   
                   <tr>
                   <td><?php echo $intI-1;?></td>
-                   <td align="center" class="hideexport divchecker"><input type="checkbox" class="uniform" name="delete[]" value="<?php echo $objRow->id;?>"  /></td> 
+                   <td align="center" class="hideexport divchecker"><input type="checkbox" class="uniform propcheck" name="delete[]" value="<?php echo $objRow->id;?>" /></td> 
                       <td><?php echo $objRow->job_listing;?>
                       <br> <br>
                      <!-- <a class="btn btn-danger btn-ms" href="<?php echo ISP :: AdminUrl('property/job-history/id/'.$objRow->id);?>">History</a>-->
@@ -1371,10 +1397,10 @@ protected function admin_property_jobHistory($objRs1, $objRow)
 $(document).ready(function() {
     $('.datatable').dataTable( {} );
 } );
-</script>      
+</script> -->     
 <div id="content">			   
   <div class="container">	
-  <div class="crumbs">
+ <!-- <div class="crumbs">
 	<ul id="breadcrumbs" class="breadcrumb">
 		<li>
 			<i class="icon-home"></i>
@@ -1437,7 +1463,7 @@ $(document).ready(function() {
                       <!--td><?php echo $objRow->importent_notes;?></td-->
                       <td><?php echo $this->objFunction->iFind(TBL_SERVICE,'name', array('id'=>$objRow->location_id));?>                      
                       </td>                                    
-                     <td align="center" class="hideexport"><?php echo $objRow->completion_date;?></td>
+                     <td align="center" class="hideexport"><?php echo date('Y-m-d h:i A',strtotime($objRow->completion_date));?></td>
                      <td align="center" class="hideexport"><a href="<?php echo ISP :: AdminUrl('reports/reset-property/id/'.$objRow->id);?>">Reset</a></td>                               
                    </tr>                            
          
@@ -1452,7 +1478,8 @@ $(document).ready(function() {
                     <th align="center"  data-class="expand">Job Started On</th>								                     
                     <th align="center" data-hide="phone">Job Started By</th>                                     
                     <th align="center" data-hide="phone">Completed On</th>                                     
-                    <th align="center" data-class="expand">Completed By</th>                                     
+                    <th align="center" data-class="expand">Completed By</th>                      
+                    <th align="center" data-class="expand">Uploaed Images</th>                                     
                           
                   </tr>						                 
                 </thead>						                 
@@ -1463,7 +1490,7 @@ $(document).ready(function() {
 			 $intI=1;
 			 
 			  while($objRow1 = $objRs1->fetch_object())  // Fetch the result in the object array
-			  {
+			  { //print_r($objRow1);
     				if($intI++%2==0)  // Condition for alternate rows color
     				   $strCss='evenTr';
     				else
@@ -1472,13 +1499,26 @@ $(document).ready(function() {
                                     			?>         			                   
                   <tr>
                   <td><?php echo $intI-1;?></td>
-                      <td><?php echo $objRow1->start_date;?></td> 
+                      <td><?php echo date('Y-m-d h:i A', strtotime($objRow1->start_date));?></td> 
                       <td><?php $rowD = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow1->started_by)); echo $rowD[0]->f_name.' '.$rowD[0]->l_name;?></td>
                       <td><?php 
                       if($objRow1->closed_by>0){
-                      echo $objRow1->closing_date; } else echo 'In Progress';?></td>
+                      echo date('Y-m-d h:i A', strtotime($objRow1->closing_date)); } else echo 'In Progress';?></td>
                       <td>
                       <?php if($objRow1->closed_by>0){ $rowD = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow1->closed_by)); echo $rowD[0]->f_name.' '.$rowD[0]->l_name; } else echo 'N/A'; ?></td>
+                      <td>
+                      	<?php //echo SITE_URL.'upload/'.$objRow1->Images; 
+						if ($objRow1->Images != '' && strpos($objRow1->Images, ',') !== false) { 
+						$simg = explode(',', $objRow1->Images);
+						foreach($simg as $si){ echo '<img src="'.SITE_URL.'/upload/'.$si.'">&nbsp;&nbsp;&nbsp;';
+						}
+						}
+						elseif ($objRow1->Images != '' && strpos($objRow1->Images, ',') === false)
+						{
+							echo '<img src="'.SITE_URL.'/upload/'.$objRow1->Images.'">';
+						}
+						else { echo '&nbsp;';}?>
+                      </td>
                      </tr>                            
 <?php
 			   }
@@ -1500,9 +1540,9 @@ $(document).ready(function() {
       </div>				                                       
     </div>				     
     <!-- /Normal --> 			   
-   <!--</div>			   
-  /.container  		 
-</div>-->
+   </div>			   
+  <!--/.container -->
+</div>
 <?php 
    }  // End of Function 
    protected function admin_piechartuserdetails($objRs)
@@ -1569,7 +1609,7 @@ $(document).ready(function() {
                                 <td align="center"><?php echo $objRow->username;?></td>             
                                  <td align="center"><?php echo $objRow->f_name.' '.$objRow->l_name;?></td>              
                                 <td align="center"><?php echo $ivrdatetimestatus[0];?></td>
-                                <td align="center"><?php echo $ivrdatetimestatus[1];?></td>
+                                <td align="center"><?php echo date('h:i A',strtotime($ivrdatetimestatus[1]));?></td>
                                 <td align="center">
                                 <?php
                                 echo $ivrdatetimestatus[2];
@@ -2060,6 +2100,18 @@ protected function showFormSubmission($objRow, $formControls, $form_token, $post
     
  protected function exportReports($export_file) {
 ?>
+<link rel="stylesheet" type="text/css" href="<?php echo SITE_URL;?>assets/css/dp/jquery.datetimepicker.css"/>
+<script src="<?php echo SITE_URL;?>assets/js/dp/jquery.datetimepicker.full.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+	$('.datetimepicker').datetimepicker();
+	$('.cdaterange').click(function(){
+			var id = $(this).val();
+			$('#'+id).show();
+		});
+   // $('.datatable').dataTable( {} );
+} ); 
+</script>
 <form method="post">
 <!--<div id="content">      
 	 <div class="container"> 
@@ -2112,7 +2164,7 @@ protected function showFormSubmission($objRow, $formControls, $form_token, $post
 						<div class="form_holder">
 							<fieldset>
 								<legend>Select what you want to export</legend>
-								<table class="table table-striped table-bordered table-hover table-checkable table-responsive datatable">
+								<table class="table table-striped table-bordered table-hover table-checkable table-responsive">
 									<tr>
 										<!--<td>
 											<input type="checkbox" class="uniform" value="all_reports" name="export[]">Export All Reports
@@ -2144,16 +2196,21 @@ protected function showFormSubmission($objRow, $formControls, $form_token, $post
                         <div class="form_holder">
                             <fieldset id="individual_report" style="display: none;">
 								<legend>Select Individual Report to export</legend>
-								<table class="table table-striped table-bordered table-hover table-checkable table-responsive datatable">
+								<table class="table table-striped table-bordered table-hover table-checkable table-responsive">
 									<tr>
 										<td>
-											<select name="duration_individual_report">
+											<select name="duration_individual_report" class="cdaterange">
                                                 <option value="">Select Duration</option>
                                                 <option value="7">Last 7 days</option>
                                                 <option value="15">Last 15 days</option>
                                                 <option value="30">Last 1 Month</option>
+                                                <option value="i-rep-date">Custom</option>
                                             </select>
 										</td>
+                                        <td id="i-rep-date" style="display:none;">
+                                           <input type="text" class="datetimepicker" name="idate_from" placeholder="From" value="" />
+                        <input type="text" class="datetimepicker" name="idate_to" placeholder="To" value="" />
+                                        </td>
 										<td>
                                             <select name="report_individual_report">
                                                 <?php echo $this->objFunction->reportsDropDown();?>
@@ -2166,33 +2223,42 @@ protected function showFormSubmission($objRow, $formControls, $form_token, $post
 
                             <fieldset id="allstate_report" style="display: none;">
 								<legend>All States Report to export</legend>
-								<table class="table table-striped table-bordered table-hover table-checkable table-responsive datatable">
+								<table class="table table-striped table-bordered table-hover table-checkable table-responsive">
 									<tr>
 										<td>
-											<select name="duration_allstate_report">
+											<select name="duration_allstate_report" class="cdaterange">
                                                 <option value="">Select Duration</option>
                                                 <option value="7">Last 7 days</option>
                                                 <option value="15">Last 15 days</option>
                                                 <option value="30">Last 1 Month</option>
+                                                <option value="as-rep-date">Custom</option>
                                             </select>
-										</td>               
+										</td>
+                                        <td id="as-rep-date" style="display:none;">
+                                           <input type="text" class="datetimepicker" name="asdate_from" placeholder="From" value="" />
+                        <input type="text" class="datetimepicker" name="asdate_to" placeholder="To" value="" />
+                                        </td>               
 									</tr>              
                                 </table>                
 							</fieldset> 
                             
                             <fieldset id="singlelocation_report" style="display: none;">
 								<legend>Single Location Report to export</legend>
-								<table class="table table-striped table-bordered table-hover table-checkable table-responsive datatable">
+								<table class="table table-striped table-bordered table-hover table-checkable table-responsive">
 									<tr>
 										<td>
-											<select name="duration_singlelocation_report">
+											<select name="duration_singlelocation_report" class="cdaterange">
                                                 <option value="">Select Duration</option>
                                                 <option value="7">Last 7 days</option>
                                                 <option value="15">Last 15 days</option>
                                                 <option value="30">Last 1 Month</option>
+                                                <option value="sl-rep-date">Custom</option>
                                             </select>
 										</td>  
-
+										<td id="sl-rep-date" style="display:none;">
+                                           <input type="text" class="datetimepicker" name="sldate_from" placeholder="From" value="" />
+                        <input type="text" class="datetimepicker" name="sldate_to" placeholder="To" value="" />
+                                        </td>
                                         <td>
 											<select name="location_singlelocation_report">
                                               <?php echo $this->objFunction->locationDropdown(); ?>
@@ -2204,17 +2270,21 @@ protected function showFormSubmission($objRow, $formControls, $form_token, $post
                             
                             <fieldset id="manager_report" style="display: none;">
 								<legend>Manager Report to export</legend>
-								<table class="table table-striped table-bordered table-hover table-checkable table-responsive datatable">
+								<table class="table table-striped table-bordered table-hover table-checkable table-responsive">
 									<tr>
 										<td>
-											<select name="duration_manager_report">
+											<select name="duration_manager_report" class="cdaterange">
                                                 <option value="">Select Duration</option>
                                                 <option value="7">Last 7 days</option>
                                                 <option value="15">Last 15 days</option>
                                                 <option value="30">Last 1 Month</option>
+                                                <option value="m-rep-date">Custom</option>
                                             </select>
 										</td>  
-
+										<td id="m-rep-date" style="display:none;">
+                                           <input type="text" class="datetimepicker" name="mdate_from" placeholder="From" value="" />
+                        <input type="text" class="datetimepicker" name="mdate_to" placeholder="To" value="" />
+                                        </td>
                                         <td>
 											<select name="staff_manager_id">
                                               <?php echo $this->objFunction->staffDropDown(); ?>
@@ -2223,6 +2293,7 @@ protected function showFormSubmission($objRow, $formControls, $form_token, $post
 									</tr>              
                                 </table>                
 							</fieldset>
+                            <input type="hidden" value="export-report" name="task">
                             <input type="submit" value="Export Report(s)" name="export_btn" class="btn btn-info">
                             <?php
                             if ($export_file != '') {
@@ -2234,11 +2305,11 @@ protected function showFormSubmission($objRow, $formControls, $form_token, $post
                         </div>
 					
                         <div class="form_holder">
-                         <table class="table table-striped table-bordered table-hover table-checkable table-responsive">
+                         <table class="table table-striped table-bordered table-hover table-checkable table-responsive datatable">
                           <thead class="cf">
                             <tr>  
                                 <th data-class="expand">File Name</th>
-                                <th>Creation Date</th>
+                                <th data-hide="phone">Creation Date</th>
                                 <th data-hide="phone">Download File</th>
                                 <th data-hide="phone">Remove File</th>
                             </tr>
@@ -2352,7 +2423,7 @@ protected function SessionSeasonReset($objRs) {
                                 ?>         			                   
                                 <tr>
                                 <td><?php echo $objRow->filename; ?></td>
-                                <td><?php echo $objRow->creation_date; ?></td>
+                                <td><?php echo date('Y-m-d h:i A', strtotime($objRow->creation_date)); ?></td>
                                 <td><a target="_blank" href="<?php echo SITE_URL; ?>sessionzip/<?php echo $objRow->filename;?>">Download</a></td>
                                 <td><a href="<?php echo ISP :: AdminUrl();?>/index.php?dir=reports&task=removesessionzip&file=<?php echo $objRow->filename; ?>" onclick="return confirm('Are you sure to Delete the file permanently?');">Remove</a></td>                        
                                 </tr>                            
@@ -2481,7 +2552,7 @@ $(document).ready(function() {
                                 ?>         			                   
                                 <tr>
                                 <td><?php echo $objRow->filename; ?></td>
-                                <td><?php echo $objRow->creation_date; ?></td>
+                                <td><?php echo date('Y-m-d h:i A', strtotime($objRow->creation_date)); ?></td>
                                 <td><a target="_blank" href="<?php echo SITE_URL; ?>seasonzip/<?php echo $objRow->filename;?>">Download</a></td>
                                 <td><a href="<?php echo ISP :: AdminUrl();?>/index.php?dir=reports&task=removeseasonzip&file=<?php echo $objRow->filename; ?>" onclick="return confirm('Are you sure to Delete the file permanently?');">Remove</a></td>                        
                                 </tr>                            
@@ -2491,7 +2562,7 @@ $(document).ready(function() {
 								{ ?>
 									<tr>
                                 <td><?php echo $objRow->filename; ?></td>
-                                <td><?php echo $objRow->creation_date; ?></td>
+                                <td><?php echo date('Y-m-d h:i A', strtotime($objRow->creation_date)); ?></td>
                                 <td><a target="_blank" href="<?php echo SITE_URL; ?>seasonzip/<?php echo $objRow->filename;?>">Download</a></td>
                                 <td><a href="<?php echo ISP :: AdminUrl();?>/index.php?dir=reports&task=removeseasonzip&file=<?php echo $objRow->filename; ?>" onclick="return confirm('Are you sure to Delete the file permanently?');">Remove</a></td>                        
                                 </tr> 
@@ -2515,6 +2586,119 @@ $(document).ready(function() {
 </div>-->
 <?php      
     }
+
+protected function admin_completedProperties($objRs)
+{
+   ?> 
+<script type="text/javascript">
+$(document).ready(function() {
+    $('.datatable').dataTable( {} );
+} );
+</script>      
+<div id="content">			   
+  <div class="container">	
+  <div class="crumbs">
+	<ul id="breadcrumbs" class="breadcrumb">
+		<li>
+			<i class="icon-home"></i>
+			<a href="<?php echo ISP::AdminUrl('dashboard/admin_dashboard/');?>">Dashboard</a>
+		</li>
+    <li>
+			<i class="current"></i>
+			<a href="#">Manage Jobs</a>
+		</li>
+		<li class="current">
+			<a href="#" title="">Completed Jobs</a>
+		</li>
+	</ul>
+</div>
+			     
+    <!--=== Normal ===--> 				     
+    <div class="row">					       
+      <div class="col-md-12">						         
+        <h4 class="text-left heding_6">Completed Jobs</h4>						         
+        <div class="widget box box-vas">							 							           
+          <div class="widget-content widget-content-vls">                                             
+            <form method="post" name="frmListing"> 
+            <div class="col-md-12 text-right" style="padding-bottom:10px">
+            
+              <span>
+                <a href="<?php echo ISP :: AdminUrl('reports/reset-all-property/');?>" onclick="return confirm('Are you sure, you want to Reset All results?\n\nThis step can not be Undone. Please use carefully.');" class="btn btn-danger btn-ms">Reset All</a>									               
+                <a href="javascript: void(0);" onclick="exportTableToCSV.apply(this, [$('#dataTables-example'), 'export-joblocations.csv']);" class="btn btn-info">Export</a>									               
+              </span> 
+            </div>                                                 
+              <table class="table table-striped table-bordered table-hover table-checkable table-responsive datatable">                                                     
+                <thead class="cf">							                   
+                  <tr>                                     
+                    <th align="center">S.N.</th>								                     
+                    <th align="center"  data-class="expand">Job Location</th>								                     
+                    <th align="center" data-hide="phone">Address</th>                                     
+                    <th align="center" data-hide="phone">Assigned To</th>                                     
+                    <th align="center" data-hide="phone">Phone Number</th>                                     
+                    <th align="center" data-hide="phone">Important Notes</th>                                     
+                    <th align="center" data-hide="phone">Assigned Location</th>                                                    
+                                                         
+                    <th align="center" data-hide="phone" class="hideexport">Completion Date</th>                                                                                                                                                                                                                                                                                               
+				            <th align="center" data-hide="phone" class="hideexport">Action</th>       
+                  </tr>						                 
+                </thead>						                 
+                <tbody>                       
+<?php
+			
+			if($objRs): // Check for the resource exists or not
+			 $intI=1;
+			 
+			  while($objRow = $objRs->fetch_object())  // Fetch the result in the object array
+			  {
+			    $strStatus = ($objRow->status)?'0':'1';
+				
+				if($intI++%2==0)  // Condition for alternate rows color
+				   $strCss='evenTr';
+				else
+				   $strCss='oddTr';
+				
+                                    			?>         			                   
+                  <tr>
+                  <td><?php echo $intI-1;?></td>
+                      <td><?php echo $objRow->job_listing;?></td> 
+                      <td><?php echo $objRow->location_address;?></td>
+                      <td><?php
+                      $rowD = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow->assigned_to));
+                      echo $rowD[0]->f_name.' '.$rowD[0]->l_name;?>
+                      </td>
+                      <td><?php echo $objRow->phn_no;?></td> 
+                      <td><?php echo $objRow->importent_notes;?></td>
+                      <td><?php
+                      echo $this->objFunction->iFind(TBL_SERVICE,'name', array('id'=>$objRow->location_id));
+                      ?>                      
+                      </td>                                    
+                     <td align="center" class="hideexport"><?php echo $objRow->completion_date;?></td>
+                     <td align="center" class="hideexport"><a href="<?php echo ISP :: AdminUrl('reports/reset-property/id/'.$objRow->id);?>">Reset</a></td>                               
+                   </tr>                            
+<?php
+			   }
+?>                            
+                </tbody>                       
+              </table>             
+                              
+<?php
+			 else:
+			       echo '<tr><td colspan="5" class="errNoRecord">No Record Found!</td></tr>';
+			 endif;  
+                            			 ?>                          
+              <input type="hidden" name="status" value="1" />                       
+              <input type="hidden" name="task" value="modifyjoblocation" />                   
+            </form>						 		           
+          </div>						         
+        </div>					       
+      </div>				                                       
+    </div>				     
+    <!-- /Normal --> 			   
+  </div>			   
+  <!-- /.container --> 		 
+</div>
+<?php 
+   }  // End of Function
    
 } // End of Class
 ?>

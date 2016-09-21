@@ -152,11 +152,11 @@ class staff extends STAFF_HTML_CONTENT
 				$file = $_FILES['md_file']['tmp_name'];
 				$handle = fopen($file, "r");
 				$i = 0;
-				while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+				while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) { 
 					if ($i > 0) {
-						$objStaffRole = $this->objDatabase->fetchRows("SELECT * FROM " . TBL_STAFFTYPE . " where LOWER(label) = '" . strtolower($data[7]) . "'");
+						$objStaffRole = $this->objDatabase->fetchRows("SELECT * FROM " . TBL_STAFFTYPE . " where LOWER(label) = '" . strtolower($data[6]) . "'");
 						$data[5] = md5($data[5]);
-						$import = "INSERT into " . $tbl . "(site_id, username, ivr_staff_id, f_name,l_name,email,phone,password, user_type) values('" . $_SESSION['site_id'] . "', '$data[0]', '" . addslashes($data[1]) . "','" . addslashes($data[2]) . "','$data[3]','$data[4]','$data[5]', '" . $objStaffRole->id . "')";
+						$import = "INSERT into " . $tbl . "(site_id, username, f_name, l_name, email, phone, password, user_type) values('" . $_SESSION['site_id'] . "', '$data[0]', '" . addslashes($data[1]) . "','" . addslashes($data[2]) . "','$data[3]','$data[4]','$data[5]', '" . $objStaffRole->id . "')";
 						$this->objDatabase->dbQuery($import);
 					}
 
@@ -228,7 +228,7 @@ class staff extends STAFF_HTML_CONTENT
 				$this->intId = $this->objDatabase->insertForm($tbl); //Insert new content in table
 				if ($this->intId) {
 					//$this->objFunction->showMessage('Record has been added successfully.', $_SERVER['REQUEST_URI']); //Function to show the message
-					return '<h3>Record has been updated successfully.</h3>';
+					return '<h3>User has been added Successfully.</h3>';
 				}
 				else {
 					$this->objFunction->filterPosted();
