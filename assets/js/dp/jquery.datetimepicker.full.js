@@ -1149,7 +1149,7 @@ var DateFormatter;
 
 		withoutCopyright: true,
 		inverseButton: false,
-		hours12: false,
+		hours12: true,
 		next: 'xdsoft_next',
 		prev : 'xdsoft_prev',
 		dayOfWeekStart: 0,
