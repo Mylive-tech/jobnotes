@@ -272,6 +272,8 @@ elseif($action == 'file_upload') {
             	$objDatabase->dbQuery("UPDATE ".TBL_JOBLOCATION." set user_gallery= CONCAT(user_gallery,',', '".$name."') where id='".$_REQUEST['pid']."'");
 			else
 				$objDatabase->dbQuery("UPDATE ".TBL_JOBLOCATION." set user_gallery= '".$name."' where id='".$_REQUEST['pid']."'");
+			
+			$objDatabase->dbQuery("INSERT INTO ".TBL_STAFF_UPLOADED_PROPERTY_IMAGES." (staff_id, prop_id, date, images) values('".$_REQUEST['uid']."','".$_REQUEST['pid']."','".date('Y-m-d')."','".$name."')");
             //$objDatabase->dbQuery("UPDATE ".TBL_JOBLOCATION." set user_gallery= CONCAT(user_gallery,',', '".$name."') where id='".$_REQUEST['pid']."'");
             echo json_encode(array("status"=>true , "message"=>"Image has been uploaded successfully", "result"=>"sucess"));
 			//echo 'success';   
@@ -333,8 +335,8 @@ elseif($action == 'save_report') {
         }
     }
     $postedValues = json_encode($post);
-    "INSERT INTO ".TBL_REPORTS_SUBMISSION." (report_id,location_id, property_id, form_values, submitted_by) values('".$post['rid']."','".$post['db_location']."', '".$post['db_property']."', '".$postedValues."','".$post['user_id']."')";
-    $objDatabase->dbQuery("INSERT INTO ".TBL_REPORTS_SUBMISSION." (report_id,location_id, property_id, form_values, submitted_by) values('".$post['rid']."','".$post['db_location']."', '".$post['db_property']."', '".$postedValues."','".$post['user_id']."')");
+    "INSERT INTO ".TBL_REPORTS_SUBMISSION." (report_id,location_id, property_id, form_values, submission_date, submitted_by) values('".$post['rid']."','".$post['db_location']."', '".$post['db_property']."', '".$postedValues."', '".date('Y-m-d H:i:s')."', '".$post['user_id']."')";
+    $objDatabase->dbQuery("INSERT INTO ".TBL_REPORTS_SUBMISSION." (report_id,location_id, property_id, form_values, submission_date, submitted_by) values('".$post['rid']."','".$post['db_location']."', '".$post['db_property']."', '".$postedValues."', '".date('Y-m-d H:i:s')."', '".$post['user_id']."')");
     $objDatabase->dbQuery("update ".TBL_REPORTS." set submissions=submissions+1 where report_id='".$post['rid']."'");
     $sendTo = $rs->send_to;
     $mailSubject = ($rs->mail_subject<>'')? $rs->mail_subject: 'Report Submission';
@@ -354,7 +356,7 @@ elseif($action == 'save_report') {
 }
 elseif($action == 'add_note')
 {
-	 $msg = $objDatabase->dbQuery("INSERT INTO ".TBL_PROPERTY_NOTES."(property_id, staff_id_or_admin, notes, date_added) values('".$_GET['pid']."', '".$_GET['uid']."', '".$_GET['note']."', '".date('Y-m-d h:i:s')."') ");
+	 $msg = $objDatabase->dbQuery("INSERT INTO ".TBL_PROPERTY_NOTES."(property_id, staff_id_or_admin, notes, date_added) values('".$_GET['pid']."', '".$_GET['uid']."', '".$_GET['note']."', '".date('Y-m-d H:i:s')."') ");
 	 if($msg)
 	 {
 	  	echo json_encode(array("status"=>true , "message"=>"Note has been added successfully", "result"=>"sucess"));

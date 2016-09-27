@@ -160,7 +160,12 @@ class JOBLOCATION extends JOBLOCATION_HTML_CONTENT
 		 {
 			$this->objDatabase->dbQuery("INSERT INTO ".TBL_STAFF_UPLOADED_PROPERTY_IMAGES." (staff_id, prop_id, date, images) values('".$_SESSION['adminid']."','".$_REQUEST['pid']."','".date('Y-m-d')."','".$galleryImages."')");
 		 }
-         $this->objDatabase->dbQuery("UPDATE ".TBL_JOBLOCATION." set user_gallery = CONCAT(user_gallery,',', '".$galleryImages."') where id='".$_REQUEST['pid']."'");
+		 $ugal = $this->objDatabase->dbQuery("select user_gallery from ".TBL_JOBLOCATION." where id='".$_REQUEST['pid']."'");
+		 if($ugal->num_rows != 0){
+			$this->objDatabase->dbQuery("UPDATE ".TBL_JOBLOCATION." set user_gallery = CONCAT(user_gallery,',', '".$galleryImages."') where id='".$_REQUEST['pid']."'");
+		 }else{
+			$this->objDatabase->dbQuery("UPDATE ".TBL_JOBLOCATION." set user_gallery = '".$galleryImages."' where id='".$_REQUEST['pid']."'");
+		 }
         $this->objFunction->__doRedirect('index.php?dir=property&task=view&id='.$_REQUEST['pid']);
          die();
      } 

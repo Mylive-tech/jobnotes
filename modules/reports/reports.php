@@ -178,19 +178,24 @@ class REPORT extends REPORT_HTML_CONTENT
 				{
 					if($_GET['propertyname'] != '')
 					{
-						$where .= " and job_listing = '".$_GET['propertyname']."'";
+						$where .= " and ".TBL_JOBLOCATION.".job_listing = '".$_GET['propertyname']."'";
 					}
 					if($_GET['locationname'] != '')
 					{
-						$where .= " and location_id = '".$_GET['locationname']."'";
+						$where .= " and ".TBL_JOBLOCATION.".location_id = '".$_GET['locationname']."'";
 					}
 					if($_GET['assignedto'] != '')
 					{
-						$where .= " and assigned_to = '".$_GET['assignedto']."'";
+						$where .= " and ".TBL_ASSIGN_PROPERTY.".user_id = '".$_GET['assignedto']."'";
 					}
 					//$strSql = "SELECT * FROM ".TBL_JOBLOCATION." where 1=1 and site_id='".$_SESSION['site_id']."'";
 				}
-			$strSql = "SELECT * FROM ".TBL_JOBLOCATION." $where";
+				if(isset($_GET['assignedto']) && $_GET['assignedto'] != '')
+				{
+					$strSql = "SELECT ".TBL_JOBLOCATION.".*, ".TBL_ASSIGN_PROPERTY.".* FROM ".TBL_JOBLOCATION." inner join ".TBL_ASSIGN_PROPERTY." on ".TBL_JOBLOCATION.".id=".TBL_ASSIGN_PROPERTY.".property_id $where";
+				}else{
+					$strSql = "SELECT * FROM ".TBL_JOBLOCATION." $where";
+				}
 			$this->objSet = $this->objDatabase->dbQuery($strSql);
 			parent :: admin_property_report($this->objSet ,'joblocation');
 	}
@@ -202,16 +207,25 @@ class REPORT extends REPORT_HTML_CONTENT
 			return $this->objSet;
 	}
 	
+	public function property_assign_details()
+	{
+			//$strSql = "SELECT * FROM ".TBL_JOBLOCATION." where 1=1 and site_id='".$_SESSION['site_id']."'";
+			$strSql = "SELECT DISTINCT(user_id) FROM ".TBL_ASSIGN_PROPERTY;
+			$this->objSet = $this->objDatabase->dbQuery($strSql);
+			return $this->objSet;
+	}
+	
 	public function resetProperty($id)
 	{
 		if ($id >0) {
-			$this->objDatabase->dbQuery("UPDATE ".TBL_JOBLOCATION." set progress='0', start_date='0000-00-00 00:00:00', completion_date='0000-00-00 00:00:00' where id='".$id."'");
+			$this->objDatabase->dbQuery("UPDATE ".TBL_JOBLOCATION." set progress='0', start_date='0000-00-00 00:00:00', pause_date='0000-00-00 00:00:00', completion_date='0000-00-00 00:00:00' where id='".$id."'");
 		}
 		else {
-			$this->objDatabase->dbQuery("UPDATE ".TBL_JOBLOCATION." set progress='0', start_date='0000-00-00 00:00:00', completion_date='0000-00-00 00:00:00'");
+			$this->objDatabase->dbQuery("UPDATE ".TBL_JOBLOCATION." set progress='0', start_date='0000-00-00 00:00:00', pause_date='0000-00-00 00:00:00', completion_date='0000-00-00 00:00:00'");
 		}
 		
 		$this->objFunction->showMessage('Record has been updated successfully.',ISP :: AdminUrl('reports/completed-properties')); 
+		//$this->objFunction->showMessage('Record has been updated successfully.',ISP :: AdminUrl('reports/manage-properties')); 
 	}
 	public function property_report_jobHistory()
 	{
@@ -826,7 +840,7 @@ class REPORT extends REPORT_HTML_CONTENT
                 $postedValues = json_encode($_POST);
 
             //echo "INSERT INTO ".TBL_REPORTS_SUBMISSION." (report_id,location_id, property_id, form_values,submitted_by) values('".$this->intId."','".$_REQUEST['db_location']."', '".$_REQUEST['db_property']."','".$postedValues."','".$_SESSION['adminid']."')";
-      			$this->objDatabase->dbQuery("INSERT INTO ".TBL_REPORTS_SUBMISSION." (report_id,location_id, property_id, form_values,submitted_by) values('".$this->intId."','".$_REQUEST['db_location']."', '".$_REQUEST['db_property']."', '".$postedValues."','".$_SESSION['adminid']."')");
+      			$this->objDatabase->dbQuery("INSERT INTO ".TBL_REPORTS_SUBMISSION." (report_id,location_id, property_id, form_values, submission_date, submitted_by) values('".$this->intId."','".$_REQUEST['db_location']."', '".$_REQUEST['db_property']."', '".$postedValues."', '".date('Y-m-d H:i:s')."', '".$_SESSION['adminid']."')");
       			$this->objDatabase->dbQuery("update ".TBL_REPORTS." set submissions=submissions+1 where report_id='".$this->intId."'");
                 $sendTo = $rs->send_to;
       			$mailSubject = $rs->mail_subject;
@@ -1306,13 +1320,13 @@ class REPORT extends REPORT_HTML_CONTENT
     parent::exportReports($export_file); 
  }
   public function exportReport() 
- {  
+ {   
     $export_file = '';
-    if (isset($_POST['export_btn']))
+    if (isset($_POST['task']))
     {
-        $export_reports = array();
-        $export_file = 'upload/zip/export-reports-'.date('Y-m-d').'.zip';
-		$status = '';
+        $export_reports = array(); $datet = str_replace(' ', '_', date('Y-m-d h:i:s'));
+        $export_file = 'upload/zip/export-reports-'.$datet.'.zip';
+		$status = ''; $flag = '';
         
        foreach ($_POST['export'] as $exportReport)
        {
@@ -1377,7 +1391,7 @@ class REPORT extends REPORT_HTML_CONTENT
              
              if($flag == 1){ 
                 $export_file = '';
-                echo "<script type=\"text/javascript\">window.alert('There are no reports matching your criteria');</script>";
+                /*echo "<script type=\"text/javascript\">window.alert('There are no reports matching your criteria');</script>";*/
              }
              else{
                 fileZip($export_reports, $export_file);
@@ -1472,7 +1486,7 @@ class REPORT extends REPORT_HTML_CONTENT
                }   
                if($flag == 1){
                   $export_file = '';
-                  echo "<script type=\"text/javascript\">window.alert('There are no reports matching your criteria');</script>";
+                 /* echo "<script type=\"text/javascript\">window.alert('There are no reports matching your criteria');</script>";*/
                }
                else{
                   fileZip($export_reports, $export_file);
@@ -1551,7 +1565,7 @@ class REPORT extends REPORT_HTML_CONTENT
                    $export_reports[] = $fileName;
                    if($flag == 1) {
                       $export_file = '';
-                      echo "<script type=\"text/javascript\">window.alert('There are no reports matching your criteria');</script>";
+                      /*echo "<script type=\"text/javascript\">window.alert('There are no reports matching your criteria');</script>";*/
                    }
                    else{
                       fileZip($export_reports, $export_file);
@@ -1630,17 +1644,24 @@ class REPORT extends REPORT_HTML_CONTENT
                }  
                if($flag == 1){
                   $export_file = '';
-                  echo "<script type=\"text/javascript\">window.alert('There are no reports matching your criteria');</script>";
+                 /* echo "<script type=\"text/javascript\">window.alert('There are no reports matching your criteria');</script>";*/
                }else{
                   fileZip($export_reports, $export_file);
 				  $status = 1;
                }
            }  
-       } 
-	   if($status == 1)
+       }
+	   if($status == 1){
+	  		echo $export_file; die; 
+	   }
+	   else
+	   {
+		   echo 0; die;
+	   }
+	   /*if($status == 1)
 	   		$this->objFunction->showMessage('Zip file created successfully.', ISP :: AdminUrl('reports/reportsmanager'));
 	   else
-			$this->objFunction->showMessage('There are no reports to export.', ISP :: AdminUrl('reports/reportsmanager'));
+			$this->objFunction->showMessage('There are no reports to export.', ISP :: AdminUrl('reports/reportsmanager'));*/
  }
  } 
     public function removeZip() {
@@ -2015,15 +2036,17 @@ class REPORT extends REPORT_HTML_CONTENT
 			$zip->close();
 			$fl_name = 'session_'.date('Y-m-d h:i:s').'.zip';
 			copy($zip_name, $_SERVER['DOCUMENT_ROOT'].'/sessionzip/'.$fl_name);
-			$this->objDatabase->insertQuery("insert into ".TBL_SESSION_RESET." (filename, creation_date) values('".$fl_name."', '".date('Y-m-d h:i:s')."')");
+			$this->objDatabase->insertQuery("insert into ".TBL_SESSION_RESET." (filename, creation_date) values('".$fl_name."', '".date('Y-m-d H:i:s')."')");
 			
 			//
 			foreach($pimg as $img){
-				unlink('upload/'.$img);
+				unlink($_SERVER['DOCUMENT_ROOT'].'/upload/'.$img);
 			}
-			$this->objDatabase->dbQuery("Update ".TBL_JOBLOCATION." set user_gallery = ''");
-			$this->objDatabase->dbQuery("Update ".TBL_STAFF_UPLOADED_PROPERTY_IMAGES." set Images = ''");
+			$this->objDatabase->dbQuery("Update ".TBL_JOBLOCATION." set user_gallery = '', importent_notes = '', progress='0', start_date='0000-00-00 00:00:00', pause_date='0000-00-00 00:00:00', completion_date='0000-00-00 00:00:00'");
+			$this->objDatabase->dbQuery("Truncate ".TBL_STAFF_UPLOADED_PROPERTY_IMAGES);
 			$this->objDatabase->dbQuery("Truncate ".TBL_REPORTS_SUBMISSION);
+			$this->objDatabase->dbQuery("Truncate ".TBL_PROPERTY_NOTES);
+			$this->objDatabase->dbQuery("Truncate ".TBL_JOBSTATUS);
 			//
 			
 			$this->objFunction->showMessage('Zip file created successfully.', ISP :: AdminUrl('reports/reportsmanager/'));
@@ -2082,7 +2105,7 @@ class REPORT extends REPORT_HTML_CONTENT
 			$zip->close();
 			$fl_name = 'season_'.date('Y-m-d h:i:s').'.zip';
 			copy($zip_name, $_SERVER['DOCUMENT_ROOT'].'/seasonzip/'.$fl_name);
-			$this->objDatabase->insertQuery("insert into ".TBL_SEASON_RESET." (filename, creation_date) values('".$fl_name."', '".date('Y-m-d h:i:s')."')");
+			$this->objDatabase->insertQuery("insert into ".TBL_SEASON_RESET." (filename, creation_date) values('".$fl_name."', '".date('Y-m-d H:i:s')."')");
 			/*if(file_exists($zip_name)){
 				header('Content-type: application/zip');
 				header('Content-Disposition: attachment; filename="'.$zip_name.'"');
@@ -2130,6 +2153,12 @@ class REPORT extends REPORT_HTML_CONTENT
 		$this->objSet = $this->objDatabase->dbQuery($strSql);
 		parent :: admin_completedProperties($this->objSet ,'joblocation');
 	} 
+	public function ugal()
+	{
+		$strsql = "select group_concat(user_gallery) as staffuploads from ".TBL_JOBLOCATION." where user_gallery != ''";
+		$objRow = $this->objDatabase->fetchRows($strsql);
+		return $objRow;
+	}
 } // End of Class
 
 

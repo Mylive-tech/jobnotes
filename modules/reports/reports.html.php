@@ -83,12 +83,31 @@ protected function listFormPostings($objRs)
 <?php   
    }
 protected function reportsmanager($objRs)
-   {
+   { 
 ?>
 <!--<link rel="stylesheet" type="text/css" href="<?php echo SITE_URL;?>assets/css/dp/jquery.datetimepicker.css"/>
 <script src="<?php echo SITE_URL;?>assets/js/dp/jquery.datetimepicker.full.js"></script>-->
   <script type="text/javascript">
   	$(document).ready(function() {
+		
+		$(document).on('submit', '#exportform', function(){//alert('ddddd');
+			$("#report_content").html('<div class="rpt_loader"><img src="<?php echo SITE_URL.'/assets/img/ajax-loader.gif' ?>" /></div>');
+		$.ajax({type: "POST", url: '<?php echo ISP :: AdminUrl('reports/export-report/');?>', data: $(this).serialize(), success: function(response){ //alert(response);
+					if(response == 0)
+					{
+						alert("There are no reports matching your criteria");
+					}					
+          	 		$.ajax({async: false , url: '<?php echo ISP :: AdminUrl('reports/export-reports/');?>', success: function(result){$("#report_content").html(result);}});
+					$('#download_link').attr('href','<?php echo SITE_URL;?>'+response);
+					if(response != 0){
+                   		$('#download_link')[0].click();
+						return false;
+					}
+       			}
+			});
+			return false;
+		});
+		
         $('.otherreportstabs').click(function(){
 				title = $(this).attr('title');
 				$('.tab_bar a').removeClass('active');
@@ -109,7 +128,69 @@ protected function reportsmanager($objRs)
 			});
 		//$('.datetimepicker').datetimepicker();
 		$('.datatable').dataTable( {} );
+		$('.dropdown-toggle').click(function(){ alert("dddd");
+			$('.dropdown-toggle').dropdown();	
+		});
     });
+	function createsessionzip(taburl)
+	{
+		$("#report_content").html('<div class="rpt_loader"><img src="<?php echo SITE_URL.'/assets/img/ajax-loader.gif' ?>" /></div>');
+		$.ajax({url: taburl, success: function(result){ 
+          	 		$.ajax({url: '<?php echo ISP :: AdminUrl('reports/session_season_reset/');?>', success: function(result){$("#report_content").html(result);}});
+       			}
+			});
+			return false;
+	}
+	
+	function removesessionzip(taburl)
+	{
+		$("#report_content").html('<div class="rpt_loader"><img src="<?php echo SITE_URL.'/assets/img/ajax-loader.gif' ?>" /></div>');
+		$.ajax({url: taburl, success: function(result){ 
+          	 		$.ajax({url: '<?php echo ISP :: AdminUrl('reports/session_season_reset/');?>', success: function(result){$("#report_content").html(result);}});
+       			}
+			});
+			return false;
+	}
+	
+	function createseasonzip(taburl)
+	{
+		$("#report_content").html('<div class="rpt_loader"><img src="<?php echo SITE_URL.'/assets/img/ajax-loader.gif' ?>" /></div>');
+		$.ajax({url: taburl, success: function(result){
+          	 		$.ajax({url: '<?php echo ISP :: AdminUrl('reports/season_reset/');?>', success: function(result){$("#report_content").html(result);}});
+       			}
+			});
+			return false;
+	}
+	function removeseasonzip(taburl)
+	{
+		$("#report_content").html('<div class="rpt_loader"><img src="<?php echo SITE_URL.'/assets/img/ajax-loader.gif' ?>" /></div>');
+		$.ajax({url: taburl, success: function(result){
+          	 		$.ajax({url: '<?php echo ISP :: AdminUrl('reports/season_reset/');?>', success: function(result){$("#report_content").html(result);}});
+       			}
+			});
+			return false;
+	}
+	
+	function removeexportzip(taburl)
+	{
+		$("#report_content").html('<div class="rpt_loader"><img src="<?php echo SITE_URL.'/assets/img/ajax-loader.gif' ?>" /></div>');
+		$.ajax({url: taburl, success: function(result){
+          	 		$.ajax({url: '<?php echo ISP :: AdminUrl('reports/export-reports/');?>', success: function(result){$("#report_content").html(result);}});
+       			}
+			});
+			return false;
+	}
+	
+	function resetpropertydata(taburl)
+	{
+		$("#report_content").html('<div class="rpt_loader"><img src="<?php echo SITE_URL.'/assets/img/ajax-loader.gif' ?>" /></div>');
+		$.ajax({url: taburl, success: function(result){
+          	 		$.ajax({url: '<?php echo ISP :: AdminUrl('reports/property_report/');?>', success: function(result){$("#report_content").html(result);}});
+       			}
+			});
+			return false;
+	}
+	
   	function loadreportcontent(taburl)
 	{
 		$("#report_content").html('<div class="rpt_loader"><img src="<?php echo SITE_URL.'/assets/img/ajax-loader.gif' ?>" /></div>');
@@ -145,6 +226,8 @@ protected function reportsmanager($objRs)
           	 	$("#report_content").html(result);
        			}
 			});
+			return false;
+			
 		}
 		else if(reporttype == 'ivrlog')
 		{
@@ -152,6 +235,7 @@ protected function reportsmanager($objRs)
           	 	$("#report_content").html(result);
        			}
 			});
+			return false;
 		}
 		else if(reporttype == 'propertylog')
 		{
@@ -159,6 +243,7 @@ protected function reportsmanager($objRs)
           	 	$("#report_content").html(result);
        			}
 			});
+			return false;
 		}
 	}
 	function viewlog(logurl)
@@ -168,13 +253,37 @@ protected function reportsmanager($objRs)
           	 	$("#report_content").html(result);
        			}
 			});
+			return false;
+	}
+	function fn_exportreports(frmobj)
+	{
+		$("#report_content").html('<div class="rpt_loader"><img src="<?php echo SITE_URL.'/assets/img/ajax-loader.gif' ?>" /></div>');
+		$.ajax({type: "POST", url: '<?php echo ISP :: AdminUrl('reports/export-report/');?>', data: frmobj.serialize(), success: function(result){ alert(result); return false;
+          	 		$.ajax({url: '<?php echo ISP :: AdminUrl('reports/export-reports/');?>', success: function(result){$("#report_content").html(result);}});
+       			}
+			});
+			return false;
 	}
   </script>
   <?php $reportnames = $this->reportNames(); ?>
 <div id="content">
 <div class="container">
 <h4 class="text-left heding_6">Reports Manager</h4> 
-<!--<div class="tab_bar">-->
+<!--<div class="tab_bar">--> <?php /*$test = $this->ugal(); echo SITE_MEDIA . 'aa'; print_r($test);
+$pimg = explode(',', $test->staffuploads); print_r($pimg);
+		//while($objRow = $objRs->fetch_object())
+		{
+			//$pimg = explode(',', $objRow->Images);
+			foreach($pimg as $img){
+				if($img != '')
+					$filesarr[] = $img;
+			}
+		}foreach($pimg as $img){ echo SITE_MEDIA.$img;
+				if (file_exists(SITE_MEDIA.$img)) { echo SITE_MEDIA.$img;
+				unlink('upload/'.$img);
+			} else {echo 'noimage';}
+			}*/
+?>
           <div id="navbar" class="tab_bar navbar-collapse collapse">
             <ul class="nav navbar-nav">
             	<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Custom Reports<span class="caret"></span></a>
@@ -215,7 +324,7 @@ protected function reportsmanager($objRs)
     <div id="report_content">
         <?php 
         //custom reports
-        $objRs = $this->reportListing_default(); $rname = $objRs->fetch_object() ?>
+        $objRs = $this->reportListing_default();  $objRs1 = $this->reportListing_default(); $rname = $objRs1->fetch_object(); ?>
 <h2><?php echo $rname->report_name;?></h2>
 <div class="row">
 <div class="col-md-12">  
@@ -239,8 +348,8 @@ protected function reportsmanager($objRs)
              
             </tr>
           </thead>
-          <tbody>-->
-          <?php $thead = 0;
+          <tbody>--> 
+          <?php $thead = 0; //echo 'dddd'; print_r($objRs); print_r($objRs->fetch_object());
             while($objRow = $objRs->fetch_object())
             {
 				$thead++; 
@@ -258,9 +367,10 @@ protected function reportsmanager($objRs)
                     <tr>  
                          <th data-class="expand">Location</th>
                          <th data-hide="phone">Property</th>
-                         <?php foreach($fbody as $fb){ if($fb->label != ''){ ?>
+                         <?php foreach($fbody as $fb){ if($fb->field_type != 'fieldset'){
+						 if($fb->label != ''){ ?>
                              <th data-hide="phone"><?php if($fb->label == '') echo '&nbsp;'; else echo $fb->label;?></th>
-                         <?php } }?>
+                         <?php } } }?>
                          <th data-hide="phone">Name</th>
                          <th data-hide="phone">Date</th>
                    </tr>
@@ -271,10 +381,10 @@ protected function reportsmanager($objRs)
                 <tr>
                 	 <td><?php echo $locname[0]->name; ?></td>
                      <td><?php echo $propname[0]->job_listing; ?></td>
-                     <?php foreach($fdata as $key=>$val){
+                     <?php foreach($fdata as $key=>$val){  if( ($key != 'form_token') && ($key != 'send') ){
 						 if( in_array($key, $fields) === false ){ ?>
                               <td><?php if(is_array($val)) echo implode(',', $val);  else echo $val; ?></td>
-                         <?php } }?>
+                         <?php } } }?>
                     <!-- <td><?php echo $fdata->db_field_2; ?></td>
                      <td><?php echo $fdata->db_field_3; ?></td>
                      <td><?php echo $fdata->db_field_4; ?></td>
@@ -339,12 +449,16 @@ protected function reportListing($objRs)
 				print_r($fdata); echo '</pre>';*/
 				?>
                 <thead class="cf">
-                    <tr>  
+                    <tr> <?php if($objRow->report_name != 'Equip Problems to Report') { ?>
                          <th data-class="expand">Location</th>
                          <th data-hide="phone">Property</th>
-                         <?php foreach($fbody as $fb){ if($fb->label != ''){ ?>
+                         <?php } ?>
+                         <?php foreach($fbody as $fb){  if($fb->field_type != 'fieldset'){
+							 if($fb->label == ''){ ?>
+							 <!--th data-hide="phone">&nbsp;</th-->
+							 <?php } else { ?>
                              <th data-hide="phone"><?php echo $fb->label;?></th>
-                         <?php } }?>
+                         <?php } } }?>
                          <th data-hide="phone">Name</th>
                          <th data-hide="phone">Date</th>
                    </tr>
@@ -352,19 +466,26 @@ protected function reportListing($objRs)
                   <tbody>
                <?php endif;?>
                 <tr>
+                <?php if($objRow->report_name != 'Equip Problems to Report') { ?>
                 	 <td><?php echo $locname[0]->name; ?></td>
                      <td><?php echo $propname[0]->job_listing; ?></td>
-                     <?php foreach($fdata as $key=>$val){
-						 if( in_array($key, $fields) === false){ ?>
-                              <td><?php if(is_array($val)) echo implode(',', $val);  else echo $val; ?></td>
-                         <?php } }?>
+                     <?php } ?>
+                     <?php foreach($fdata as $key=>$val){ if( ($key != 'form_token') && ($key != 'send') ){
+						 if( in_array($key, $fields) === false){  ?>
+                              <td><?php 
+							  if($objRow->report_name == 'Subcontractors Equipment Usage' )
+							  {
+								  if($val == '') {echo '0';} else { echo $val;}
+							  }
+							  elseif(is_array($val)) echo implode(',', $val);  else echo $val; ?></td>
+                         <?php } } }?>
                     <!-- <td><?php echo $fdata->db_field_2; ?></td>
                      <td><?php echo $fdata->db_field_3; ?></td>
                      <td><?php echo $fdata->db_field_4; ?></td>
                      <td><?php echo $fdata->db_field_5; ?></td>
                      <td><?php echo $fdata->db_field_6; ?></td>-->
                      <td><?php echo $uname[0]->f_name . ' ' .$uname[0]->l_name; ?></td>
-                     <td><?php echo $date; ?></td>
+                     <td><?php echo date('Y-m-d h:i A', strtotime($date)); ?></td>
                 </tr>
                 
             <?php }
@@ -523,7 +644,10 @@ protected function admin_report_ivr_log($objRs) {
 <script src="<?php echo SITE_URL;?>assets/js/dp/jquery.datetimepicker.full.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
-	$('.datetimepicker').datetimepicker();
+	//$('.datetimepicker').datetimepicker();
+	$('.datetimepicker').datetimepicker({
+        format : 'Y-m-d h:i A'
+    });
    // $('.datatable').dataTable( {} );
 } ); 
 </script>         
@@ -646,7 +770,7 @@ $(document).ready(function() {
                           <tr> 
                             <td align="center"><?php echo $rowCount;?></td>             
                             <td align="center"><?php echo $log['date'];?></td>
-                            <td align="center"><?php echo $log['time_12_hour_clock'];?></td>
+                            <td align="center"><?php echo date('h:i A', $log['time_stamp']);?></td>
                             <td align="center"><?php echo ucfirst($log['clock_action_description']);?></td>
                           </tr>
                         <?php 
@@ -657,7 +781,7 @@ $(document).ready(function() {
                           <tr> 
                             <td align="center"><?php echo $rowCount;?></td>             
                             <td align="center"><?php echo $log['date'];?></td>
-                            <td align="center"><?php echo $log['time_12_hour_clock'];?></td>
+                            <td align="center"><?php echo date('h:i A', $log['time_stamp']);?></td>
                             <td align="center"><?php echo ucfirst($log['clock_action_description']);?></td>
                           </tr>
                         <?php
@@ -684,7 +808,7 @@ $(document).ready(function() {
         <option value="clock in" <?php if(isset($_GET['clock_action']) && $_GET['clock_action'] == 'clock in') echo 'selected="selected"';?>>Clock In</option>
         <option value="clock out" <?php if(isset($_GET['clock_action']) && $_GET['clock_action'] == 'clock out') echo 'selected="selected"';?>>Clock Out</option></select>
                         <input type="hidden" name="reporttype" id="reporttype" value="ivrlog" />
-                        <input type="button" name="s" id="s" value="Search" onclick="searchreportcontent('<?php echo ISP :: AdminUrl('reports/report_ivr_log/');?>')" />
+                        <input type="button" name="s" id="s" value="Search" onclick="searchreportcontent('<?php echo ISP :: AdminUrl('reports/report_ivr_log/');?>'); return false;" />
                     </form>
                     </p>
                 <table class="table table-striped table-bordered table-hover table-checkable table-responsive datatable" id="dataTables-example">                    
@@ -844,7 +968,12 @@ protected function admin_driver_report($objRs) {
 <script type="text/javascript">
 
 $(document).ready(function() {
-	$('.datetimepicker').datetimepicker();
+	//$('.datetimepicker').datetimepicker();
+	$('.datetimepicker').datetimepicker({
+        format : 'Y-m-d h:i A',
+		ampm: true,
+		use24hours: false,
+    });
     //$('.datatable').dataTable( {} );
 } ); 
 </script>         
@@ -915,7 +1044,7 @@ $(document).ready(function() {
         <input type="text" name="fname" id="fname" value="<?php if(isset($_GET['fname'])) echo $_GET['fname'];?>" placeholder="First Name" />
         <input type="text" name="lname" id="lname" value="<?php if(isset($_GET['lname'])) echo $_GET['lname'];?>" placeholder="Last Name" />
         <input type="hidden" name="reporttype" id="reporttype" value="driverlog" />
-        <input type="submit" name="s" id="s" value="Search" onclick="searchreportcontent('<?php echo ISP :: AdminUrl('reports/driver_report/');?>')" />
+        <input type="submit" name="s" id="s" value="Search" onclick="searchreportcontent('<?php echo ISP :: AdminUrl('reports/driver_report/');?>'); return false;" />
       </form></p>
         <div class="tabbable tabbable-custom">						
           <div class="widget box box-vas">							 							
@@ -1104,10 +1233,10 @@ $(document).ready(function() {
                             <tr> 
                                 <td align="center"><?php echo $i;?></td>             
                                 <td align="center"><?php echo $objRow->job_listing;?></td>              
-                                <td align="center"><?php echo $objRow->starting_date;?></td>              
-                                 <td align="center"><?php echo $objRow->closing_date;?></td>              
+                                <td align="center"><?php echo date('Y-m-d h:i A', strtotime($objRow->starting_date));?></td>              
+                                 <td align="center"><?php echo date('Y-m-d h:i A', strtotime($objRow->closing_date));?></td>              
                                 <td align="center">
-                                <?php $diff1 = strtotime($objRow->closing_date) - strtotime($objRow->start_date);
+                                <?php $diff1 = strtotime($objRow->closing_date) - strtotime($objRow->starting_date);
 								echo round($diff1/3600, 2);
                                 //echo strftime('%b, %d %Y', $log['time_stamp']);?> <?php //echo ucfirst($log['clock_action_description']);?>
                                 </td>                             
@@ -1252,18 +1381,18 @@ protected function admin_property_report($objRs)
         </select>
         <select name="assignedto" id="assignedto">
         	<option value="">Assigned to</option>
-             <?php $reportdetails = $this->property_report_details();
+             <?php $reportdetails = $this->property_assign_details();
 			while($rd = $reportdetails->fetch_object())  // Fetch the result in the object array
 			  {
-				  $staffname = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$rd->assigned_to));
-				  if($rd->assigned_to == $_GET['assignedto']) {$sel = 'selected="selected"';}
+				  $staffname = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$rd->user_id));
+				  if($rd->user_id == $_GET['assignedto']) {$sel = 'selected="selected"';}
 				  else {$sel='';}
-				 echo '<option value="'.$rd->assigned_to.'" '.$sel.'>'.$staffname[0]->f_name.' '.$staffname[0]->l_name.'</option>'; 
+				 echo '<option value="'.$rd->user_id.'" '.$sel.'>'.$staffname[0]->f_name.' '.$staffname[0]->l_name.'</option>'; 
 			  }
 			?>
         </select>
         <input type="hidden" name="reporttype" id="reporttype" value="propertylog" />
-        <input type="submit" name="s" id="s" value="Search" onclick="searchreportcontent('<?php echo ISP :: AdminUrl('reports/property_report/');?>')" />
+        <input type="submit" name="s" id="s" value="Search" onclick="searchreportcontent('<?php echo ISP :: AdminUrl('reports/property_report/');?>'); return false;" />
       </form></p>				     
     <div class="row">					       
       <div class="col-md-12">					         
@@ -1333,9 +1462,10 @@ protected function admin_property_report($objRs)
                       </td> 
                       <td><?php echo $objRow->location_address;?></td>
                       <td><?php
-                      if($objRow->assigned_to >0) {
-                        $rowD = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow->assigned_to));
-                        echo $rowD[0]->f_name.' '.$rowD[0]->l_name;  
+                      if($objRow->assigned_to != '') {
+                       // $rowD = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow->assigned_to));
+                        //echo $rowD[0]->f_name.' '.$rowD[0]->l_name;  
+						echo ucfirst(str_replace('_', ' ', $objRow->assigned_to));
                       }
                       else{
                         echo 'Unassigned';    
@@ -1463,8 +1593,14 @@ $(document).ready(function() {
                       <!--td><?php echo $objRow->importent_notes;?></td-->
                       <td><?php echo $this->objFunction->iFind(TBL_SERVICE,'name', array('id'=>$objRow->location_id));?>                      
                       </td>                                    
-                     <td align="center" class="hideexport"><?php echo date('Y-m-d h:i A',strtotime($objRow->completion_date));?></td>
-                     <td align="center" class="hideexport"><a href="<?php echo ISP :: AdminUrl('reports/reset-property/id/'.$objRow->id);?>">Reset</a></td>                               
+                     <td align="center" class="hideexport"><?php
+					 if($objRow->completion_date != '0000-00-00 00:00:00') 
+					 	echo date('Y-m-d h:i A',strtotime($objRow->completion_date));
+					 else
+					 	echo 'N/A';?></td>
+                     <td align="center" class="hideexport"><!--<a href="<?php echo ISP :: AdminUrl('reports/reset-property/id/'.$objRow->id);?>">Reset</a>-->
+                     <a onclick="resetpropertydata('<?php echo ISP :: AdminUrl('reports/reset-property/id/'.$objRow->id);?>'); return false;" href="javascript:void(0)">Reset</a>
+                     </td>                               
                    </tr>                            
          
                 </tbody>                       
@@ -1499,7 +1635,9 @@ $(document).ready(function() {
                                     			?>         			                   
                   <tr>
                   <td><?php echo $intI-1;?></td>
-                      <td><?php echo date('Y-m-d h:i A', strtotime($objRow1->start_date));?></td> 
+                      <td><?php
+					  if($objRow1->starting_date == '0000-00-00 00:00:00'){echo 'N/A';}
+					   else {echo date('Y-m-d h:i A', strtotime($objRow1->starting_date));}?></td> 
                       <td><?php $rowD = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow1->started_by)); echo $rowD[0]->f_name.' '.$rowD[0]->l_name;?></td>
                       <td><?php 
                       if($objRow1->closed_by>0){
@@ -1551,7 +1689,10 @@ $(document).ready(function() {
 						 ?> 
                  <script type="text/javascript">
 $(document).ready(function() {
-	$('.datetimepicker').datetimepicker();
+	//$('.datetimepicker').datetimepicker();
+	$('.datetimepicker').datetimepicker({
+        format : 'Y-m-d h:i A'
+    });
     $('.datatable').dataTable( {} );
 } ); 
 </script>         
@@ -2104,7 +2245,10 @@ protected function showFormSubmission($objRow, $formControls, $form_token, $post
 <script src="<?php echo SITE_URL;?>assets/js/dp/jquery.datetimepicker.full.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
-	$('.datetimepicker').datetimepicker();
+	//$('.datetimepicker').datetimepicker();
+	 $('.datetimepicker').datetimepicker({
+        format : 'Y-m-d h:i A'
+    });
 	$('.cdaterange').click(function(){
 			var id = $(this).val();
 			$('#'+id).show();
@@ -2112,7 +2256,7 @@ $(document).ready(function() {
    // $('.datatable').dataTable( {} );
 } ); 
 </script>
-<form method="post">
+<form method="post" id="exportform">
 <!--<div id="content">      
 	 <div class="container"> 
      <h4 class="text-left heding_6">Report Types</h4>
@@ -2294,7 +2438,8 @@ $(document).ready(function() {
                                 </table>                
 							</fieldset>
                             <input type="hidden" value="export-report" name="task">
-                            <input type="submit" value="Export Report(s)" name="export_btn" class="btn btn-info">
+                            <!--<input type="submit" value="Export Report(s)" name="export_btn" class="btn btn-info">-->
+							<input type="submit" value="Export Report(s)" name="export_btn" class="btn btn-info" id="expreportform">
                             <?php
                             if ($export_file != '') {
                             ?>
@@ -2324,9 +2469,11 @@ $(document).ready(function() {
                          ?>   
                             <tr>
                                 <td><?php echo $filename;?></td>
-                                <td><?php echo date("m/d/Y", strtotime(substr($filename, -14,-4)));?></td>
+                                <td><?php echo date("Y-m-d h:i A", strtotime(str_replace('_', ' ', substr($filename, 15,-4))));?></td>
                                 <td><a href="<?php echo SITE_URL.$file;?>" target="_blank">Download</a></td>
-                                <td><a onclick="return confirm('Are you sure to Delete the file permanently?');" href="<?php echo SITE_ADMINURL.'index.php?dir=reports&task=removezip&file='.$filename;?>">Remove</a></td>
+                                <td><!--a onclick="return confirm('Are you sure to Delete the file permanently?');" href="<?php echo SITE_ADMINURL.'index.php?dir=reports&task=removezip&file='.$filename;?>">Remove</a-->
+                                <a href="javascript:void(0)" onclick="removeexportzip('<?php echo SITE_ADMINURL.'index.php?dir=reports&task=removezip&file='.$filename;?>'); return false;">Remove</a>
+                                </td>
                             </tr>
                         <?php 
                                 }
@@ -2342,6 +2489,7 @@ $(document).ready(function() {
 	<!--</div>
 </div>-->
 </form>
+<a href="" id="download_link" style="display:none;"></a>
 <?php      
     }
 protected function SessionSeasonReset($objRs) {
@@ -2425,7 +2573,10 @@ protected function SessionSeasonReset($objRs) {
                                 <td><?php echo $objRow->filename; ?></td>
                                 <td><?php echo date('Y-m-d h:i A', strtotime($objRow->creation_date)); ?></td>
                                 <td><a target="_blank" href="<?php echo SITE_URL; ?>sessionzip/<?php echo $objRow->filename;?>">Download</a></td>
-                                <td><a href="<?php echo ISP :: AdminUrl();?>/index.php?dir=reports&task=removesessionzip&file=<?php echo $objRow->filename; ?>" onclick="return confirm('Are you sure to Delete the file permanently?');">Remove</a></td>                        
+                                <td><!--a href="<?php echo ISP :: AdminUrl();?>/index.php?dir=reports&task=removesessionzip&file=<?php echo $objRow->filename; ?>" onclick="return confirm('Are you sure to Delete the file permanently?');">Remove</a-->
+                                
+                                 <a href="javascript:void(0)" onclick="removesessionzip('<?php echo ISP :: AdminUrl();?>/index.php?dir=reports&task=removesessionzip&file=<?php echo $objRow->filename; ?>'); return false;">Remove</a>
+                                </td>                        
                                 </tr>                            
                                 <?php  
                                 }
@@ -2435,7 +2586,7 @@ protected function SessionSeasonReset($objRs) {
                                 ?>
                             </tbody>                       
                         </table> 
-                        <a class="btn btn-info" href="<?php echo ISP :: AdminUrl();?>index.php?dir=reports&task=sessionzip">Reset Session</a>
+                        <a class="btn btn-info" href="javascript:void(0)" onclick="createsessionzip('<?php echo ISP :: AdminUrl();?>index.php?dir=reports&task=sessionzip'); return false;">Reset Session</a>
                      <!--<form method="post" action="">
                      <input type="hidden" name="task" value="sessionzip" / >
                      <input type="submit" name="session_reset" id="session_reset" value="Reset Session" />
@@ -2554,7 +2705,10 @@ $(document).ready(function() {
                                 <td><?php echo $objRow->filename; ?></td>
                                 <td><?php echo date('Y-m-d h:i A', strtotime($objRow->creation_date)); ?></td>
                                 <td><a target="_blank" href="<?php echo SITE_URL; ?>seasonzip/<?php echo $objRow->filename;?>">Download</a></td>
-                                <td><a href="<?php echo ISP :: AdminUrl();?>/index.php?dir=reports&task=removeseasonzip&file=<?php echo $objRow->filename; ?>" onclick="return confirm('Are you sure to Delete the file permanently?');">Remove</a></td>                        
+                                <td><!--a href="<?php echo ISP :: AdminUrl();?>/index.php?dir=reports&task=removeseasonzip&file=<?php echo $objRow->filename; ?>" onclick="return confirm('Are you sure to Delete the file permanently?');">Remove</a-->
+                                
+                                 <a href="javascript:void(0)" onclick="removeseasonzip('<?php echo ISP :: AdminUrl();?>/index.php?dir=reports&task=removeseasonzip&file=<?php echo $objRow->filename; ?>'); return false;">Remove</a>
+                                </td>                        
                                 </tr>                            
                                 <?php endif;
 								}
@@ -2564,7 +2718,9 @@ $(document).ready(function() {
                                 <td><?php echo $objRow->filename; ?></td>
                                 <td><?php echo date('Y-m-d h:i A', strtotime($objRow->creation_date)); ?></td>
                                 <td><a target="_blank" href="<?php echo SITE_URL; ?>seasonzip/<?php echo $objRow->filename;?>">Download</a></td>
-                                <td><a href="<?php echo ISP :: AdminUrl();?>/index.php?dir=reports&task=removeseasonzip&file=<?php echo $objRow->filename; ?>" onclick="return confirm('Are you sure to Delete the file permanently?');">Remove</a></td>                        
+                                <td><!--a href="<?php echo ISP :: AdminUrl();?>/index.php?dir=reports&task=removeseasonzip&file=<?php echo $objRow->filename; ?>" onclick="return confirm('Are you sure to Delete the file permanently?');">Remove</a-->
+                                <a href="javascript:void(0)" onclick="removeseasonzip('<?php echo ISP :: AdminUrl();?>/index.php?dir=reports&task=removeseasonzip&file=<?php echo $objRow->filename; ?>'); return false;">Remove</a>
+                                </td>                        
                                 </tr> 
 								<? }
                                 }
@@ -2577,7 +2733,7 @@ $(document).ready(function() {
                        <!-- <form action="" method="post" name="frmSeason">
                         	<input type="submit" class="btn btn-info" name="btn_season" value="Reset Season" onclick="document.frmSeason.status.value='season';"> 
                          </form>-->
-                        <a class="btn btn-info" href="<?php echo ISP :: AdminUrl();?>index.php?dir=reports&task=seasonzip">Reset Season</a>
+                        <a class="btn btn-info" href="javascript:void(0)" onclick="createseasonzip('<?php echo ISP :: AdminUrl();?>index.php?dir=reports&task=seasonzip'); return false;">Reset Season</a>
                     </div>                        
 				</div>                   
 			</div>            		
