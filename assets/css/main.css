@@ -3062,3 +3062,86 @@ body.modal-open {
     min-height: 150px;
     padding: 7px 5px;
 }
+
+/*Custom reports tab dropdown*/
+
+#content .container .tab_bar ul ul.customreports {
+	display:none;
+    -webkit-border-radius: 0px;
+    -moz-border-radius: 0px;
+    border-radius: 0px;
+    -webkit-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.07);
+    -moz-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.07);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.07);
+    font-size: 13px;
+    text-align: left;
+    background: #fff;
+    border: 1px solid #dcdcdc;
+    position: absolute;
+    z-index: 2;
+    width: 230px;
+}
+
+#content .container .tab_bar ul ul.customreports li {
+    display: block!important;
+    margin: 0px!important;
+}
+
+#content .container .tab_bar ul ul.customreports li a:hover {
+    background-color: #668eb0!important;
+    color: #fff!important;
+}
+#content .container .tab_bar ul ul.customreports li a {
+    background: transparent!important;
+    border: 0px!important;
+    width: 100%;
+    margin: 0px;
+}
+#content .container .tab_bar ul ul.customreports li a:active, #content .container .tab_bar ul ul.customreports li a:focus, #content .container .tab_bar ul ul.customreports li a:hover {
+    text-decoration: none;
+}
+
+#content .container .tab_bar ul ul.customreports li a.active {
+    display: inline-block;
+    padding: 5px 10px;
+    background: none #668EB0 !important;
+    border: 1px solid #668EB0;
+    font-size: 13px;
+    color: #fff;
+    text-decoration: none;
+}
+#content .container .tab_bar ul ul.customreports li a.active::after {
+     border-color: none !important;
+    border-style: none !important;
+    border-width: 0;
+    bottom: 0;
+}
+
+/*hide column for sorting*/
+.hiddencolumn
+{
+	display: none !important;
+}
+
+/*Jobhistory page report display*/
+.jobhistoryproperty > li {
+    border: 1px solid #ccc;
+    clear: both !important;
+    display: inline !important;
+    float: none !important;
+    margin-right: 5px;
+    padding: 5px;
+    width: auto !important;
+}
+
+/*datepicker css*/
+.datepicker_header .icon-home::before {
+    content: none !important;
+}
+.datepicker > .datepicker_header > .icon-close
+{
+	padding:8px 0 !important;
+}
+.datepicker > .datepicker_header > a:hover {
+    background-color: none !important;
+}

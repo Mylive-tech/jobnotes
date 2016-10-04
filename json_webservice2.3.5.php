@@ -8,11 +8,11 @@ function list_all_properties_reports($login_id=0, $auto_login='') {
 	//$strsql = "SELECT s.name as location_name,s.show_locations_home, p.*, pn.notes, DATE_FORMAT(p.start_date,'%d %b %Y') as start_date,DATE_FORMAT(p.completion_date,'%d %b %Y') as completion_date from ".TBL_JOBLOCATION." p inner join ".TBL_SERVICE." s on s.id = p.location_id left join ".TBL_PROPERTY_NOTES." pn on p.id = pn.property_id where p.status=1 and p.site_id='1' order by s.name asc"; 
 	if($login_id > 1)
 	{
-		$strsql = "SELECT s.name as location_name,s.show_locations_home, p.*, DATE_FORMAT(p.start_date,'%Y-%m-%d %h:%i %p') as start_date, DATE_FORMAT(p.completion_date,'%Y-%m-%d %h:%i %p') as completion_date, pn.staff_id_or_admin, pn.notes, DATE_FORMAT(pn.date_added,'%Y-%m-%d %h:%i %p') as date_added from ".TBL_JOBLOCATION." p inner join ".TBL_SERVICE." s on s.id = p.location_id inner join ".TBL_ASSIGN_PROPERTY." ap on p.id = ap.property_id left join ".TBL_PROPERTY_NOTES." pn on p.id = pn.property_id where p.status=1 and p.site_id='1' and ap.user_id = '".$login_id."' order by s.name asc, p.priority_status desc"; 
+		$strsql = "SELECT s.name as location_name,s.show_locations_home, p.*, DATE_FORMAT(p.start_date,'%Y-%m-%d %h:%i %p') as start_date, DATE_FORMAT(p.completion_date,'%Y-%m-%d %h:%i %p') as completion_date, pn.staff_id_or_admin, pn.notes, DATE_FORMAT(pn.date_added,'%Y-%m-%d %h:%i %p') as date_added, js.job_id, js.started_by, js.starting_date, js.pausing_date, js.closed_by, js.closing_date from ".TBL_JOBLOCATION." p inner join ".TBL_SERVICE." s on s.id = p.location_id inner join ".TBL_ASSIGN_PROPERTY." ap on p.id = ap.property_id left join ".TBL_JOBSTATUS." js on p.id = js.job_id left join ".TBL_PROPERTY_NOTES." pn on p.id = pn.property_id where p.status=1 and p.site_id='1' and ap.user_id = '".$login_id."' order by s.name asc, p.priority_status desc"; 
 	}
 	else
 	{
-		$strsql = "SELECT s.name as location_name,s.show_locations_home, p.*,DATE_FORMAT(p.start_date,'%Y-%m-%d %h:%i %p') as start_date, DATE_FORMAT(p.completion_date,'%Y-%m-%d %h:%i %p') as completion_date, pn.staff_id_or_admin, pn.notes, DATE_FORMAT(pn.date_added,'%Y-%m-%d %h:%i %p') as date_added from ".TBL_JOBLOCATION." p inner join ".TBL_SERVICE." s on s.id = p.location_id left join ".TBL_PROPERTY_NOTES." pn on p.id = pn.property_id where p.status=1 and p.site_id='1' order by s.name asc, p.priority_status desc"; 
+		$strsql = "SELECT s.name as location_name,s.show_locations_home, p.*,DATE_FORMAT(p.start_date,'%Y-%m-%d %h:%i %p') as start_date, DATE_FORMAT(p.completion_date,'%Y-%m-%d %h:%i %p') as completion_date, pn.staff_id_or_admin, pn.notes, DATE_FORMAT(pn.date_added,'%Y-%m-%d %h:%i %p') as date_added, js.job_id, js.started_by, js.starting_date, js.pausing_date, js.closed_by, js.closing_date from ".TBL_JOBLOCATION." p inner join ".TBL_SERVICE." s on s.id = p.location_id left join ".TBL_JOBSTATUS." js on p.id = js.job_id left join ".TBL_PROPERTY_NOTES." pn on p.id = pn.property_id where p.status=1 and p.site_id='1' order by s.name asc, p.priority_status desc";
 	}
     $objRs =  $objDatabase->dbFetch($strsql);
 	//
@@ -163,13 +163,13 @@ elseif($action == 'updatejob') {
     }
     elseif(intval($_GET['status'])==2) {  
         $objDatabase->dbQuery("UPDATE ".TBL_JOBLOCATION." set progress='2', completion_date='".date('Y-m-d H:i:s')."' where id='".$_GET['pid']."'");
-        $objDatabase->dbQuery("UPDATE ".TBL_JOBSTATUS." set closed_by='".$_GET['uid']."', closing_date='".date('Y-m-d H:i:s')."' where job_id='".$_GET['pid']."' and closed_by='' ");
+        $objDatabase->dbQuery("UPDATE ".TBL_JOBSTATUS." set closed_by='".$_GET['uid']."', closing_date='".date('Y-m-d H:i:s')."' where job_id='".$_GET['pid']."' and closed_by='' and pausing_date = '0000-00-00 00:00:00' ");
         echo json_encode(array('status'=>true , 'message'=>'Job complete','result'=>date('Y-m-d H:i:s')));
 		//echo date('Y-m-d H:i:s');
     }
     elseif(intval($_GET['status'])==3) {
 		$objDatabase->dbQuery("UPDATE ".TBL_JOBLOCATION." set progress='3', pause_date='".date('Y-m-d H:i:s')."' where id='".$_GET['pid']."'");
-        $objDatabase->dbQuery("UPDATE ".TBL_JOBSTATUS." set closed_by='".$_GET['uid']."', pausing_date='".date('Y-m-d H:i:s')."' where job_id='".$_GET['pid']."' and closed_by='' ");
+        $objDatabase->dbQuery("UPDATE ".TBL_JOBSTATUS." set pausing_date='".date('Y-m-d H:i:s')."', closed_by='".$_GET['uid']."' where job_id='".$_GET['pid']."' and closing_date = '0000-00-00 00:00:00' ");
         //$objDatabase->dbQuery("UPDATE ".TBL_JOBLOCATION." set progress='0', start_date='0000-00-00 00:00:00', completion_date='0000-00-00 00:00:00' where id='".$_GET['pid']."'");
         echo json_encode(array('status'=>true , 'message'=>'Job Paused','result'=>'success'));
 		//echo 'success';
@@ -273,7 +273,7 @@ elseif($action == 'file_upload') {
 			else
 				$objDatabase->dbQuery("UPDATE ".TBL_JOBLOCATION." set user_gallery= '".$name."' where id='".$_REQUEST['pid']."'");
 			
-			$objDatabase->dbQuery("INSERT INTO ".TBL_STAFF_UPLOADED_PROPERTY_IMAGES." (staff_id, prop_id, date, images) values('".$_REQUEST['uid']."','".$_REQUEST['pid']."','".date('Y-m-d')."','".$name."')");
+			$objDatabase->dbQuery("INSERT INTO ".TBL_STAFF_UPLOADED_PROPERTY_IMAGES." (staff_id, prop_id, date, images) values('".$_REQUEST['uid']."','".$_REQUEST['pid']."','".date('Y-m-d H:i:s')."','".$name."')");
             //$objDatabase->dbQuery("UPDATE ".TBL_JOBLOCATION." set user_gallery= CONCAT(user_gallery,',', '".$name."') where id='".$_REQUEST['pid']."'");
             echo json_encode(array("status"=>true , "message"=>"Image has been uploaded successfully", "result"=>"sucess"));
 			//echo 'success';   

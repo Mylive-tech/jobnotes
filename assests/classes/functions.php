@@ -277,7 +277,10 @@
               </div>                         
               <div class="col-md-6 pull-left inprogdiv2">         
                 <?php
-                $objRsDetails = $this->objDBCon->dbQuery("Select j.*, s.name as section_name, s.territory from ".TBL_JOBLOCATION." j inner join ".TBL_SERVICE." s on j.location_id =s.id where j.progress=1 and j.status=1 and j.site_id='".$_SESSION['site_id']."'");
+                //$objRsDetails = $this->objDBCon->dbQuery("Select j.*, s.name as section_name, s.territory from ".TBL_JOBLOCATION." j inner join ".TBL_SERVICE." s on j.location_id =s.id where j.progress=1 and j.status=1 and j.site_id='".$_SESSION['site_id']."'");
+				
+				$objRsDetails = $this->objDBCon->dbQuery("Select s.name as section_name, j.*, js.started_by  from ".TBL_SERVICE." s inner join ".TBL_JOBLOCATION." j on s.id = j.location_id inner join ".TBL_JOBSTATUS." js on j.id =js.job_id where j.progress=1 and j.status=1 and j.site_id='".$_SESSION['site_id']."' and js.pausing_date = '0000-00-00 00:00:00' and js.closing_date = '0000-00-00 00:00:00'");
+				
                 while($objProperty = $objRsDetails->fetch_object())
                 {
                 ?>                            
@@ -288,7 +291,8 @@
                 <b>Territory: </b><?php echo $objProperty->territory;?><br>
                 <b>Assigned To: </b><?php  echo ucfirst(str_replace('_', ' ', $objProperty->assigned_to));/*$rowD = $this->iFindAll(TBL_STAFF, array('id'=>$objProperty->assigned_to)); echo $rowD[0]->f_name.' '.$rowD[0]->l_name;*/?><br>
                 <b>Phone: </b><?php echo $objProperty->phn_no;?><br> 
-                <b>Started On: </b> <?php echo strftime("%m/%d/%Y %I:%M %p", strtotime($objProperty->start_date));?><br>        
+                <b>Started On: </b> <?php echo strftime("%m/%d/%Y %I:%M %p", strtotime($objProperty->start_date));?><br>
+                 <b>Started By: </b><?php $rowD = $this->iFindAll(TBL_STAFF, array('id'=>$objProperty->started_by)); echo $rowD[0]->f_name.' '.$rowD[0]->l_name;?><br>        
                 </p>         
                 <?php
                 }
@@ -317,7 +321,10 @@
                 </div>                         
                 <div class="col-md-6 nopadding pull-left">         
                     <?php
-                    $objRsDetails = $this->objDBCon->dbQuery("Select j.*, s.name as section_name, s.territory from ".TBL_JOBLOCATION." j inner join ".TBL_SERVICE." s on j.location_id =s.id where j.progress=2 and j.status=1 and j.site_id='".$_SESSION['site_id']."'");
+                    //$objRsDetails = $this->objDBCon->dbQuery("Select j.*, s.name as section_name, s.territory from ".TBL_JOBLOCATION." j inner join ".TBL_SERVICE." s on j.location_id =s.id where j.progress=2 and j.status=1 and j.site_id='".$_SESSION['site_id']."'");
+					
+					$objRsDetails = $this->objDBCon->dbQuery("Select s.name as section_name, j.*, js.closed_by  from ".TBL_SERVICE." s inner join ".TBL_JOBLOCATION." j on s.id = j.location_id inner join ".TBL_JOBSTATUS." js on j.id =js.job_id where j.progress=2 and j.status=1 and j.site_id='".$_SESSION['site_id']."' and js.pausing_date = '0000-00-00 00:00:00'");
+					
                     while($objProperty = $objRsDetails->fetch_object())
                     {
                     ?>                            
@@ -329,6 +336,7 @@
                         <b>Assigned To: </b><?php  echo ucfirst(str_replace('_', ' ', $objProperty->assigned_to));/*$rowD = $this->iFindAll(TBL_STAFF, array('id'=>$objProperty->assigned_to)); echo $rowD[0]->f_name.' '.$rowD[0]->l_name;*/?><br>
                         <b>Phone: </b><?php echo $objProperty->phn_no;?><br>  
                         <b>Completed On: </b><?php echo strftime("%m/%d/%Y %I:%M %p", strtotime($objProperty->completion_date));?><br>
+                        <b>Completed By: </b><?php $rowD = $this->iFindAll(TBL_STAFF, array('id'=>$objProperty->closed_by)); echo $rowD[0]->f_name.' '.$rowD[0]->l_name;?><br>
                         </p>         
                     <?php
                     }
@@ -357,7 +365,10 @@
                 </div>                         
                 <div class="col-md-6 nopadding pull-left">         
                     <?php
-                    $objRsDetails = $this->objDBCon->dbQuery("Select j.*, s.name as section_name, s.territory from ".TBL_JOBLOCATION." j inner join ".TBL_SERVICE." s on j.location_id =s.id where j.progress=3 and j.status=1 and j.site_id='".$_SESSION['site_id']."'");
+                    //$objRsDetails = $this->objDBCon->dbQuery("Select j.*, s.name as section_name, s.territory from ".TBL_JOBLOCATION." j inner join ".TBL_SERVICE." s on j.location_id =s.id where j.progress=3 and j.status=1 and j.site_id='".$_SESSION['site_id']."'");
+					
+					$objRsDetails = $this->objDBCon->dbQuery("Select s.name as section_name, j.*, js.started_by  from ".TBL_SERVICE." s inner join ".TBL_JOBLOCATION." j on s.id = j.location_id inner join ".TBL_JOBSTATUS." js on j.id =js.job_id where j.progress=3 and j.status=1 and j.site_id='".$_SESSION['site_id']."' and js.closing_date = '0000-00-00 00:00:00'");
+					
                     while($objProperty = $objRsDetails->fetch_object())
                     {
                     ?>                            
@@ -369,6 +380,7 @@
                         <b>Assigned To: </b><?php  echo ucfirst(str_replace('_', ' ', $objProperty->assigned_to));/*$rowD = $this->iFindAll(TBL_STAFF, array('id'=>$objProperty->assigned_to)); echo $rowD[0]->f_name.' '.$rowD[0]->l_name;*/?><br>
                         <b>Phone: </b><?php echo $objProperty->phn_no;?><br>  
                         <b>Paused On: </b><?php echo strftime("%m/%d/%Y %I:%M %p", strtotime($objProperty->pause_date));?><br>
+                        <b>Paused By: </b><?php $rowD = $this->iFindAll(TBL_STAFF, array('id'=>$objProperty->closed_by)); echo $rowD[0]->f_name.' '.$rowD[0]->l_name;?><br>
                         </p>         
                     <?php
                     }
@@ -1579,7 +1591,7 @@ public function getFormSubmissionValues($submission_id)
     $location_assigned_to = $this->iFind(TBL_JOBLOCATION, 'assigned_to', array('id'=>$postedValues['db_property']));
     $fieldCount=0;
    
-    foreach($fields as $field)
+    /*foreach($fields as $field)
     {
         $fieldCount = $fieldCount+1;        
         
@@ -1599,11 +1611,24 @@ public function getFormSubmissionValues($submission_id)
                 $formControls[$label_prefix.$field->label] = $array_val;
             }
         }
-    } 
+    } */
+	$fields = array('db_location','db_property','rid','user_id','timestamp');
+	foreach($postedValues as $key=>$val)	
+    {
+		if( in_array($key, $fields) === false)
+		{
+				if (is_array($val))
+						$array_val =  implode(",", $val);
+				 else
+						$array_val = $val;
+					
+				$formControls[$key] = $array_val;
+		}
+	}
      
      $formControls['Submission Date'] =  strftime("%m/%d/%Y %I:%M %p", strtotime($rsData->submission_date));
      $formControls['Submitted By'] =  $this->iFind(TBL_STAFF, "CONCAT(f_name, ' ', l_name)", array("id"=>$rsData->submitted_by));
-     $formControls['Assigned To'] =   $this->iFind(TBL_STAFF, "CONCAT(f_name, ' ', l_name)", array("id"=>$location_assigned_to));
+     $formControls['Assigned To'] =   ucfirst(str_replace('_', ' ', $location_assigned_to));//$this->iFind(TBL_STAFF, "CONCAT(f_name, ' ', l_name)", array("id"=>$location_assigned_to));
      
     return $formControls;
 }

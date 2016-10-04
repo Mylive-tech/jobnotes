@@ -237,6 +237,22 @@ class REPORT extends REPORT_HTML_CONTENT
 		  
 			parent :: admin_property_jobHistory($this->objSet, $this->objSet1);
 	}
+	
+	public function property_report_m_jobHistory()
+	{
+		$strSql = "SELECT * FROM ".TBL_JOBSTATUS." js inner join ".TBL_JOBLOCATION." jl on js.job_id=jl.id  left join ".TBL_STAFF_UPLOADED_PROPERTY_IMAGES." si on jl.id=si.prop_id where js.job_id='".$this->intId."' order by js.id desc";
+			$this->objSet = $this->objDatabase->dbQuery($strSql);
+
+		$strSql = "SELECT * FROM ".TBL_JOBLOCATION." where 1=1 and id='".$this->intId."'";
+			$this->objSet1 = $this->objDatabase->fetchRows($strSql);
+		  
+			parent :: admin_m_property_jobHistory($this->objSet, $this->objSet1);
+	}
+	public function getReportsDetails($jid)
+	{
+		$this->objSet = $this->objDatabase->dbQuery("Select report_id from ".TBL_REPORTS_SUBMISSION." where property_id = '".$jid."'");
+		return $this->objSet;
+	}
 	public function report_details($pid) {
 	   
 	   $strSql = "SELECT * FROM ".TBL_JOBSTATUS." js inner join ".TBL_JOBLOCATION." jl on js.job_id=jl.id where js.job_id=".$pid." order by js.id desc";
@@ -266,6 +282,13 @@ class REPORT extends REPORT_HTML_CONTENT
 		$propdetails = $this->objSet;
 		return $propdetails;
    }
+   public function export_property_reports($propid)
+   {
+	   $strSql = "SELECT * FROM ".TBL_REPORTS." r INNER JOIN ".TBL_REPORTS_SUBMISSION." rs ON r.report_id=rs.report_id where rs.property_id=".$propid;
+	   $this->objSet = $this->objDatabase->dbQuery($strSql);
+		$repdetails = $this->objSet;
+		return $repdetails;
+   }
    public function direct($pids)
    {  //print_r(explode(',', $_GET['cjid']));echo '1111'; die;
    		require_once 'PHPExcel/Classes/PHPExcel.php';
@@ -290,6 +313,7 @@ class REPORT extends REPORT_HTML_CONTENT
 		$row=1;
 		foreach($pids as $pid)
 		{
+			$oldreportname = '';
 			if($row != 1){$row = $row+2;}
 			$jobdata = $this->report_details($pid);
 			
@@ -440,6 +464,109 @@ class REPORT extends REPORT_HTML_CONTENT
 				}
 				$row++;
 			}
+			//
+			$row = $row+2;
+			$propertyreports = $this->export_property_reports($pid);
+			while($objRow = $propertyreports->fetch_object())
+			{
+				$col=0;
+				$fbody = json_decode($objRow->form_body); 
+				$report_name = $objRow->report_name;
+				if($oldreportname != $report_name){
+					$objPHPExcel->getActiveSheet()->getRowDimension($row)->setRowHeight(25);
+					$objPHPExcel->getActiveSheet()->setCellValue('A'.$row, $report_name);
+					
+					$objPHPExcel->getActiveSheet()->mergeCells('A'.$row.':C'.$row);
+					$objPHPExcel->getActiveSheet()
+					->getStyle('A'.$row.':C'.$row)
+					->getAlignment()
+					->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+					$objPHPExcel->getActiveSheet()->getStyle('A'.$row)->getFont()->setBold(true)->setSize(16);
+					$row = $row+2;
+					
+					if($report_name != 'Equip Problems to Report') { 
+						$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $row, 'Location');
+						$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $row, 'Property');
+						$i=2;
+					}
+					else {
+						$i=0;
+					}
+					$x = 0;
+					$y = 0;
+					foreach($fbody as $fb)
+					{  
+						if($fb->field_type != 'fieldset')
+						{
+							if($fb->label == ''){
+							} 
+							else 
+							{
+								if($objRow->report_name == 'Subcontractors Equipment Usage') 
+								{
+									$fb->label = $fbody[$x]->label."-".$fb->label;
+								}
+								$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, $row, $fb->label);
+								$i++;
+							} 
+							$y++; 
+						
+						} 
+						else 
+						{ 
+							if($y>0) { $x = $x+3;} 
+						} 
+					
+					}
+					$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i++, $row, 'Name');
+					$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i++, $row, 'Date');
+					$row++;
+				}
+				$locname = $this->objFunction->iFindAll(TBL_SERVICE, array('id'=>$objRow->location_id));
+				$propname = $this->objFunction->iFindAll(TBL_JOBLOCATION, array('id'=>$objRow->property_id));
+				$uname = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow->submitted_by));
+				$date = $objRow->submission_date; 
+				$fdata = json_decode($objRow->form_values, true);
+				$fields = array('db_location','db_property','rid','user_id','timestamp');
+				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $locname[0]->name);$col++;					
+				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $propname[0]->job_listing);$col++; 
+				
+				foreach($fdata as $key=>$val)
+				{
+					if( ($key != 'form_token') && ($key != 'send') ){
+						if( in_array($key, $fields) === false){  
+							 
+							if($objRow->report_name == 'Subcontractors Equipment Usage' )
+							{
+								
+								if($val == '') {
+									$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, 0);
+									$col++;
+								} 
+								else { 
+									$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $val);
+									$col++;
+								}
+							}
+							elseif(is_array($val)) 
+							{
+								$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, implode(',', $val));		 	$col++;  
+							}
+							else
+							{
+								$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $val);		 	
+								$col++;  
+							}
+						}
+					} 
+				}
+				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $uname[0]->f_name . ' ' .$uname[0]->l_name);$col++;
+				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, date('Y-m-d h:i A', strtotime($date)));
+				$row++;
+				$oldreportname = $report_name;
+				
+			}
+			//
 		}
 	}
    elseif(!isset($_GET['jid']))
@@ -452,6 +579,7 @@ class REPORT extends REPORT_HTML_CONTENT
 		$row=1;
 		foreach($pids as $pid)
 		{
+			$oldreportname = '';
 			if($row != 1){$row = $row+2;}
 			$jobdata = $this->report_details($pid);
 			
@@ -602,6 +730,109 @@ class REPORT extends REPORT_HTML_CONTENT
 				}
 				$row++;
 			}
+			//
+			$row = $row+2;
+			$propertyreports = $this->export_property_reports($pid);
+			while($objRow = $propertyreports->fetch_object())
+			{ 
+				$col=0;
+				$fbody = json_decode($objRow->form_body); 
+				$report_name = $objRow->report_name;
+				if($oldreportname != $report_name){
+					$objPHPExcel->getActiveSheet()->getRowDimension($row)->setRowHeight(25);
+					$objPHPExcel->getActiveSheet()->setCellValue('A'.$row, $report_name);
+					
+					$objPHPExcel->getActiveSheet()->mergeCells('A'.$row.':C'.$row);
+					$objPHPExcel->getActiveSheet()
+					->getStyle('A'.$row.':C'.$row)
+					->getAlignment()
+					->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+					$objPHPExcel->getActiveSheet()->getStyle('A'.$row)->getFont()->setBold(true)->setSize(16);
+					$row = $row+2;
+					
+					if($report_name != 'Equip Problems to Report') { 
+						$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $row, 'Location');
+						$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $row, 'Property');
+						$i=2;
+					}
+					else {
+						$i=0;
+					}
+					$x = 0;
+					$y = 0;
+					foreach($fbody as $fb)
+					{  
+						if($fb->field_type != 'fieldset')
+						{
+							if($fb->label == ''){
+							} 
+							else 
+							{
+								if($objRow->report_name == 'Subcontractors Equipment Usage') 
+								{
+									$fb->label = $fbody[$x]->label."-".$fb->label;
+								}
+								$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, $row, $fb->label);
+								$i++;
+							} 
+							$y++; 
+						
+						} 
+						else 
+						{ 
+							if($y>0) { $x = $x+3;} 
+						} 
+					
+					}
+					$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i++, $row, 'Name');
+					$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i++, $row, 'Date');
+					$row++;
+				}
+				$locname = $this->objFunction->iFindAll(TBL_SERVICE, array('id'=>$objRow->location_id));
+				$propname = $this->objFunction->iFindAll(TBL_JOBLOCATION, array('id'=>$objRow->property_id));
+				$uname = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow->submitted_by));
+				$date = $objRow->submission_date; 
+				$fdata = json_decode($objRow->form_values, true);
+				$fields = array('db_location','db_property','rid','user_id','timestamp');
+				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $locname[0]->name);$col++;					
+				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $propname[0]->job_listing);$col++; 
+				
+				foreach($fdata as $key=>$val)
+				{
+					if( ($key != 'form_token') && ($key != 'send') ){
+						if( in_array($key, $fields) === false){  
+							 
+							if($objRow->report_name == 'Subcontractors Equipment Usage' )
+							{
+								
+								if($val == '') {
+									$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, 0);
+									$col++;
+								} 
+								else { 
+									$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $val);
+									$col++;
+								}
+							}
+							elseif(is_array($val)) 
+							{
+								$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, implode(',', $val));		 	$col++;  
+							}
+							else
+							{
+								$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $val);		 	
+								$col++;  
+							}
+						}
+					} 
+				}
+				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $uname[0]->f_name . ' ' .$uname[0]->l_name);$col++;
+				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, date('Y-m-d h:i A', strtotime($date)));
+				$row++;
+				$oldreportname = $report_name;
+				
+			}
+			//
 		}
 	}
    else
@@ -755,6 +986,109 @@ class REPORT extends REPORT_HTML_CONTENT
 		}
 		$row++;
 	}
+	//
+	$row = $row+2;
+	$propertyreports = $this->export_property_reports($_GET['jid']);
+	while($objRow = $propertyreports->fetch_object())
+	{
+		$col=0;
+		$fbody = json_decode($objRow->form_body); 
+		$report_name = $objRow->report_name;
+		if($oldreportname != $report_name){
+			$objPHPExcel->getActiveSheet()->getRowDimension($row)->setRowHeight(25);
+			$objPHPExcel->getActiveSheet()->setCellValue('A'.$row, $report_name);
+			
+			$objPHPExcel->getActiveSheet()->mergeCells('A'.$row.':C'.$row);
+			$objPHPExcel->getActiveSheet()
+			->getStyle('A'.$row.':C'.$row)
+			->getAlignment()
+			->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+			$objPHPExcel->getActiveSheet()->getStyle('A'.$row)->getFont()->setBold(true)->setSize(16);
+			$row = $row+2;
+			
+			if($report_name != 'Equip Problems to Report') { 
+				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $row, 'Location');
+				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $row, 'Property');
+				$i=2;
+			}
+			else {
+				$i=0;
+			}
+			$x = 0;
+			$y = 0;
+			foreach($fbody as $fb)
+			{  
+				if($fb->field_type != 'fieldset')
+				{
+					if($fb->label == ''){
+					} 
+					else 
+					{
+						if($objRow->report_name == 'Subcontractors Equipment Usage') 
+						{
+							$fb->label = $fbody[$x]->label."-".$fb->label;
+						}
+						$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, $row, $fb->label);
+						$i++;
+					} 
+					$y++; 
+				
+				} 
+				else 
+				{ 
+					if($y>0) { $x = $x+3;} 
+				} 
+			
+			}
+			$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i++, $row, 'Name');
+			$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i++, $row, 'Date');
+			$row++;
+		}
+		$locname = $this->objFunction->iFindAll(TBL_SERVICE, array('id'=>$objRow->location_id));
+		$propname = $this->objFunction->iFindAll(TBL_JOBLOCATION, array('id'=>$objRow->property_id));
+		$uname = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow->submitted_by));
+		$date = $objRow->submission_date; 
+		$fdata = json_decode($objRow->form_values, true);
+		$fields = array('db_location','db_property','rid','user_id','timestamp');
+		$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $locname[0]->name);$col++;					
+		$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $propname[0]->job_listing);$col++; 
+		
+		foreach($fdata as $key=>$val)
+		{
+			if( ($key != 'form_token') && ($key != 'send') ){
+				if( in_array($key, $fields) === false){  
+					 
+					if($objRow->report_name == 'Subcontractors Equipment Usage' )
+					{
+						
+						if($val == '') {
+							$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, 0);
+							$col++;
+						} 
+						else { 
+							$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $val);
+							$col++;
+						}
+					}
+					elseif(is_array($val)) 
+					{
+						$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, implode(',', $val));		 	$col++;  
+					}
+					else
+					{
+						$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $val);		 	
+						$col++;  
+					}
+				}
+			} 
+		}
+		$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $uname[0]->f_name . ' ' .$uname[0]->l_name);$col++;
+		$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, date('Y-m-d h:i A', strtotime($date)));
+		$row++;
+		$oldreportname = $report_name;
+		
+	}
+	//
    }
 	$rand = rand(1234, 9898);
 	$presentDate = date('YmdHis');
@@ -1324,7 +1658,7 @@ class REPORT extends REPORT_HTML_CONTENT
     $export_file = '';
     if (isset($_POST['task']))
     {
-        $export_reports = array(); $datet = str_replace(' ', '_', date('Y-m-d h:i:s'));
+        $export_reports = array(); $datet = str_replace(' ', '_', date('Y-m-d H:i:s'));
         $export_file = 'upload/zip/export-reports-'.$datet.'.zip';
 		$status = ''; $flag = '';
         
@@ -1376,7 +1710,40 @@ class REPORT extends REPORT_HTML_CONTENT
                        $form_data = $this->objFunction->getFormSubmissionValues($objRow->id);
                        if ($reportKeys == FALSE)
                        {
-                           $headings = array_keys($form_data);
+                           //$headings = array_keys($form_data);
+						 $headings = array();
+						 $headings[] = 'Location'; 
+						 $headings[] = 'Property';
+    					$rs = $this->objDatabase->fetchRows("select * from ".TBL_REPORTS." where status='1' and report_id='".$objReport->report_id."'");
+    					$fbody =  json_decode($rs->form_body);
+						$x = 0;
+						$y = 0;
+						foreach($fbody as $fb)
+						{  
+							if($fb->field_type != 'fieldset')
+							{
+								if($fb->label == ''){
+								} 
+								else 
+								{
+									if($reportName == 'Subcontractors Equipment Usage') 
+									{
+										$fb->label = $fbody[$x]->label."-".$fb->label;
+									}
+									$headings[] = $fb->label;
+								} 
+								$y++; 
+							
+							} 
+							else 
+							{ 
+								if($y>0) { $x = $x+3;} 
+							} 
+						
+						}
+						$headings[] = 'Submission Date'; 
+						$headings[] = 'Submitted By';
+						$headings[] = 'Assigned To';
                        }
                        $reportKeys = TRUE; 
                        $report_data[] =  $form_data;
@@ -1476,7 +1843,41 @@ class REPORT extends REPORT_HTML_CONTENT
                      
                      if ($reportKeys == FALSE)
                      {
-                         $headings = array_keys($form_data);
+                         //$headings = array_keys($form_data);
+						 $headings = array();
+						 $headings[] = 'Location'; 
+						 $headings[] = 'Property';
+                         //$headings = array_keys($form_data);
+    					$rs = $this->objDatabase->fetchRows("select * from ".TBL_REPORTS." where status='1' and report_id='".$objReportId."'");
+    					$fbody =  json_decode($rs->form_body);
+						$x = 0;
+						$y = 0;
+						foreach($fbody as $fb)
+						{  
+							if($fb->field_type != 'fieldset')
+							{
+								if($fb->label == ''){
+								} 
+								else 
+								{
+									if($reportName == 'Subcontractors Equipment Usage') 
+									{
+										$fb->label = $fbody[$x]->label."-".$fb->label;
+									}
+									$headings[] = $fb->label;
+								} 
+								$y++; 
+							
+							} 
+							else 
+							{ 
+								if($y>0) { $x = $x+3;} 
+							} 
+						
+						}
+						$headings[] = 'Submission Date'; 
+						$headings[] = 'Submitted By';
+						$headings[] = 'Assigned To';
                      }
                      $reportKeys = TRUE; 
                      $report_data[] =  $form_data;
@@ -1556,7 +1957,40 @@ class REPORT extends REPORT_HTML_CONTENT
                      
                      if ($reportKeys == FALSE)
                      {
-                         $headings = array_keys($form_data);
+						 $headings = array();
+						 $headings[] = 'Location'; 
+						 $headings[] = 'Property';
+                         //$headings = array_keys($form_data);
+    					$rs = $this->objDatabase->fetchRows("select * from ".TBL_REPORTS." where status='1' and report_id='".$objReportId."'");
+    					$fbody =  json_decode($rs->form_body);
+						$x = 0;
+						$y = 0;
+						foreach($fbody as $fb)
+						{  
+							if($fb->field_type != 'fieldset')
+							{
+								if($fb->label == ''){
+								} 
+								else 
+								{
+									if($reportName == 'Subcontractors Equipment Usage') 
+									{
+										$fb->label = $fbody[$x]->label."-".$fb->label;
+									}
+									$headings[] = $fb->label;
+								} 
+								$y++; 
+							
+							} 
+							else 
+							{ 
+								if($y>0) { $x = $x+3;} 
+							} 
+						
+						}
+						$headings[] = 'Submission Date'; 
+						$headings[] = 'Submitted By';
+						$headings[] = 'Assigned To';
                      }
                      $reportKeys = TRUE; 
                      $report_data[] =  $form_data;
@@ -1634,7 +2068,41 @@ class REPORT extends REPORT_HTML_CONTENT
                      
                      if ($reportKeys == FALSE)
                      {
-                         $headings = array_keys($form_data);
+                         //$headings = array_keys($form_data);
+						 $headings = array();
+						 $headings[] = 'Location'; 
+						 $headings[] = 'Property';
+                         //$headings = array_keys($form_data);
+    					$rs = $this->objDatabase->fetchRows("select * from ".TBL_REPORTS." where status='1' and report_id='".$objReportId."'");
+    					$fbody =  json_decode($rs->form_body);
+						$x = 0;
+						$y = 0;
+						foreach($fbody as $fb)
+						{  
+							if($fb->field_type != 'fieldset')
+							{
+								if($fb->label == ''){
+								} 
+								else 
+								{
+									if($reportName == 'Subcontractors Equipment Usage') 
+									{
+										$fb->label = $fbody[$x]->label."-".$fb->label;
+									}
+									$headings[] = $fb->label;
+								} 
+								$y++; 
+							
+							} 
+							else 
+							{ 
+								if($y>0) { $x = $x+3;} 
+							} 
+						
+						}
+						$headings[] = 'Submission Date'; 
+						$headings[] = 'Submitted By';
+						$headings[] = 'Assigned To';
                      }
                      $reportKeys = TRUE; 
                      $report_data[] =  $form_data;
@@ -1911,7 +2379,8 @@ class REPORT extends REPORT_HTML_CONTENT
 			while($objRow = $objRs->fetch_object())
 			{ 
 				$col=0;
-				//$objPHPExcel->setActiveSheetIndex(0); 
+				//$objPHPExcel->setActiveSheetIndex(0);
+				$fbody = json_decode($objRow->form_body); 
 				$report_name = $objRow->report_name;
 				if($oldreportname != $report_name){
 					$objPHPExcel->getActiveSheet()->getRowDimension($row)->setRowHeight(25);
@@ -1924,7 +2393,44 @@ class REPORT extends REPORT_HTML_CONTENT
 					->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 					$objPHPExcel->getActiveSheet()->getStyle('A'.$row)->getFont()->setBold(true)->setSize(16);
 					$row = $row+2;
-					$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $row, 'Location');
+					
+					if($report_name != 'Equip Problems to Report') { 
+						$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $row, 'Location');
+						$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $row, 'Property');
+						$i=2;
+					}
+					else {
+						$i=0;
+					}
+					$x = 0;
+					$y = 0;
+					foreach($fbody as $fb)
+					{  
+						if($fb->field_type != 'fieldset')
+						{
+							if($fb->label == ''){
+							} 
+							else 
+							{
+								if($objRow->report_name == 'Subcontractors Equipment Usage') 
+								{
+									$fb->label = $fbody[$x]->label."-".$fb->label;
+								}
+								$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, $row, $fb->label);
+								$i++;
+							} 
+							$y++; 
+						
+						} 
+						else 
+						{ 
+							if($y>0) { $x = $x+3;} 
+						} 
+					
+					}
+					$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i++, $row, 'Name');
+					$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i++, $row, 'Date');
+					/*$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $row, 'Location');
 					$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $row, 'Property');
 					$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $row, 'Emp. No');
 					$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $row, 'Salt used');
@@ -1942,23 +2448,55 @@ class REPORT extends REPORT_HTML_CONTENT
 					$objPHPExcel->getActiveSheet()->getStyle('F'.$row)->getFont()->setBold(true)->setSize(12);
 					$objPHPExcel->getActiveSheet()->getStyle('G'.$row)->getFont()->setBold(true)->setSize(12);
 					$objPHPExcel->getActiveSheet()->getStyle('H'.$row)->getFont()->setBold(true)->setSize(12);
-					$objPHPExcel->getActiveSheet()->getStyle('I'.$row)->getFont()->setBold(true)->setSize(12);
+					$objPHPExcel->getActiveSheet()->getStyle('I'.$row)->getFont()->setBold(true)->setSize(12);*/
 					$row++;
 				}
 				$locname = $this->objFunction->iFindAll(TBL_SERVICE, array('id'=>$objRow->location_id));
 				$propname = $this->objFunction->iFindAll(TBL_JOBLOCATION, array('id'=>$objRow->property_id));
 				$uname = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow->submitted_by));
 				$date = $objRow->submission_date;
-				$fdata = json_decode($objRow->form_values);	 
+				//$fdata = json_decode($objRow->form_values);	 
+				$fdata = json_decode($objRow->form_values, true);
+				$fields = array('db_location','db_property','rid','user_id','timestamp');
 				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $locname[0]->name);$col++;					
 				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $propname[0]->job_listing);$col++; 
-				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $fdata->db_field_2);$col++;
+				
+				foreach($fdata as $key=>$val)
+				{
+					if( ($key != 'form_token') && ($key != 'send') ){
+						if( in_array($key, $fields) === false){  
+							 
+							if($objRow->report_name == 'Subcontractors Equipment Usage' )
+							{
+								
+								if($val == '') {
+									$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, 0);
+									$col++;
+								} 
+								else { 
+									$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $val);
+									$col++;
+								}
+							}
+							elseif(is_array($val)) 
+							{
+								$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, implode(',', $val));		 	$col++;  
+							}
+							else
+							{
+								$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $val);		 	
+								$col++;  
+							}
+						}
+					} 
+				}
+				/*$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $fdata->db_field_2);$col++;
 				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $fdata->db_field_3);$col++;
 				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $fdata->db_field_4);$col++;
 				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $fdata->db_field_5);$col++;
-				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $fdata->db_field_6);$col++;
+				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $fdata->db_field_6);$col++;*/
 				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $uname[0]->f_name . ' ' .$uname[0]->l_name);$col++;
-				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $date);
+				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, date('Y-m-d h:i A', strtotime($date)));
 				$row++;
 				$oldreportname = $report_name;
 				
@@ -1993,6 +2531,7 @@ class REPORT extends REPORT_HTML_CONTENT
 		{
 			$diff1 = strtotime($objRow->c_date) - strtotime($objRow->s_date);
 			$work_hour = round($diff1/3600, 2);
+			if($work_hour < 0) { $work_hour = 'N/A';}
 			$strLines.= $objRow->username . ', ' .$objRow->f_name. ', '.$objRow->l_name. ', '.$objRow->s_date . ', '.$objRow->c_date. ', '.$work_hour . PHP_EOL;
 		}
 		fputs($fd, $strLines);
@@ -2024,7 +2563,8 @@ class REPORT extends REPORT_HTML_CONTENT
 		}
 		if(count($valid_files > 0)){
 			$zip = new ZipArchive();
-			$zip_name = "session.zip";
+			//$zip_name = "session.zip";
+             $zip_name = 'session_'.date('Y-m-d H:i:s').'.zip';
 			if($zip->open($zip_name, ZIPARCHIVE::CREATE)!==TRUE){
 			$error .= "* Sorry ZIP creation failed at this time";
 			}
@@ -2034,10 +2574,10 @@ class REPORT extends REPORT_HTML_CONTENT
 			}
 			
 			$zip->close();
-			$fl_name = 'session_'.date('Y-m-d h:i:s').'.zip';
-			copy($zip_name, $_SERVER['DOCUMENT_ROOT'].'/sessionzip/'.$fl_name);
-			$this->objDatabase->insertQuery("insert into ".TBL_SESSION_RESET." (filename, creation_date) values('".$fl_name."', '".date('Y-m-d H:i:s')."')");
-			
+			//$fl_name = 'session_'.date('Y-m-d H:i:s').'.zip';
+			copy($zip_name, $_SERVER['DOCUMENT_ROOT'].'/sessionzip/'.$zip_name);
+			$this->objDatabase->insertQuery("insert into ".TBL_SESSION_RESET." (filename, creation_date) values('".$zip_name."', '".date('Y-m-d H:i:s')."')");
+			unlink($zip_name);
 			//
 			foreach($pimg as $img){
 				unlink($_SERVER['DOCUMENT_ROOT'].'/upload/'.$img);
@@ -2071,6 +2611,18 @@ class REPORT extends REPORT_HTML_CONTENT
 		$this->objDatabase->dbQuery("DELETE FROM ".TBL_SESSION_RESET." where filename = '".$file."'");
         $this->objFunction->showMessage('Zip file removed successfully.', ISP :: AdminUrl('reports/reportsmanager/'));   
     }
+	
+	public function removeBulkSessionzip($sids)
+	{
+		$ids = explode(',', $sids);
+		foreach($ids as $id)
+		{
+			$filename = $this->objFunction->iFind(TBL_SESSION_RESET, 'filename', array('id'=>$id));
+			unlink($_SERVER['DOCUMENT_ROOT'].'/sessionzip/'.$filename);
+			$this->objDatabase->dbQuery("DELETE FROM ".TBL_SESSION_RESET." where filename = '".$filename."'");
+		}
+	}
+	
 	public function seasonzip()
 	{
 		$curdir = getcwd();
@@ -2103,7 +2655,7 @@ class REPORT extends REPORT_HTML_CONTENT
 			}
 			
 			$zip->close();
-			$fl_name = 'season_'.date('Y-m-d h:i:s').'.zip';
+			$fl_name = 'season_'.date('Y-m-d H:i:s').'.zip';
 			copy($zip_name, $_SERVER['DOCUMENT_ROOT'].'/seasonzip/'.$fl_name);
 			$this->objDatabase->insertQuery("insert into ".TBL_SEASON_RESET." (filename, creation_date) values('".$fl_name."', '".date('Y-m-d H:i:s')."')");
 			/*if(file_exists($zip_name)){
@@ -2159,6 +2711,69 @@ class REPORT extends REPORT_HTML_CONTENT
 		$objRow = $this->objDatabase->fetchRows($strsql);
 		return $objRow;
 	}
+	public function jobhistory_property_reports($rid, $pid)
+	{
+		//echo 'Iindsfds12345'; die;
+		$strsql = "SELECT r.*,rs.* FROM " . TBL_REPORTS . " r inner join " . TBL_REPORTS_SUBMISSION . " rs on r.report_id=rs.report_id where r.site_id='" . $_SESSION['site_id'] . "' and rs.report_id ='".$rid."' and rs.property_id = '".$pid."'"; //die;
+		$objRs = $this->objDatabase->dbQuery($strsql);
+		$rdata = '<table class="table table-striped table-bordered table-hover table-checkable table-responsive datatable" id="dataTables-example">';
+		$thead = 0;
+		while($objRow = $objRs->fetch_object())
+		{
+			$thead++;  
+			$locname = $this->objFunction->iFindAll(TBL_SERVICE, array('id'=>$objRow->location_id));
+			$propname = $this->objFunction->iFindAll(TBL_JOBLOCATION, array('id'=>$objRow->property_id));
+			$uname = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow->submitted_by));
+			$date = $objRow->submission_date;
+			$fdata = json_decode($objRow->form_values, true);
+			$fbody = json_decode($objRow->form_body);
+			if($thead == 1):
+			$fields = array('db_location','db_property','rid','user_id','timestamp');
+			
+			$rdata .= '<thead class="cf"><tr> ';
+			if($objRow->report_name != 'Equip Problems to Report') {
+				 $rdata .= '<th data-class="expand">Location</th>
+				 <th data-hide="phone">Property</th>';
+				 }
+				 $x = 0;
+				 $y = 0;
+				 foreach($fbody as $fb){  if($fb->field_type != 'fieldset'){
+					 if($fb->label == ''){
+					   } else {
+							 if($objRow->report_name == 'Subcontractors Equipment Usage') {
+								 $fb->label = $fbody[$x]->label."<br>".$fb->label;
+							 }
+					 $rdata .= '<th data-hide="phone">'.$fb->label.'</th>';
+				  } $y++; } else { if($y>0) { $x = $x+3;} } }
+				 $rdata .= '<th data-hide="phone">Name</th>
+				 <th data-hide="phone">Date</th>
+			</tr>
+			</thead>
+			<tbody>';
+			endif;
+			$rdata .= '<tr>';
+			if($objRow->report_name != 'Equip Problems to Report') {
+			 $rdata .= '<td>'.$locname[0]->name.'</td>
+			 <td>'.$propname[0]->job_listing.'</td>';
+				}
+			 foreach($fdata as $key=>$val){ if( ($key != 'form_token') && ($key != 'send') ){
+				 if( in_array($key, $fields) === false){
+					  $rdata .= '<td>';
+					  if($objRow->report_name == 'Subcontractors Equipment Usage' )
+					  {
+						  if($val == '') {$rdata .= '0';} else { $rdata .= $val;}
+					  }
+					  elseif(is_array($val)) $rdata .= implode(',', $val);  else $rdata .= $val;
+					  $rdata .= '</td>';
+				} } }
+			 $rdata .= '<td>'.$uname[0]->f_name . ' ' .$uname[0]->l_name.'</td>
+			 <td>'.date('Y-m-d h:i A', strtotime($date)).'</td></tr>';
+		}
+		$rdata .= '</tbody></table>';
+		echo $rdata;
+		die;	
+	}
+	
 } // End of Class
 
 
@@ -2260,6 +2875,10 @@ switch($strTask)
     $objContent->property_report_jobHistory();
   break;
   
+  case 'jobhistory':
+    $objContent->property_report_m_jobHistory();
+  break;
+  
   case 'export_ivr_log_report':
     $objContent->export_ivr_log_report();
   break;
@@ -2295,6 +2914,14 @@ switch($strTask)
   case 'reset-all-property':
       $objContent->resetProperty(-1);
   break;
+  
+   case 'remove-bulk-sessionzip':
+      $objContent->removeBulkSessionzip($_GET['sszipid']);
+  break;
+  case 'jobhistory-property-reports':
+      $objContent->jobhistory_property_reports($_GET['rid'], $_GET['pid']);
+  break;
+  
   
 }
 

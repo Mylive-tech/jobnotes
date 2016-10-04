@@ -2,7 +2,7 @@
 require_once('../../settings.php');
 //piechart ajax request
 if($_POST['customerids']) {
-		$scsinusr = "<form method='post' name='frmListing'><table class='table table-striped table-bordered table-hover table-checkable table-responsive'><thead class='cf'><tr><th data-class='expand'>Username/IVR Staff ID</th><th data-hide='phone'>Name</th><th data-hide='phone'>Date</th><th data-hide='phone'>Time</th><th data-hide='phone'>Clock Action</th><th>View Full Log</th></tr></thead><tbody>";
+		$scsinusr = "<form method='post' name='frmListing'><table class='table table-striped table-bordered table-hover table-checkable table-responsive'><thead class='cf'><tr><th data-class='expand'>Username/IVR Staff ID</th><th data-hide='phone'>Name</th><th data-hide='phone'>Date</th><th data-hide='phone'>Time</th><th data-hide='phone'>Clock Action</th><!--th>View Full Log</th--></tr></thead><tbody>";
 			$sids=$_POST['customerids'];
 			$sid_array=explode(',', $sids);
 			$strSql = "SELECT s.*,st.label as userRole FROM " . TBL_STAFF . " s inner join " . TBL_STAFFTYPE . " st on s.user_type=st.id where s.username IN($sids) and s.user_type >1  and s.site_id='" . $_SESSION['site_id'] . "'";
@@ -28,7 +28,7 @@ if($_POST['customerids']) {
                             $rowCount++;
 							$ivrdatetimestatus = explode(',', $staff_log[$objRow->username]);      
                             $scsinusr .= "<tr> 
-                                <td align='center'>".$objRow->username."</td><td align='center'>".$objRow->f_name." ".$objRow->l_name."</td><td align='center'>".$ivrdatetimestatus[0]."</td><td align='center'>".$ivrdatetimestatus[1]."</td><td align='center'>".$ivrdatetimestatus[2]."</td><td align='center'><a href='".ISP::AdminUrl('reports/report_ivr_log/?staffid='.$objRow->username)."'>View</a></td></tr>";        
+                                <td align='center'>".$objRow->username."</td><td align='center'>".$objRow->f_name." ".$objRow->l_name."</td><td align='center'>".$ivrdatetimestatus[0]."</td><td align='center'>".$ivrdatetimestatus[1]."</td><td align='center'>".$ivrdatetimestatus[2]."</td><!--td align='center'><a href='".ISP::AdminUrl('reports/report_ivr_log/?staffid='.$objRow->username)."'>View</a></td--></tr>";        
                 }                     
 			}
 			}               

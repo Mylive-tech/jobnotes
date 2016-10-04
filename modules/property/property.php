@@ -158,7 +158,7 @@ class JOBLOCATION extends JOBLOCATION_HTML_CONTENT
 		 }
 		 else
 		 {
-			$this->objDatabase->dbQuery("INSERT INTO ".TBL_STAFF_UPLOADED_PROPERTY_IMAGES." (staff_id, prop_id, date, images) values('".$_SESSION['adminid']."','".$_REQUEST['pid']."','".date('Y-m-d')."','".$galleryImages."')");
+			$this->objDatabase->dbQuery("INSERT INTO ".TBL_STAFF_UPLOADED_PROPERTY_IMAGES." (staff_id, prop_id, date, images) values('".$_SESSION['adminid']."','".$_REQUEST['pid']."','".date('Y-m-d H:i:s')."','".$galleryImages."')");
 		 }
 		 $ugal = $this->objDatabase->dbQuery("select user_gallery from ".TBL_JOBLOCATION." where id='".$_REQUEST['pid']."'");
 		 if($ugal->num_rows != 0){
@@ -260,7 +260,7 @@ class JOBLOCATION extends JOBLOCATION_HTML_CONTENT
       	     	   $this->objRecord=(object)$_POST;  // converion of Posted array to object message
       		   	   parent :: admin_Form($this->objRecord);
       	  	 }
-			  $this->objDatabase->dbQuery("INSERT ".TBL_PROPERTY_NOTES."(property_id, staff_id_or_admin, notes, date_added) values('".$this->intId."', '".$_SESSION['adminid']."', '".$_POST['md_importent_notes']."', '".date('Y-m-d h:i:s')."') ");
+			  $this->objDatabase->dbQuery("INSERT ".TBL_PROPERTY_NOTES."(property_id, staff_id_or_admin, notes, date_added) values('".$this->intId."', '".$_SESSION['adminid']."', '".$_POST['md_importent_notes']."', '".date('Y-m-d H:i:s')."') ");
 	 else:
            $this->objDatabase->updateForm($tbl); //Update Exisiting content	
 			//
@@ -614,7 +614,7 @@ class JOBLOCATION extends JOBLOCATION_HTML_CONTENT
    
    public function add_notes()
    {
-	   $this->objDatabase->dbQuery("INSERT INTO ".TBL_PROPERTY_NOTES."(property_id, staff_id_or_admin, notes, date_added) values('".$_POST['prop_id']."', '".$_POST['staff_id']."', '".$_POST['txt_note']."', '".date('Y-m-d h:i:s')."') ");
+	   $this->objDatabase->dbQuery("INSERT INTO ".TBL_PROPERTY_NOTES."(property_id, staff_id_or_admin, notes, date_added) values('".$_POST['prop_id']."', '".$_POST['staff_id']."', '".$_POST['txt_note']."', '".date('Y-m-d H:i:s')."') ");
    }
    
    public function edit_notes()

@@ -89,6 +89,11 @@ protected function reportsmanager($objRs)
 <script src="<?php echo SITE_URL;?>assets/js/dp/jquery.datetimepicker.full.js"></script>-->
   <script type="text/javascript">
   	$(document).ready(function() {
+		//
+		$('li#cr_nav').click(function(){
+			$(this).children('.customreports').stop().slideToggle(400);
+		});
+		//
 		
 		$(document).on('submit', '#exportform', function(){//alert('ddddd');
 			$("#report_content").html('<div class="rpt_loader"><img src="<?php echo SITE_URL.'/assets/img/ajax-loader.gif' ?>" /></div>');
@@ -128,9 +133,6 @@ protected function reportsmanager($objRs)
 			});
 		//$('.datetimepicker').datetimepicker();
 		$('.datatable').dataTable( {} );
-		$('.dropdown-toggle').click(function(){ alert("dddd");
-			$('.dropdown-toggle').dropdown();	
-		});
     });
 	function createsessionzip(taburl)
 	{
@@ -207,6 +209,7 @@ protected function reportsmanager($objRs)
        		}
 		});
 	}
+	
 	function searchreportcontent(taburl)
 	{
 		var datefrom = $('#datetimepicker_from').val();
@@ -286,14 +289,22 @@ $pimg = explode(',', $test->staffuploads); print_r($pimg);
 ?>
           <div id="navbar" class="tab_bar navbar-collapse collapse">
             <ul class="nav navbar-nav">
-            	<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Custom Reports<span class="caret"></span></a>
+                <li id="cr_nav"><a href="#">Custom Reports<span class="caret"></span></a>
+                     <ul class="customreports">
+                    <?php while($rname = $reportnames->fetch_object())
+                    { ?>
+                    <li><a href="#" onclick="loadreportcontent('<?php echo ISP :: AdminUrl('reports/listing/?rid='.$rname->report_id);?>')" class="customreportsubtabs" title="<?php echo $rname->report_name;?>"><?php echo $rname->report_name;?></a></li>
+                     <?php $i++; }?>
+                    </ul>
+                </li>
+            	<!--<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Custom Reports<span class="caret"></span></a>
                     <ul class="dropdown-menu">
                     <?php while($rname = $reportnames->fetch_object())
                     { ?>
                     <li><a href="#" onclick="loadreportcontent('<?php echo ISP :: AdminUrl('reports/listing/?rid='.$rname->report_id);?>')" class="customreportsubtabs" title="<?php echo $rname->report_name;?>"><?php echo $rname->report_name;?></a></li>
                      <?php $i++; }?>
                     </ul>
-              </li>
+              </li>-->
               <li><a href="#" onclick="loadreportcontent('<?php echo ISP :: AdminUrl('reports/report_ivr_log/');?>')" class="otherreportstabs" title="IVR Log">IVR Log</a></li>
     <li><a href="#" onclick="loadreportcontent('<?php echo ISP :: AdminUrl('reports/driver_report/');?>')"class="otherreportstabs" title="Driver Reports">Driver Reports</a></li>
     <li><a href="#" onclick="loadreportcontent('<?php echo ISP :: AdminUrl('reports/property_report/');?>')" class="otherreportstabs" title="Properties Report">Properties Reports</a></li>
@@ -445,20 +456,28 @@ protected function reportListing($objRs)
 				$fbody = json_decode($objRow->form_body);
 				if($thead == 1):
 				$fields = array('db_location','db_property','rid','user_id','timestamp');
-				/*echo '<pre>'; print_r($fbody); echo '<br/>'; 
-				print_r($fdata); echo '</pre>';*/
+				//echo '<pre>'; print_r($fbody); echo '<br/>'; 
+				//print_r($fdata); echo '</pre>';
+                                //echo $fbody[0]->label;
 				?>
                 <thead class="cf">
                     <tr> <?php if($objRow->report_name != 'Equip Problems to Report') { ?>
                          <th data-class="expand">Location</th>
                          <th data-hide="phone">Property</th>
                          <?php } ?>
-                         <?php foreach($fbody as $fb){  if($fb->field_type != 'fieldset'){
+                         <?php 
+                         $x = 0;
+                         $y = 0;
+                         foreach($fbody as $fb){  if($fb->field_type != 'fieldset'){
 							 if($fb->label == ''){ ?>
 							 <!--th data-hide="phone">&nbsp;</th-->
-							 <?php } else { ?>
+							 <?php } else {
+                                                             if($objRow->report_name == 'Subcontractors Equipment Usage') {
+                                                                 $fb->label = $fbody[$x]->label."<br>".$fb->label;
+                                                             }
+                                                             ?>
                              <th data-hide="phone"><?php echo $fb->label;?></th>
-                         <?php } } }?>
+                         <?php } $y++; } else { if($y>0) { $x = $x+3;} } }?>
                          <th data-hide="phone">Name</th>
                          <th data-hide="phone">Date</th>
                    </tr>
@@ -640,17 +659,18 @@ protected function reportListing($objRs)
    }
 protected function admin_report_ivr_log($objRs) {
 ?>
-<link rel="stylesheet" type="text/css" href="<?php echo SITE_URL;?>assets/css/dp/jquery.datetimepicker.css"/>
-<script src="<?php echo SITE_URL;?>assets/js/dp/jquery.datetimepicker.full.js"></script>
+<script type="text/javascript" src="<?php echo SITE_URL;?>assets/dp/jquery.simple-dtpicker.js"></script>
+<link type="text/css" href="<?php echo SITE_URL;?>assets/dp/jquery.simple-dtpicker.css" rel="stylesheet" />
 <script type="text/javascript">
-$(document).ready(function() {
-	//$('.datetimepicker').datetimepicker();
-	$('.datetimepicker').datetimepicker({
-        format : 'Y-m-d h:i A'
-    });
-   // $('.datatable').dataTable( {} );
-} ); 
-</script>         
+		$(function(){
+			$('.datetimepicker').appendDtpicker({
+				dateFormat: "YYYY-MM-DD H:mmTT", 	
+				"amPmInTimeList": true,
+				"closeOnSelected": true,
+				"autodateOnStart": false
+				});
+		});
+</script>        
 <!--<div id="content">			
   <div class="container">               
   <h4 class="text-left heding_6">Report Types</h4>
@@ -962,7 +982,7 @@ $(document).ready(function() {
 } 
 protected function admin_driver_report($objRs) {
 ?>
-<link rel="stylesheet" type="text/css" href="<?php echo SITE_URL;?>assets/css/dp/jquery.datetimepicker.css"/>
+<!--<link rel="stylesheet" type="text/css" href="<?php echo SITE_URL;?>assets/css/dp/jquery.datetimepicker.css"/>
 <script src="<?php echo SITE_URL;?>assets/js/dp/jquery.datetimepicker.full.js"></script>
 
 <script type="text/javascript">
@@ -970,13 +990,42 @@ protected function admin_driver_report($objRs) {
 $(document).ready(function() {
 	//$('.datetimepicker').datetimepicker();
 	$('.datetimepicker').datetimepicker({
-        format : 'Y-m-d h:i A',
+       	format : 'Y-m-d H:i A',
 		ampm: true,
-		use24hours: false,
+		//use24hours: true,
     });
     //$('.datatable').dataTable( {} );
 } ); 
-</script>         
+</script> -->
+<script type="text/javascript" src="<?php echo SITE_URL;?>assets/dp/jquery.simple-dtpicker.js"></script>
+<link type="text/css" href="<?php echo SITE_URL;?>assets/dp/jquery.simple-dtpicker.css" rel="stylesheet" />
+<script type="text/javascript">
+		$(function(){
+			$('.datetimepicker').appendDtpicker({
+				dateFormat: "YYYY-MM-DD H:mmTT", 	
+				"amPmInTimeList": true,
+				"closeOnSelected": true,
+				"autodateOnStart": false
+				});
+		});
+</script>
+<!--<link rel="stylesheet" media="all" type="text/css" href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css" />
+<link rel="stylesheet" media="all" type="text/css" href="<?php echo SITE_URL;?>assets/dp/jquery-ui-timepicker-addon.css" /> 
+<script type="text/javascript" src="http://code.jquery.com/ui/1.11.0/jquery-ui.min.js"></script>
+<script type="text/javascript" src="<?php echo SITE_URL;?>assets/dp/jquery-ui-timepicker-addon.js"></script>
+<script type="text/javascript">
+	
+$(function(){
+	$('.datetimepicker').datetimepicker({
+		controlType: 'select',
+		oneLine: true,
+		dateFormat: 'yy-mm-dd',
+		timeFormat: 'hh:mm tt'
+	});
+});
+	
+</script>-->
+       
 <!--<div id="content">			
   <div class="container">               
   <h4 class="text-left heding_6">Report Types</h4>-->
@@ -1096,9 +1145,11 @@ $(document).ready(function() {
                                 <td align="center"><?php echo $objRow->f_name;?></td>              
                                 <td align="center"><?php echo $objRow->l_name;?></td>              
                                 <td align="center">
-                                <?php  
-                                 $diff1 = strtotime($objRow->c_date) - strtotime($objRow->s_date);
-								echo round($diff1/3600, 2);
+                                <?php
+                                 	$diff1 = strtotime($objRow->c_date) - strtotime($objRow->s_date);
+									if($diff1 > 0)
+										echo round($diff1/3600, 2);
+									else echo 'N/A';
                                 //echo strftime('%b, %d %Y', $log['time_stamp']);?> <?php //echo ucfirst($log['clock_action_description']);?>
                                 </td>                             
                                 <td align="center"><a href="#" onclick="viewlog('<?php echo ISP :: AdminUrl('reports/driver_report_log/?driver_id='.$objRow->id);?>')">View</a><!--a href="<?php //echo ISP :: AdminUrl('index.php?dir=staff&task=edit-staff&id='.$objRow->id);?>">View</a--></td>
@@ -1236,8 +1287,12 @@ $(document).ready(function() {
                                 <td align="center"><?php echo date('Y-m-d h:i A', strtotime($objRow->starting_date));?></td>              
                                  <td align="center"><?php echo date('Y-m-d h:i A', strtotime($objRow->closing_date));?></td>              
                                 <td align="center">
-                                <?php $diff1 = strtotime($objRow->closing_date) - strtotime($objRow->starting_date);
-								echo round($diff1/3600, 2);
+                                <?php 
+								$diff1 = strtotime($objRow->closing_date) - strtotime($objRow->starting_date);
+								if($diff1 > 0)
+									echo round($diff1/3600, 2);
+								else 
+									echo 'N/A';
                                 //echo strftime('%b, %d %Y', $log['time_stamp']);?> <?php //echo ucfirst($log['clock_action_description']);?>
                                 </td>                             
                                 <!--<td align="center"><a href="<?php //echo ISP :: AdminUrl('index.php?dir=staff&task=edit-staff&id='.$objRow->id);?>">View</a></td>
@@ -1277,6 +1332,10 @@ protected function admin_property_report($objRs)
 				//alert(pids + "ddd");
 				if(pids != ''){
 					$('.export_props').attr('href', '<?php echo ISP :: AdminUrl('reports/direct/');?>?cjid='+pids); 
+				}
+				else
+				{
+					$('.export_props').attr('href', '<?php echo ISP :: AdminUrl('reports/direct/');?>'); 
 				}
 				return true;
 			});
@@ -1357,6 +1416,22 @@ protected function admin_property_report($objRs)
     <!--=== Normal ===--> 
     <p>
     <form action="" method="get">
+    	
+        <select name="locationname" id="locationname">
+        	<option value="">Select Location</option>
+             <?php  $reportdetails = $this->property_report_details(); $loc = array();
+			while($rd = $reportdetails->fetch_object())  // Fetch the result in the object array
+			  {
+				  if(!in_array($rd->location_id, $loc)){
+					  if($rd->location_id == $_GET['locationname']) {$sel = 'selected="selected"';}
+					  else {$sel='';}
+					 echo '<option value="'.$rd->location_id.'" '.$sel.'>'.$this->objFunction->iFind(TBL_SERVICE,'name', array('id'=>$rd->location_id)).'</option>';
+					 $loc[] = $rd->location_id; 
+				  }
+			  }
+			?>
+        </select>
+        
         <select name="propertyname" id="propertyname">
         	<option value="">Select Property</option>
             <?php  $reportdetails = $this->property_report_details();
@@ -1368,17 +1443,7 @@ protected function admin_property_report($objRs)
 			  }
 			?>
         </select>
-        <select name="locationname" id="locationname">
-        	<option value="">Select Location</option>
-             <?php  $reportdetails = $this->property_report_details();
-			while($rd = $reportdetails->fetch_object())  // Fetch the result in the object array
-			  {
-				  if($rd->location_id == $_GET['locationname']) {$sel = 'selected="selected"';}
-				  else {$sel='';}
-				 echo '<option value="'.$rd->location_id.'" '.$sel.'>'.$this->objFunction->iFind(TBL_SERVICE,'name', array('id'=>$rd->location_id)).'</option>'; 
-			  }
-			?>
-        </select>
+        
         <select name="assignedto" id="assignedto">
         	<option value="">Assigned to</option>
              <?php $reportdetails = $this->property_assign_details();
@@ -1420,7 +1485,8 @@ protected function admin_property_report($objRs)
             </div>                                                 
               <table class="table table-striped table-bordered table-hover table-checkable table-responsive datatable">                                                     
                 <thead class="cf">							                   
-                  <tr>                                     
+                  <tr>
+                  	<th class="hiddencolumn"></th>                                     
                     <th align="center">S.N.</th>
                      <th align="center" data-hide="phone" class="hideexport divchecker"><input type="checkbox" class="uniform" name="del[]" onclick="selectDeselect('delete[]');"/> 								                     
                     <th align="center"  data-class="expand">Job Location</th>								                     
@@ -1454,6 +1520,7 @@ protected function admin_property_report($objRs)
 				
                                     			?>         			                   
                   <tr>
+                  <td class="hiddencolumn"></td>
                   <td><?php echo $intI-1;?></td>
                    <td align="center" class="hideexport divchecker"><input type="checkbox" class="uniform propcheck" name="delete[]" value="<?php echo $objRow->id;?>" /></td> 
                       <td><?php echo $objRow->job_listing;?>
@@ -1519,10 +1586,24 @@ protected function admin_property_report($objRs)
 </div>-->
 <?php 
    }  // End of Function 
-
-protected function admin_property_jobHistory($objRs1, $objRow)
+protected function admin_m_property_jobHistory($objRs1, $objRow)
 {
-   ?> 
+	$report_ids = $this->getReportsDetails($objRow->id);
+	//print_r($report_ids);
+   ?>
+   <script type="text/javascript"> 
+   function jobhistoryloadreportcontent(taburl)
+	{
+		$("#jobhistoryreportdata").html('<div class="rpt_loader"><img src="<?php echo SITE_URL.'/assets/img/ajax-loader.gif' ?>" /></div>');
+		$.ajax({
+			url: taburl, 
+			success: function(result){
+				$("#jobhistoryreportdata").html(result);
+			}
+		});
+		return false;
+	}
+	</script>
 <!--<script type="text/javascript">
 $(document).ready(function() {
     $('.datatable').dataTable( {} );
@@ -1530,7 +1611,7 @@ $(document).ready(function() {
 </script> -->     
 <div id="content">			   
   <div class="container">	
- <!-- <div class="crumbs">
+  <!--<div class="crumbs">
 	<ul id="breadcrumbs" class="breadcrumb">
 		<li>
 			<i class="icon-home"></i>
@@ -1562,7 +1643,8 @@ $(document).ready(function() {
             </div>                                                 
               <table class="table table-striped table-bordered table-hover table-checkable table-responsive datatable1">                                                     
                 <thead class="cf">							                   
-                  <tr>                                     
+                  <tr> 
+                  <th class="hiddencolumn"></th>                                    
                     <th align="center">S.N.</th>								                     
                     <th align="center"  data-class="expand">Job Location</th>								                     
                     <th align="center" data-hide="phone">Address</th>                                     
@@ -1585,10 +1667,11 @@ $(document).ready(function() {
 				
                                     			?>         			                   
                   <tr>
+                  <td class="hiddencolumn"></td>
                   <td><?php echo $intI-1;?></td>
                       <td><?php echo $objRow->job_listing;?></td> 
                       <td><?php echo $objRow->location_address;?></td>
-                      <td><?php $rowD = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow->assigned_to)); echo $rowD[0]->f_name.' '.$rowD[0]->l_name;?></td>
+                      <td><?php /*$rowD = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow->assigned_to)); echo $rowD[0]->f_name.' '.$rowD[0]->l_name;*/ echo ucfirst(str_replace('_',' ',$objRow->assigned_to));?></td>
                       <td><?php echo $objRow->phn_no;?></td> 
                       <!--td><?php echo $objRow->importent_notes;?></td-->
                       <td><?php echo $this->objFunction->iFind(TBL_SERVICE,'name', array('id'=>$objRow->location_id));?>                      
@@ -1598,24 +1681,37 @@ $(document).ready(function() {
 					 	echo date('Y-m-d h:i A',strtotime($objRow->completion_date));
 					 else
 					 	echo 'N/A';?></td>
-                     <td align="center" class="hideexport"><!--<a href="<?php echo ISP :: AdminUrl('reports/reset-property/id/'.$objRow->id);?>">Reset</a>-->
-                     <a onclick="resetpropertydata('<?php echo ISP :: AdminUrl('reports/reset-property/id/'.$objRow->id);?>'); return false;" href="javascript:void(0)">Reset</a>
+                     <td align="center" class="hideexport"><a href="<?php echo ISP :: AdminUrl('reports/reset-property/id/'.$objRow->id);?>">Reset</a>
+                    <!-- <a onclick="resetpropertydata('<?php echo ISP :: AdminUrl('reports/reset-property/id/'.$objRow->id);?>'); return false;" href="javascript:void(0)">Reset</a>-->
                      </td>                               
                    </tr>                            
          
                 </tbody>                       
-              </table>  
-              
+              </table>
+              <br/>  
+              <p><strong>Submitted Reports :</strong></p>
+              	<ul class="jobhistoryproperty">
+					<?php $repid = array();
+					 while($rids = $report_ids->fetch_object())
+                    { 
+					if(!in_array($rids->report_id, $repid)){?>
+                        <li><a href="javascript:void(0)" onclick="jobhistoryloadreportcontent('<?php echo ISP :: AdminUrl('reports/jobhistory-property-reports/?rid='.$rids->report_id.'&pid='.$objRow->id);?>'); return false;"><?php echo $this->objFunction->iFind(TBL_REPORTS, 'report_name', array('report_id'=>$rids->report_id)); ?></a></li>
+                     <?php $repid[] = $rids->report_id;
+					}
+					}?>
+                </ul>
+                <div id="jobhistoryreportdata"></div>
               
               <table id="dataTables-example" class="table table-striped table-bordered table-hover table-checkable table-responsive datatable">                                                     
                 <thead class="cf">							                   
-                  <tr>                                     
+                  <tr>    
+                  <th class="hiddencolumn"></th>                                 
                     <th align="center">S.N.</th>								                     
                     <th align="center"  data-class="expand">Job Started On</th>								                     
                     <th align="center" data-hide="phone">Job Started By</th>                                     
                     <th align="center" data-hide="phone">Completed On</th>                                     
                     <th align="center" data-class="expand">Completed By</th>                      
-                    <th align="center" data-class="expand">Uploaed Images</th>                                     
+                    <th align="center" data-class="expand">Uploaded Images</th>                                     
                           
                   </tr>						                 
                 </thead>						                 
@@ -1634,6 +1730,7 @@ $(document).ready(function() {
 				
                                     			?>         			                   
                   <tr>
+                  <td class="hiddencolumn"></td>
                   <td><?php echo $intI-1;?></td>
                       <td><?php
 					  if($objRow1->starting_date == '0000-00-00 00:00:00'){echo 'N/A';}
@@ -1648,12 +1745,12 @@ $(document).ready(function() {
                       	<?php //echo SITE_URL.'upload/'.$objRow1->Images; 
 						if ($objRow1->Images != '' && strpos($objRow1->Images, ',') !== false) { 
 						$simg = explode(',', $objRow1->Images);
-						foreach($simg as $si){ echo '<img src="'.SITE_URL.'/upload/'.$si.'">&nbsp;&nbsp;&nbsp;';
+						foreach($simg as $si){ echo '<img src="'.SITE_URL.'/upload/'.$si.'">&nbsp;'.$rowD[0]->f_name.' '.$rowD[0]->l_name.'('.date('Y-m-d h:i A',strtotime($objRow1->date)).') &nbsp;&nbsp;&nbsp;';
 						}
 						}
 						elseif ($objRow1->Images != '' && strpos($objRow1->Images, ',') === false)
 						{
-							echo '<img src="'.SITE_URL.'/upload/'.$objRow1->Images.'">';
+							echo '<img src="'.SITE_URL.'/upload/'.$objRow1->Images.'" width="60">&nbsp;' .$rowD[0]->f_name.' '.$rowD[0]->l_name.'('.date('Y-m-d h:i A',strtotime($objRow1->date)).')';
 						}
 						else { echo '&nbsp;';}?>
                       </td>
@@ -1681,6 +1778,199 @@ $(document).ready(function() {
    </div>			   
   <!--/.container -->
 </div>
+<?php 
+   }  // End of Function
+protected function admin_property_jobHistory($objRs1, $objRow)
+{
+	$report_ids = $this->getReportsDetails($objRow->id);
+   ?>
+   <script type="text/javascript"> 
+   function jobhistoryloadreportcontent(taburl)
+	{
+		$("#jobhistoryreportdata").html('<div class="rpt_loader"><img src="<?php echo SITE_URL.'/assets/img/ajax-loader.gif' ?>" /></div>');
+		$.ajax({
+			url: taburl, 
+			success: function(result){
+				$("#jobhistoryreportdata").html(result);
+			}
+		});
+		return false;
+	}
+	</script> 
+<!--<script type="text/javascript">
+$(document).ready(function() {
+    $('.datatable').dataTable( {} );
+} );
+</script> -->     
+<!--<div id="content">			   
+  <div class="container">	
+  <div class="crumbs">
+	<ul id="breadcrumbs" class="breadcrumb">
+		<li>
+			<i class="icon-home"></i>
+			<a href="<?php echo ISP::AdminUrl('dashboard/admin_dashboard/');?>">Dashboard</a>
+		</li>
+    <li>
+			<i class="current"></i>
+			<a href="<?php echo ISP::AdminUrl('reports/property_report/');?>">Property Reports</a>
+		</li>
+		<li class="current">
+			<a href="#" title="">Job History</a>
+		</li>
+	</ul>
+</div>
+-->			     
+    <!--=== Normal ===--> 				     
+    <div class="row">					       
+      <div class="col-md-12">						         
+        <h4 class="text-left heding_6">Job History</h4>						         
+        <div class="widget box box-vas">							 							           
+          <div class="widget-content widget-content-vls">                                             
+            <form method="post" name="frmListing"> 
+            <div class="col-md-12 text-right" style="padding-bottom:10px">
+            
+              <span>										                 
+               <!-- <a href="javascript: void(0);" onclick="exportTableToCSV.apply(this, [$('#dataTables-example'), 'export-history-<?php echo $objRow->job_listing;?>.xls']);" class="btn btn-info">Export</a>-->
+                <a href="<?php echo ISP :: AdminUrl('reports/direct/?jid='.$objRow->id);?>" class="btn btn-info">Export</a>								               
+              </span> 
+            </div>                                                 
+              <table class="table table-striped table-bordered table-hover table-checkable table-responsive datatable1">                                                     
+                <thead class="cf">							                   
+                  <tr> 
+                  <th class="hiddencolumn"></th>                                    
+                    <th align="center">S.N.</th>								                     
+                    <th align="center"  data-class="expand">Job Location</th>								                     
+                    <th align="center" data-hide="phone">Address</th>                                     
+                    <th align="center" data-hide="phone">Assigned To</th>                                     
+                    <th align="center" data-hide="phone">Phone Number</th>                                     
+					<!--th align="center" data-hide="phone">Important Notes</th-->                                     
+                    <th align="center" data-hide="phone">Assigned Location</th>                                            
+                    <th align="center" data-hide="phone" class="hideexport">Completion Date</th>                                                                                                                                                                                                                                                                                               
+				            <th align="center" data-hide="phone" class="hideexport">Action</th>       
+                  </tr>						                 
+                </thead>						                 
+                <tbody>                       
+<?php
+	    $strStatus = ($objRow->status)?'0':'1';
+				
+				if($intI++%2==0)  // Condition for alternate rows color
+				   $strCss='evenTr';
+				else
+				   $strCss='oddTr';
+				
+                                    			?>         			                   
+                  <tr>
+                  <td class="hiddencolumn"></td>
+                  <td><?php echo $intI-1;?></td>
+                      <td><?php echo $objRow->job_listing;?></td> 
+                      <td><?php echo $objRow->location_address;?></td>
+                      <td><?php /*$rowD = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow->assigned_to)); echo $rowD[0]->f_name.' '.$rowD[0]->l_name;*/echo ucfirst(str_replace('_',' ',$objRow->assigned_to));?></td>
+                      <td><?php echo $objRow->phn_no;?></td> 
+                      <!--td><?php echo $objRow->importent_notes;?></td-->
+                      <td><?php echo $this->objFunction->iFind(TBL_SERVICE,'name', array('id'=>$objRow->location_id));?>                      
+                      </td>                                    
+                     <td align="center" class="hideexport"><?php
+					 if($objRow->completion_date != '0000-00-00 00:00:00') 
+					 	echo date('Y-m-d h:i A',strtotime($objRow->completion_date));
+					 else
+					 	echo 'N/A';?></td>
+                     <td align="center" class="hideexport"><!--<a href="<?php echo ISP :: AdminUrl('reports/reset-property/id/'.$objRow->id);?>">Reset</a>-->
+                     <a onclick="resetpropertydata('<?php echo ISP :: AdminUrl('reports/reset-property/id/'.$objRow->id);?>'); return false;" href="javascript:void(0)">Reset</a>
+                     </td>                               
+                   </tr>                            
+         
+                </tbody>                       
+              </table>  
+              
+               <br/>  
+              <p><strong>Submitted Reports :</strong></p>
+              	<ul class="jobhistoryproperty">
+					<?php $repid = array();
+					 while($rids = $report_ids->fetch_object())
+                    { 
+					if(!in_array($rids->report_id, $repid)){?>
+                        <li><a href="javascript:void(0)" onclick="jobhistoryloadreportcontent('<?php echo ISP :: AdminUrl('reports/jobhistory-property-reports/?rid='.$rids->report_id.'&pid='.$objRow->id);?>'); return false;"><?php echo $this->objFunction->iFind(TBL_REPORTS, 'report_name', array('report_id'=>$rids->report_id)); ?></a></li>
+                     <?php $repid[] = $rids->report_id;
+					}
+					}?>
+                </ul>
+                <div id="jobhistoryreportdata"></div>
+              <table id="dataTables-example" class="table table-striped table-bordered table-hover table-checkable table-responsive datatable">                                                     
+                <thead class="cf">							                   
+                  <tr>    
+                  <th class="hiddencolumn"></th>                                 
+                    <th align="center">S.N.</th>								                     
+                    <th align="center"  data-class="expand">Job Started On</th>								                     
+                    <th align="center" data-hide="phone">Job Started By</th>                                     
+                    <th align="center" data-hide="phone">Completed On</th>                                     
+                    <th align="center" data-class="expand">Completed By</th>                      
+                    <th align="center" data-class="expand">Uploaded Images</th>                                     
+                          
+                  </tr>						                 
+                </thead>						                 
+                <tbody>                       
+<?php
+			
+			if($objRs1): // Check for the resource exists or not
+			 $intI=1;
+			 
+			  while($objRow1 = $objRs1->fetch_object())  // Fetch the result in the object array
+			  { //print_r($objRow1);
+    				if($intI++%2==0)  // Condition for alternate rows color
+    				   $strCss='evenTr';
+    				else
+    				   $strCss='oddTr';
+				
+                                    			?>         			                   
+                  <tr>
+                  <td class="hiddencolumn"></td>
+                  <td><?php echo $intI-1;?></td>
+                      <td><?php
+					  if($objRow1->starting_date == '0000-00-00 00:00:00'){echo 'N/A';}
+					   else {echo date('Y-m-d h:i A', strtotime($objRow1->starting_date));}?></td> 
+                      <td><?php $rowD = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow1->started_by)); echo $rowD[0]->f_name.' '.$rowD[0]->l_name;?></td>
+                      <td><?php 
+                      if($objRow1->closed_by>0){
+                      echo date('Y-m-d h:i A', strtotime($objRow1->closing_date)); } else echo 'In Progress';?></td>
+                      <td>
+                      <?php if($objRow1->closed_by>0){ $rowD = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow1->closed_by)); echo $rowD[0]->f_name.' '.$rowD[0]->l_name; } else echo 'N/A'; ?></td>
+                      <td>
+                      	<?php //echo SITE_URL.'upload/'.$objRow1->Images; 
+						if ($objRow1->Images != '' && strpos($objRow1->Images, ',') !== false) { 
+						$simg = explode(',', $objRow1->Images);
+						foreach($simg as $si){ echo '<img src="'.SITE_URL.'/upload/'.$si.'">&nbsp;'.$rowD[0]->f_name.' '.$rowD[0]->l_name.'('.date('Y-m-d h:i A',strtotime($objRow1->date)).')&nbsp;&nbsp;&nbsp;';
+						}
+						}
+						elseif ($objRow1->Images != '' && strpos($objRow1->Images, ',') === false)
+						{
+							echo '<img src="'.SITE_URL.'/upload/'.$objRow1->Images.'" width="60">&nbsp;'.$rowD[0]->f_name.' '.$rowD[0]->l_name.'('.date('Y-m-d h:i A',strtotime($objRow1->date)).')';
+						}
+						else { echo '&nbsp;';}?>
+                      </td>
+                     </tr>                            
+<?php
+			   }
+      else:
+			       echo '<tr><td colspan="5" class="errNoRecord">No Record Found!</td></tr>';
+			endif;
+?>                            
+                </tbody>                       
+              </table>           
+                              
+<?php
+			  
+                            			 ?>                          
+              <input type="hidden" name="status" value="1" />                       
+              <input type="hidden" name="task" value="modifyjoblocation" />                   
+            </form>						 		           
+          </div>						         
+        </div>					       
+      </div>				                                       
+    </div>				     
+    <!-- /Normal --> 			   
+   <!--</div>			   
+  /.container 
+</div>-->
 <?php 
    }  // End of Function 
    protected function admin_piechartuserdetails($objRs)
@@ -2241,14 +2531,26 @@ protected function showFormSubmission($objRow, $formControls, $form_token, $post
     
  protected function exportReports($export_file) {
 ?>
-<link rel="stylesheet" type="text/css" href="<?php echo SITE_URL;?>assets/css/dp/jquery.datetimepicker.css"/>
-<script src="<?php echo SITE_URL;?>assets/js/dp/jquery.datetimepicker.full.js"></script>
+<!--<link rel="stylesheet" type="text/css" href="<?php echo SITE_URL;?>assets/css/dp/jquery.datetimepicker.css"/>
+<script src="<?php echo SITE_URL;?>assets/js/dp/jquery.datetimepicker.full.js"></script>-->
+<script type="text/javascript" src="<?php echo SITE_URL;?>assets/dp/jquery.simple-dtpicker.js"></script>
+<link type="text/css" href="<?php echo SITE_URL;?>assets/dp/jquery.simple-dtpicker.css" rel="stylesheet" />
+<script type="text/javascript">
+		$(function(){
+			$('.datetimepicker').appendDtpicker({
+				dateFormat: "YYYY-MM-DD H:mmTT", 	
+				"amPmInTimeList": true,
+				"closeOnSelected": true,
+				"autodateOnStart": false
+				});
+		});
+</script>
 <script type="text/javascript">
 $(document).ready(function() {
 	//$('.datetimepicker').datetimepicker();
-	 $('.datetimepicker').datetimepicker({
+	/* $('.datetimepicker').datetimepicker({
         format : 'Y-m-d h:i A'
-    });
+    });*/
 	$('.cdaterange').click(function(){
 			var id = $(this).val();
 			$('#'+id).show();
@@ -2314,7 +2616,7 @@ $(document).ready(function() {
 											<input type="checkbox" class="uniform" value="all_reports" name="export[]">Export All Reports
 										</td>-->
 										<td>
-											<input type="checkbox"  class="uniform"  value="all_state_reports" name="export[]" onclick=" $('#allstate_report').toggle(); $('#allstate_report').find('select').attr('disabled',!this.checked);">All State Reports
+											<input type="checkbox"  class="uniform"  value="all_state_reports" name="export[]" onclick=" $('#allstate_report').toggle(); $('#allstate_report').find('select').attr('disabled',!this.checked);">All Property Reports
 										</td>
 										<td>
 											<input type="checkbox" class="uniform"  value="single_location_reports" name="export[]" onclick=" $('#singlelocation_report').toggle(); $('#singlelocation_report').find('select').attr('disabled',!this.checked);">Single Location Reports
@@ -2494,6 +2796,24 @@ $(document).ready(function() {
     }
 protected function SessionSeasonReset($objRs) {
 ?>
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('.del_sessionzip').click(function(){ 
+				var sids = $('.sessionzipcheck:checked').map(function() {
+    			return this.value;
+				}).get().join(',');
+				if(sids != ''){
+					$('.del_sessionzip').attr('href', '<?php echo ISP :: AdminUrl('reports/remove-bulk-sessionzip/');?>?sszipid='+sids); 
+					$("#report_content").html('<div class="rpt_loader"><img src="<?php echo SITE_URL.'/assets/img/ajax-loader.gif' ?>" /></div>');
+					$.ajax({url: '<?php echo ISP :: AdminUrl('reports/remove-bulk-sessionzip/');?>?sszipid='+sids, success: function(result){ 
+          	 		$.ajax({url: '<?php echo ISP :: AdminUrl('reports/session_season_reset/');?>', success: function(result){$("#report_content").html(result);}});
+       			}
+				});
+			}
+				return false;
+			});
+	});
+</script>
 <!--<div id="content">      
 	 <div class="container"> 
      <h4 class="text-left heding_6">Report Types</h4>
@@ -2548,13 +2868,17 @@ protected function SessionSeasonReset($objRs) {
                             </a>
                             </li>
                         </ul>
+                        <div class="col-md-12 text-right" style="padding-bottom:10px">
+                        	<a href="<?php echo ISP :: AdminUrl('reports/remove-bulk-sessionzip/');?>" class="btn btn-danger btn-ms del_sessionzip">Delete</a>
+                        </div>
                         <table class="table table-striped table-bordered table-hover table-checkable table-responsive datatable">	 	
                         	<thead class="cf">							                   
                         		<tr>
                                     <th align="center"  data-class="expand">File Name</th>
                                     <th align="center" data-hide="phone">Creation Date</th>
                                     <th align="center" data-hide="phone">Download File</th>
-                                    <th align="center" data-hide="phone">Remove File</th>					                   
+                                    <th align="center" data-hide="phone">Remove File</th>
+                                    <th align="center" data-hide="phone" class="hideexport divchecker"><input type="checkbox" class="uniform" name="del[]" onclick="selectDeselect('delete[]');"/></th>					                   
                         		</tr>						                 
                         	</thead>						                 
                         	<tbody>
@@ -2576,7 +2900,8 @@ protected function SessionSeasonReset($objRs) {
                                 <td><!--a href="<?php echo ISP :: AdminUrl();?>/index.php?dir=reports&task=removesessionzip&file=<?php echo $objRow->filename; ?>" onclick="return confirm('Are you sure to Delete the file permanently?');">Remove</a-->
                                 
                                  <a href="javascript:void(0)" onclick="removesessionzip('<?php echo ISP :: AdminUrl();?>/index.php?dir=reports&task=removesessionzip&file=<?php echo $objRow->filename; ?>'); return false;">Remove</a>
-                                </td>                        
+                                </td>
+                                 <td class="hideexport divchecker"><input type="checkbox" class="uniform sessionzipcheck" name="delete[]" value="<?php echo $objRow->id;?>" /></td>                        
                                 </tr>                            
                                 <?php  
                                 }
@@ -2785,7 +3110,8 @@ $(document).ready(function() {
             </div>                                                 
               <table class="table table-striped table-bordered table-hover table-checkable table-responsive datatable">                                                     
                 <thead class="cf">							                   
-                  <tr>                                     
+                  <tr>
+                  <th class="hiddencolumn"></th>                                     
                     <th align="center">S.N.</th>								                     
                     <th align="center"  data-class="expand">Job Location</th>								                     
                     <th align="center" data-hide="phone">Address</th>                                     
@@ -2815,6 +3141,7 @@ $(document).ready(function() {
 				
                                     			?>         			                   
                   <tr>
+                  <td class="hiddencolumn"></td>
                   <td><?php echo $intI-1;?></td>
                       <td><?php echo $objRow->job_listing;?></td> 
                       <td><?php echo $objRow->location_address;?></td>

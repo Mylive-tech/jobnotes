@@ -530,8 +530,9 @@ $(document).ready(function() {
             </div>                                                 
               <table class="table table-striped table-bordered table-hover table-checkable table-responsive datatable">                                                     
                 <thead class="cf">							                   
-                  <tr>                                     
-                    <th align="center">S.N.</th>								                     
+                  <tr>
+					<th class="hiddencolumn"></th>		
+                    <th align="center" title="this is for section number">S.N.</th>								                     
                     <th align="center"  data-class="expand">Job Location</th>
 					<th align="center" data-hide="phone">Assigned Location</th> 						
                     <th align="center" data-hide="phone">Address</th>                                     
@@ -563,10 +564,11 @@ $(document).ready(function() {
 				
                                     			?>         			                   
                   <tr>
+				  <td class="hiddencolumn"></td>
                   <td><?php echo $intI-1;?></td>
                       <td><?php echo $objRow->job_listing;?>
                       <br> <br>
-                      <a class="btn btn-danger btn-ms" href="<?php echo ISP :: AdminUrl('reports/job-history/id/'.$objRow->id);?>">History</a>
+                      <a class="btn btn-danger btn-ms" href="<?php echo ISP :: AdminUrl('reports/jobhistory/id/'.$objRow->id);?>">History</a>
                       </td> 
 					  <td><?php echo $this->objFunction->iFind(TBL_SERVICE,'name', array('id'=>$objRow->location_id)); ?></td>
                       <td><?php echo $objRow->location_address;?></td>
@@ -670,7 +672,8 @@ $(document).ready(function() {
             </div>                                                 
               <table class="table table-striped table-bordered table-hover table-checkable table-responsive datatable1">                                                     
                 <thead class="cf">							                   
-                  <tr>                                     
+                  <tr> 
+                  	<th class="hiddencolumn"></th>                                    
                     <th align="center">S.N.</th>								                     
                     <th align="center"  data-class="expand">Job Location</th>								                     
                     <th align="center" data-hide="phone">Address</th>                                     
@@ -693,6 +696,7 @@ $(document).ready(function() {
 				
                                     			?>         			                   
                   <tr>
+                  <td class="hiddencolumn"></td>
                   <td><?php echo $intI-1;?></td>
                       <td><?php echo $objRow->job_listing;?></td> 
                       <td><?php echo $objRow->location_address;?></td>
@@ -711,7 +715,8 @@ $(document).ready(function() {
               
               <table id="dataTables-example" class="table table-striped table-bordered table-hover table-checkable table-responsive datatable">                                                     
                 <thead class="cf">							                   
-                  <tr>                                     
+                  <tr>
+                  	<th class="hiddencolumn"></th>                                     
                     <th align="center">S.N.</th>								                     
                     <th align="center"  data-class="expand">Job Started On</th>								                     
                     <th align="center" data-hide="phone">Job Started By</th>                                     
@@ -735,6 +740,7 @@ $(document).ready(function() {
 				
                                     			?>         			                   
                   <tr>
+                  <td class="hiddencolumn"></td>
                   <td><?php echo $intI-1;?></td>
                       <td><?php echo $objRow1->start_date;?></td> 
                       <td><?php $rowD = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow1->started_by)); echo $rowD[0]->f_name.' '.$rowD[0]->l_name;?></td>
@@ -814,7 +820,8 @@ $(document).ready(function() {
             </div>                                                 
               <table class="table table-striped table-bordered table-hover table-checkable table-responsive datatable">                                                     
                 <thead class="cf">							                   
-                  <tr>                                     
+                  <tr> 
+                  	<th class="hiddencolumn"></th>                                    
                     <th align="center">S.N.</th>								                     
                     <th align="center"  data-class="expand">Job Location</th>								                     
                     <th align="center" data-hide="phone">Address</th>                                     
@@ -844,6 +851,7 @@ $(document).ready(function() {
 				
                                     			?>         			                   
                   <tr>
+                  <td class="hiddencolumn"></td>
                   <td><?php echo $intI-1;?></td>
                       <td><?php echo $objRow->job_listing;?></td> 
                       <td><?php echo $objRow->location_address;?></td>
