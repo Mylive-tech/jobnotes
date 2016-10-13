@@ -584,7 +584,7 @@ if($currentPageUrl== ISP::AdminUrl('staff/staff_ivr_log/'))
 								</a>
 
 							</li>
-                            <li>
+                            <!--<li>
 
 								<a href="<?php echo ISP :: AdminUrl('reports/completed-properties/');?>" class="<?php echo $completeProp;?>">
 
@@ -594,7 +594,7 @@ if($currentPageUrl== ISP::AdminUrl('staff/staff_ivr_log/'))
 
 								</a>
 
-							</li>
+							</li>-->
 
 	<?php } ?>						
 

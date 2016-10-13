@@ -37,7 +37,20 @@ class DSHBOARD_HTML_CONTENT
             $("a.padding10").parent().removeClass("activelink");
             currentlink.parent().addClass("activelink");
         }   
-
+		
+		//
+		function getdetailsfromzip(wurl)
+		{
+			$(".weather").html('<div class="rpt_loader"><img src="<?php echo SITE_URL.'/assets/img/ajax-loader.gif' ?>" /></div>');
+			$.ajax({url: wurl, 
+					method: "POST",
+					data: { zipcode: $('#zip').val()},
+					success: function(result){ 
+						$(".3_odd ").html(result);
+					}
+				});
+				return false;
+		}
     </script>                      
 <div id="content">			   
   <div class="container">           
@@ -126,9 +139,10 @@ class DSHBOARD_HTML_CONTENT
       <div class="col-md-12 nopadding" id="widgetsorting">
                 <div class="col-md-6 col-sm-12 nopadding">
                     <ul class="sortable nopadding col-md-12">
-                    <?php
+                    <?php $i=1;
                         foreach($odd_content as $odd_widget_value) {
-                            echo '<li class="ui-state-default nopadding col-md-12 col-sm-12 widget box">'.$odd_widget_value.'</li>';                    
+                            echo '<li class="'.$i.'_odd ui-state-default nopadding col-md-12 col-sm-12 widget box">'.$odd_widget_value.'</li>';
+							$i++;                    
                         }
                     ?>    
                     </ul>
@@ -138,7 +152,7 @@ class DSHBOARD_HTML_CONTENT
                     <?php $i=1;
                         foreach($even_content as $even_widget_value) {
 							if($i != 1)
-                            	echo '<li class="ui-state-default nopadding widget box col-md-12 col-sm-12 text-left">'.$even_widget_value.'</li>';                    
+                            	echo '<li class="'.$i.'_even ui-state-default nopadding widget box col-md-12 col-sm-12 text-left">'.$even_widget_value.'</li>';                    
 							$i++;	
                         }
                     ?>

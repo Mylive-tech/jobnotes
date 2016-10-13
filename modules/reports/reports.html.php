@@ -183,11 +183,16 @@ protected function reportsmanager($objRs)
 			return false;
 	}
 	
-	function resetpropertydata(taburl)
+	function resetpropertydata(taburl, pid)
 	{
 		$("#report_content").html('<div class="rpt_loader"><img src="<?php echo SITE_URL.'/assets/img/ajax-loader.gif' ?>" /></div>');
-		$.ajax({url: taburl, success: function(result){
-          	 		$.ajax({url: '<?php echo ISP :: AdminUrl('reports/property_report/');?>', success: function(result){$("#report_content").html(result);}});
+		$.ajax({url: taburl, success: function(response){ alert(response);
+          	 		$.ajax({url: '<?php echo ISP :: AdminUrl('reports/job-history/id/');?>'+pid, success: function(result){$("#report_content").html(result);}});
+					$('#download_link').attr('href','<?php echo SITE_URL;?>'+response);
+					if(response != 0){
+                   		$('#download_link')[0].click();
+						return false;
+					}
        			}
 			});
 			return false;
@@ -261,8 +266,26 @@ protected function reportsmanager($objRs)
 	function fn_exportreports(frmobj)
 	{
 		$("#report_content").html('<div class="rpt_loader"><img src="<?php echo SITE_URL.'/assets/img/ajax-loader.gif' ?>" /></div>');
-		$.ajax({type: "POST", url: '<?php echo ISP :: AdminUrl('reports/export-report/');?>', data: frmobj.serialize(), success: function(result){ alert(result); return false;
+		$.ajax({type: "POST", url: '<?php echo ISP :: AdminUrl('reports/export-report/');?>', data: frmobj.serialize(), success: function(result){ //alert(result); return false;
           	 		$.ajax({url: '<?php echo ISP :: AdminUrl('reports/export-reports/');?>', success: function(result){$("#report_content").html(result);}});
+       			}
+			});
+			return false;
+	}
+	function fn_resetalljob()
+	{
+		$("#report_content").html('<div class="rpt_loader"><img src="<?php echo SITE_URL.'/assets/img/ajax-loader.gif' ?>" /></div>');
+		$.ajax({type: "POST", url: '<?php echo ISP :: AdminUrl('reports/reset-all-property/');?>', data: frmobj.serialize(), success: function(result){
+          	 		$.ajax({url: '<?php echo ISP :: AdminUrl('reports/completed-properties/');?>', success: function(result){$("#report_content").html(result);}});
+       			}
+			});
+			return false;
+	}
+	function fn_resetjob(pid)
+	{
+		$("#report_content").html('<div class="rpt_loader"><img src="<?php echo SITE_URL.'/assets/img/ajax-loader.gif' ?>" /></div>');
+		$.ajax({type: "POST", url: '<?php echo ISP :: AdminUrl('reports/reset-property/id/');?>'+pid, data: frmobj.serialize(), success: function(result){
+          	 		$.ajax({url: '<?php echo ISP :: AdminUrl('reports/completed-properties/');?>', success: function(result){$("#report_content").html(result);}});
        			}
 			});
 			return false;
@@ -310,6 +333,7 @@ $pimg = explode(',', $test->staffuploads); print_r($pimg);
     <li><a href="#" onclick="loadreportcontent('<?php echo ISP :: AdminUrl('reports/property_report/');?>')" class="otherreportstabs" title="Properties Report">Properties Reports</a></li>
     <li><a href="#" onclick="loadreportcontent('<?php echo ISP :: AdminUrl('reports/export-reports/');?>')" class="otherreportstabs" title="Export Reports">Export Reports</a></li>
      <li><a href="#" onclick="loadreportcontent('<?php echo ISP :: AdminUrl('reports/session_season_reset/');?>')" class="otherreportstabs" title="Session and Season Reset">Session and Season Reset</a></li>
+     <li><a href="#" onclick="loadreportcontent('<?php echo ISP :: AdminUrl('reports/completed-properties/');?>')" class="otherreportstabs" title="Completed Jobs">Completed Jobs</a></li>
             </ul>
             
           </div>
@@ -1874,8 +1898,8 @@ $(document).ready(function() {
 					 	echo date('Y-m-d h:i A',strtotime($objRow->completion_date));
 					 else
 					 	echo 'N/A';?></td>
-                     <td align="center" class="hideexport"><!--<a href="<?php echo ISP :: AdminUrl('reports/reset-property/id/'.$objRow->id);?>">Reset</a>-->
-                     <a onclick="resetpropertydata('<?php echo ISP :: AdminUrl('reports/reset-property/id/'.$objRow->id);?>'); return false;" href="javascript:void(0)">Reset</a>
+                     <td align="center" class="hideexport"><a href="<?php echo ISP :: AdminUrl('reports/reset-property/id/'.$objRow->id);?>">Reset</a>
+                     <!--<a onclick="resetpropertydata('<?php echo ISP :: AdminUrl('reports/reset-property/id/'.$objRow->id);?>', '<?php echo $objRow->id; ?>'); return false;" href="javascript:void(0)">Reset</a>-->
                      </td>                               
                    </tr>                            
          
@@ -1962,11 +1986,12 @@ $(document).ready(function() {
                             			 ?>                          
               <input type="hidden" name="status" value="1" />                       
               <input type="hidden" name="task" value="modifyjoblocation" />                   
-            </form>						 		           
+            </form>
+            <!--<a href="" id="download_link" style="display:none;"></a>-->
           </div>						         
         </div>					       
       </div>				                                       
-    </div>				     
+    </div>
     <!-- /Normal --> 			   
    <!--</div>			   
   /.container 
@@ -3076,7 +3101,7 @@ $(document).ready(function() {
     $('.datatable').dataTable( {} );
 } );
 </script>      
-<div id="content">			   
+<!--<div id="content">			   
   <div class="container">	
   <div class="crumbs">
 	<ul id="breadcrumbs" class="breadcrumb">
@@ -3092,19 +3117,20 @@ $(document).ready(function() {
 			<a href="#" title="">Completed Jobs</a>
 		</li>
 	</ul>
-</div>
+</div>-->
 			     
     <!--=== Normal ===--> 				     
     <div class="row">					       
       <div class="col-md-12">						         
-        <h4 class="text-left heding_6">Completed Jobs</h4>						         
+        <!--<h4 class="text-left heding_6">Completed Jobs</h4>	-->					         
         <div class="widget box box-vas">							 							           
           <div class="widget-content widget-content-vls">                                             
             <form method="post" name="frmListing"> 
             <div class="col-md-12 text-right" style="padding-bottom:10px">
             
               <span>
-                <a href="<?php echo ISP :: AdminUrl('reports/reset-all-property/');?>" onclick="return confirm('Are you sure, you want to Reset All results?\n\nThis step can not be Undone. Please use carefully.');" class="btn btn-danger btn-ms">Reset All</a>									               
+               <!-- <a href="<?php echo ISP :: AdminUrl('reports/reset-all-property/');?>" onclick="return confirm('Are you sure, you want to Reset All results?\n\nThis step can not be Undone. Please use carefully.');" class="btn btn-danger btn-ms">Reset All</a>-->
+                <a href="javascript: void(0);" onclick="fn_resetalljob(); return false;" class="btn btn-danger btn-ms">Reset All</a>									               
                 <a href="javascript: void(0);" onclick="exportTableToCSV.apply(this, [$('#dataTables-example'), 'export-joblocations.csv']);" class="btn btn-info">Export</a>									               
               </span> 
             </div>                                                 
@@ -3156,7 +3182,8 @@ $(document).ready(function() {
                       ?>                      
                       </td>                                    
                      <td align="center" class="hideexport"><?php echo $objRow->completion_date;?></td>
-                     <td align="center" class="hideexport"><a href="<?php echo ISP :: AdminUrl('reports/reset-property/id/'.$objRow->id);?>">Reset</a></td>                               
+                     <td align="center" class="hideexport"><!--<a href="<?php echo ISP :: AdminUrl('reports/reset-property/id/'.$objRow->id);?>">Reset</a>-->
+                     <a href="javascript: void(0);" onclick="fn_resetjob('<?php echo $objRow->id;?>'); return false;">Reset</a></td>                               
                    </tr>                            
 <?php
 			   }
@@ -3177,9 +3204,9 @@ $(document).ready(function() {
       </div>				                                       
     </div>				     
     <!-- /Normal --> 			   
-  </div>			   
-  <!-- /.container --> 		 
-</div>
+  <!--</div>			   
+   /.container  		 
+</div>-->
 <?php 
    }  // End of Function
    

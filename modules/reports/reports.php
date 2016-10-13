@@ -218,7 +218,410 @@ class REPORT extends REPORT_HTML_CONTENT
 	public function resetProperty($id)
 	{
 		if ($id >0) {
-			$this->objDatabase->dbQuery("UPDATE ".TBL_JOBLOCATION." set progress='0', start_date='0000-00-00 00:00:00', pause_date='0000-00-00 00:00:00', completion_date='0000-00-00 00:00:00' where id='".$id."'");
+			//
+			/*export property reports*/
+			require_once 'PHPExcel/Classes/PHPExcel.php';
+			$objPHPExcel = new PHPExcel(); 
+			$objPHPExcel->getProperties()
+						->setCreator("user")
+						->setLastModifiedBy("user")
+						->setTitle("Office 2007 XLSX Test Document")
+						->setSubject("Office 2007 XLSX Test Document")
+						->setDescription("Test document for Office 2007 XLSX, generated using PHP classes.")
+						->setKeywords("office 2007 openxml php")
+						->setCategory("Test result file");
+			chdir($_SERVER['DOCUMENT_ROOT'].'/upload');
+			foreach(range('A','D') as $columnID) {
+				$objPHPExcel->getActiveSheet()->getColumnDimension($columnID)
+					->setAutoSize(true);
+			}
+			$strsql = "SELECT * FROM ".TBL_JOBLOCATION." where id = '".$id."'";
+			$objRs = $this->objDatabase->dbQuery($strsql);
+			if($objRs)
+			{
+				$row=1;
+				while($obRow = $objRs->fetch_object())
+				{
+					if($row != 1){$row = $row+2;}
+					$jobdata = $this->report_details($obRow->id);
+					
+					// Set the active Excel worksheet to sheet 0
+					$objPHPExcel->setActiveSheetIndex(0); 
+					// Initialise the Excel row number
+					$rowCount = 0; 
+					$propname = $this->propname($obRow->id);
+					$objPHPExcel->getActiveSheet()->getRowDimension($row)->setRowHeight(25);
+					$objPHPExcel->getActiveSheet()->setCellValue('A'.$row, $propname->job_listing);
+					
+					$objPHPExcel->getActiveSheet()->mergeCells('A'.$row.':E'.$row);
+					$objPHPExcel->getActiveSheet()
+					->getStyle('A'.$row.':E'.$row)
+					->getAlignment()
+					->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+					$objPHPExcel->getActiveSheet()->getStyle('A'.$row)->getFont()->setBold(true)->setSize(16);
+					
+					$row = $row+2;
+					$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $row, 'Staff #');
+					$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $row, 'Started By');
+					$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $row, 'Job Start (or unpause)');
+					$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $row, 'Pause');
+					$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(4, $row, 'Job End');
+					$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(5, $row, 'Completed By');
+					
+					$objPHPExcel->getActiveSheet()->getStyle('A'.$row)->getFont()->setBold(true)->setSize(12);
+					$objPHPExcel->getActiveSheet()->getStyle('B'.$row)->getFont()->setBold(true)->setSize(12);
+					$objPHPExcel->getActiveSheet()->getStyle('C'.$row)->getFont()->setBold(true)->setSize(12);
+					$objPHPExcel->getActiveSheet()->getStyle('D'.$row)->getFont()->setBold(true)->setSize(12);
+					$objPHPExcel->getActiveSheet()->getStyle('E'.$row)->getFont()->setBold(true)->setSize(12);
+					$objPHPExcel->getActiveSheet()->getStyle('F'.$row)->getFont()->setBold(true)->setSize(12);
+					// Build cells
+					$row++;
+					$count =1;
+					while( $objRow = $jobdata->fetch_object() )
+					{ 
+						$col=0;
+						$startdate = date('Y-m-d h:i:s a', strtotime($objRow->starting_date));
+						if($objRow->pausing_date != '0000-00-00 00:00:00')
+							$pausedate = date('Y-m-d h:i:s a', strtotime($objRow->pausing_date));
+						else
+							$pausedate = '00:00 Null';
+						if($objRow->closing_date != '0000-00-00 00:00:00')
+							$enddate = date('Y-m-d h:i:s a', strtotime($objRow->closing_date));
+						else
+							$enddate = '00:00 Null';
+						$closedate = strtotime($objRow->closing_date);
+						$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $count);$col++;
+						$rowD = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow->started_by));
+						$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $rowD[0]->f_name.' '.$rowD[0]->l_name);$col++; 
+						$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $startdate);$col++;
+						$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $pausedate);$col++;
+						$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $enddate);$col++;
+						$rowD = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow->closed_by));
+						$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $rowD[0]->f_name.' '.$rowD[0]->l_name);$row++; $count++;
+						 
+					}
+					
+					$staffuploadsdata = $this->staffuploads($obRow->id);
+					$row = $row + 3	;
+					$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $row, 'StaffName');
+					$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $row, 'Date');
+					$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $row, 'Images');
+					
+					$objPHPExcel->getActiveSheet()
+					->getStyle('B'.$row)
+					->getAlignment()
+					->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+					$objPHPExcel->getActiveSheet()
+					->getStyle('C'.$row)
+					->getAlignment()
+					->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+					$objPHPExcel->getActiveSheet()
+					->getStyle('D'.$row)
+					->getAlignment()
+					->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+					$objPHPExcel->getActiveSheet()->getStyle('B'.$row)->getFont()->setBold(true)->setSize(12);
+					$objPHPExcel->getActiveSheet()->getStyle('C'.$row)->getFont()->setBold(true)->setSize(12);
+					$objPHPExcel->getActiveSheet()->getStyle('D'.$row)->getFont()->setBold(true)->setSize(12);
+					
+					$row++;
+					$supload = array();
+					while($objRow = $staffuploadsdata->fetch_object())  // Fetch the result in the object array
+					{	
+						$supload[] = get_object_vars($objRow);	
+					}
+					foreach($supload as $objRow1)
+					{
+						$col = 1;
+						foreach($objRow1 as $key=>$value) {
+							if($key == 'images')
+							{
+								$objPHPExcel->getActiveSheet()->getRowDimension($row)->setRowHeight(95);
+								$col = $row;
+								if (strpos($value, ',') !== false)
+								{
+									$imgcell = 'D';
+									$img = explode(',', $value);
+									foreach($img as $pimg)
+									{
+										$objPHPExcel->getActiveSheet()->getColumnDimension($imgcell)->setWidth(30);
+										$objDrawing = new PHPExcel_Worksheet_Drawing();
+										$objDrawing->setName('Customer Signature');
+										$objDrawing->setDescription('Customer Signature');
+										//Path to signature .jpg file
+										$signature = $_SERVER['DOCUMENT_ROOT'].'/upload/'.$pimg;     
+										$objDrawing->setPath($signature);
+										$objDrawing->setOffsetX(25);                     //setOffsetX works properly
+										$objDrawing->setOffsetY(10);                     //setOffsetY works properly
+										$objDrawing->setCoordinates($imgcell.$col);             //set image to cell 
+										$objDrawing->setWidth(100);  
+										$objDrawing->setHeight(90);                     //signature height  
+										$objDrawing->setWorksheet($objPHPExcel->getActiveSheet());
+										++$imgcell;
+									}
+								}
+								else
+								{
+									$imgcell = 'D';
+									$objPHPExcel->getActiveSheet()->getColumnDimension($imgcell)->setWidth(30);
+									$image = $value;
+									$objDrawing = new PHPExcel_Worksheet_Drawing();
+									$objDrawing->setName('Customer Signature');
+									$objDrawing->setDescription('Customer Signature');
+									//Path to signature .jpg file
+									$signature = $_SERVER['DOCUMENT_ROOT'].'/upload/'.$image;     
+									$objDrawing->setPath($signature);
+									$objDrawing->setOffsetX(25);                     //setOffsetX works properly
+									$objDrawing->setOffsetY(10);                     //setOffsetY works properly
+									$objDrawing->setCoordinates($imgcell.$col);             //set image to cell 
+									$objDrawing->setWidth(100);  
+									$objDrawing->setHeight(90);                     //signature height  
+									$objDrawing->setWorksheet($objPHPExcel->getActiveSheet());
+								}
+								
+							}
+							elseif($key == 'staff_id')
+							{
+								$staffname = $this->staffname($value);
+								$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $staffname->f_name.' '.$staffname->l_name);
+							}
+							else
+							{
+								$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $value);
+							}
+							$col++;
+						}
+						$row++;
+					}
+				}
+			}
+			
+			$property_report = "export_property_report.xlsx";
+			$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+			ob_clean();
+			$objWriter->save(str_replace(__FILE__,"export_property_report.xlsx",__FILE__));	
+			/*export images*/
+			$strsql = "select user_gallery as staffuploads from ".TBL_JOBLOCATION." where user_gallery != '' and id = '".$id."'";
+			$objRow = $this->objDatabase->fetchRows($strsql);
+			$filesarr = array();
+			$pimg = explode(',', $objRow->staffuploads);
+				foreach($pimg as $img){
+					if($img != '')
+						$filesarr[] = $img;
+				}
+			/*export custom report*/
+			$objPHPExcel = new PHPExcel(); 
+			$objPHPExcel->getProperties()
+						->setCreator("user")
+						->setLastModifiedBy("user")
+						->setTitle("Office 2007 XLSX Test Document")
+						->setSubject("Office 2007 XLSX Test Document")
+						->setDescription("Test document for Office 2007 XLSX, generated using PHP classes.")
+						->setKeywords("office 2007 openxml php")
+						->setCategory("Test result file");
+			foreach(range('A','I') as $columnID) {
+				$objPHPExcel->getActiveSheet()->getColumnDimension($columnID)
+					->setAutoSize(true);
+			}
+			$strsql = "SELECT r.*,rs.* FROM " . TBL_REPORTS . " r inner join " . TBL_REPORTS_SUBMISSION . " rs on r.report_id=rs.report_id where r.site_id='" . $_SESSION['site_id'] . "' and rs.property_id = '".$id."' order by r.report_id";
+			$objRs = $this->objDatabase->dbQuery($strsql);
+			if($objRs)
+			{
+				$row=1;
+				while($objRow = $objRs->fetch_object())
+				{ 
+					$col=0;
+					//$objPHPExcel->setActiveSheetIndex(0);
+					$fbody = json_decode($objRow->form_body); 
+					$report_name = $objRow->report_name;
+					if($oldreportname != $report_name){
+						$objPHPExcel->getActiveSheet()->getRowDimension($row)->setRowHeight(25);
+						$objPHPExcel->getActiveSheet()->setCellValue('A'.$row, $report_name);
+						
+						$objPHPExcel->getActiveSheet()->mergeCells('A'.$row.':C'.$row);
+						$objPHPExcel->getActiveSheet()
+						->getStyle('A'.$row.':C'.$row)
+						->getAlignment()
+						->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+						$objPHPExcel->getActiveSheet()->getStyle('A'.$row)->getFont()->setBold(true)->setSize(16);
+						$row = $row+2;
+						
+						if($report_name != 'Equip Problems to Report') { 
+							$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $row, 'Location');
+							$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $row, 'Property');
+							$i=2;
+						}
+						else {
+							$i=0;
+						}
+						$x = 0;
+						$y = 0;
+						foreach($fbody as $fb)
+						{  
+							if($fb->field_type != 'fieldset')
+							{
+								if($fb->label == ''){
+								} 
+								else 
+								{
+									if($objRow->report_name == 'Subcontractors Equipment Usage') 
+									{
+										$fb->label = $fbody[$x]->label."-".$fb->label;
+									}
+									$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, $row, $fb->label);
+									$i++;
+								} 
+								$y++; 
+							
+							} 
+							else 
+							{ 
+								if($y>0) { $x = $x+3;} 
+							} 
+						
+						}
+						$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i++, $row, 'Name');
+						$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i++, $row, 'Date');
+						$row++;
+					}
+					$locname = $this->objFunction->iFindAll(TBL_SERVICE, array('id'=>$objRow->location_id));
+					$propname = $this->objFunction->iFindAll(TBL_JOBLOCATION, array('id'=>$objRow->property_id));
+					$uname = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow->submitted_by));
+					$date = $objRow->submission_date;	 
+					$fdata = json_decode($objRow->form_values, true);
+					$fields = array('db_location','db_property','rid','user_id','timestamp');
+					$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $locname[0]->name);$col++;					
+					$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $propname[0]->job_listing);$col++; 
+					
+					foreach($fdata as $key=>$val)
+					{
+						if( ($key != 'form_token') && ($key != 'send') ){
+							if( in_array($key, $fields) === false){  
+								 
+								if($objRow->report_name == 'Subcontractors Equipment Usage' )
+								{
+									
+									if($val == '') {
+										$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, 0);
+										$col++;
+									} 
+									else { 
+										$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $val);
+										$col++;
+									}
+								}
+								elseif(is_array($val)) 
+								{
+									$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, implode(',', $val));		 	$col++;  
+								}
+								else
+								{
+									$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $val);		 	
+									$col++;  
+								}
+							}
+						} 
+					}
+					$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, $uname[0]->f_name . ' ' .$uname[0]->l_name);$col++;
+					$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $row, date('Y-m-d h:i A', strtotime($date)));
+					$row++;
+					$oldreportname = $report_name;
+					
+				}
+			}
+			$custom_reports = 'export_custom_reports.xlsx';
+			//header('Content-Type: application/vnd.ms-excel');
+			//header('Content-Disposition: attachment;filename="'.$custom_reports.'"');
+			//header('Cache-Control: max-age=0');
+			$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+			$objWriter->save(str_replace(__FILE__,"export_custom_reports.xlsx",__FILE__));
+			/*export important notes*/
+			$strsql = "SELECT * FROM ".TBL_PROPERTY_NOTES."  where property_id = '".$id."'";
+			$objRs = $this->objDatabase->dbQuery($strsql);
+			$important_notes = 'export_important_notes.csv';
+			$fd = fopen ($important_notes, "w");
+			$strLines = 'StaffId, Note, Date' . PHP_EOL;
+			while($objRow = $objRs->fetch_object())
+			{
+				$rowD = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow->staff_id_or_admin));
+				$strLines.= $rowD[0]->f_name. ' ' .$rowD[0]->l_name . ', ' .$objRow->notes. ', '.$objRow->date_added . PHP_EOL;
+			}
+			fputs($fd, $strLines);
+			fclose($fd);
+			/*export Driver reports*/
+			$strsql = "SELECT s.id,s.username,s.f_name,s.l_name, js.starting_date as s_date, js.closing_date as c_date FROM " . TBL_STAFF . " s inner join " . TBL_JOBSTATUS . " js on s.id=js.started_by and s.id=js.closed_by  where js.job_id = '".$id."' and s.user_type >1  and s.site_id='" . $_SESSION['site_id'] . "'";
+			$objRs = $this->objDatabase->dbQuery($strsql);
+			$driver_report = 'export_driver_report.csv';
+			$fd = fopen ($driver_report, "w");
+			$strLines = 'Username/Staff ID, First Name, Last Name, Start Date, Close Date, Hours Worked' . PHP_EOL;
+			while($objRow = $objRs->fetch_object())
+			{
+				$diff1 = strtotime($objRow->c_date) - strtotime($objRow->s_date);
+				$work_hour = round($diff1/3600, 2);
+				if($work_hour < 0) { $work_hour = 'N/A';}
+				$strLines.= $objRow->username . ', ' .$objRow->f_name. ', '.$objRow->l_name. ', '.$objRow->s_date . ', '.$objRow->c_date. ', '.$work_hour . PHP_EOL;
+			}
+			fputs($fd, $strLines);
+			fclose($fd);
+			/*export ivr log
+			$array_log = $this->objFunction->getStaffIvrLog();
+			$ivr_log_staff = 'export_ivr_log_staff.csv';
+			ob_start();
+			$fd = fopen ($ivr_log_staff, "w");
+			if (count($array_log) > 0) {
+				$strLines = 'Name, Date, Time, Status' . PHP_EOL;
+					foreach($array_log as $log) {
+						$strLines.= $log['staff_full_name'] . ', ' .strftime('%b %d %Y', $log['time_stamp']) . ', ' . $log['time_12_hour_clock'] . ', ' . ucfirst($log['clock_action_description']) . PHP_EOL;
+					}
+				fputs($fd, $strLines);
+				fclose($fd);
+			}*/
+			//$filesarr[] = $ivr_log_staff; 
+			$filesarr[] = $important_notes;
+			$filesarr[] = $property_report; $filesarr[] = $custom_reports;
+			$filesarr[] =$driver_report;
+			$files = $filesarr;
+			$valid_files = array();
+			if(is_array($files)) {
+				foreach($files as $file) {
+					if(file_exists($file)) {
+						$valid_files[] = $file;
+					}
+				}
+			}
+			if(count($valid_files > 0)){
+				$zip = new ZipArchive();
+				$zip_name = 'propertyreset_'.date('Y-m-d H:i:s').'.zip';
+				if($zip->open($zip_name, ZIPARCHIVE::CREATE)!==TRUE){
+				$error .= "* Sorry ZIP creation failed at this time";
+				}
+				
+				foreach($valid_files as $file){
+				$zip->addFile($file);
+				}
+				$zip->close();
+				
+				copy($zip_name, $_SERVER['DOCUMENT_ROOT'].'/upload/resetproperties/'.$zip_name);
+				/*$this->objDatabase->insertQuery("insert into ".TBL_SESSION_RESET." (filename, creation_date) values('".$zip_name."', '".date('Y-m-d H:i:s')."')");*/
+				//
+				foreach($pimg as $img){
+					unlink($_SERVER['DOCUMENT_ROOT'].'/upload/'.$img);
+				}
+				$this->objDatabase->dbQuery("Update ".TBL_JOBLOCATION." set user_gallery = '', importent_notes = '', progress='0', start_date='0000-00-00 00:00:00', pause_date='0000-00-00 00:00:00', completion_date='0000-00-00 00:00:00' where id='".$id."'");
+				$this->objDatabase->dbQuery("delete from ".TBL_STAFF_UPLOADED_PROPERTY_IMAGES." where prop_id='".$id."'");
+				$this->objDatabase->dbQuery("delete from ".TBL_REPORTS_SUBMISSION." where property_id='".$id."'");
+				$this->objDatabase->dbQuery("delete from ".TBL_PROPERTY_NOTES." where property_id='".$id."'");
+				$this->objDatabase->dbQuery("delete from ".TBL_JOBSTATUS." where job_id='".$id."'");
+				//
+				//echo 'upload/resetproperties/'.$zip_name;
+				header('Content-disposition: attachment; filename=PropertyReset.zip');
+    			header('Content-type: application/zip');
+    			readfile($zip_name);
+				unlink($zip_name);
+				//echo 'upload/resetproperties/'.$zip_name;
+				//$this->objFunction->showMessage('Zip file created successfully.', ISP :: AdminUrl('reports/jobhistory/id/'.$id));
+				die();
+			} 
+			
 		}
 		else {
 			$this->objDatabase->dbQuery("UPDATE ".TBL_JOBLOCATION." set progress='0', start_date='0000-00-00 00:00:00', pause_date='0000-00-00 00:00:00', completion_date='0000-00-00 00:00:00'");
@@ -2645,7 +3048,8 @@ class REPORT extends REPORT_HTML_CONTENT
 		}
 		if(count($valid_files > 0)){
 			$zip = new ZipArchive();
-			$zip_name = "season.zip";
+			//$zip_name = "season.zip";
+			$zip_name = 'season_'.date('Y-m-d H:i:s').'.zip';
 			if($zip->open($zip_name, ZIPARCHIVE::CREATE)!==TRUE){
 			$error .= "* Sorry ZIP creation failed at this time";
 			}
@@ -2655,9 +3059,9 @@ class REPORT extends REPORT_HTML_CONTENT
 			}
 			
 			$zip->close();
-			$fl_name = 'season_'.date('Y-m-d H:i:s').'.zip';
-			copy($zip_name, $_SERVER['DOCUMENT_ROOT'].'/seasonzip/'.$fl_name);
-			$this->objDatabase->insertQuery("insert into ".TBL_SEASON_RESET." (filename, creation_date) values('".$fl_name."', '".date('Y-m-d H:i:s')."')");
+			//$fl_name = 'season_'.date('Y-m-d H:i:s').'.zip';
+			copy($zip_name, $_SERVER['DOCUMENT_ROOT'].'/seasonzip/'.$zip_name);
+			$this->objDatabase->insertQuery("insert into ".TBL_SEASON_RESET." (filename, creation_date) values('".$zip_name."', '".date('Y-m-d H:i:s')."')");
 			/*if(file_exists($zip_name)){
 				header('Content-type: application/zip');
 				header('Content-Disposition: attachment; filename="'.$zip_name.'"');
