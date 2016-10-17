@@ -228,7 +228,7 @@ class Database
             
                if( substr($key, 0, 3) == 'md_')
                {
-                 if(trim($value)=="" && trim($key) != "md_job_title")
+                 if(trim($value)=="" && trim($key) != "md_job_title" && trim($key) != "md_importent_notes")
                    $strMessage= '<li>Required fields can not be left blank</li>';
                }
             
@@ -260,7 +260,7 @@ class Database
                {                        
                     $this->objThumb->create_thumbnail($strDirectory.$val['name'], $strDirectory.'mobile/'.$val['name'], 450, 450);                        $this->objThumb->create_thumbnail($strDirectory.$val['name'], $strDirectory.'tablet/'.$val['name'], 800, 800);  
                          
-               }     
+               }    
             }      
             
         
@@ -371,7 +371,7 @@ Where And return true/false according to function success.
         $strQueryValue = implode(', ', $arrQueryValue);
         if( $strMessage=='')
         {
-              $strQuery = "UPDATE ".$tmpTableName." SET ".$strQueryValue." WHERE $primaryId = '".$tmpId."'";    
+              $strQuery = "UPDATE ".$tmpTableName." SET ".$strQueryValue." WHERE $primaryId = '".$tmpId."'";
               return $this->updateQuery($strQuery);
         }    
         else

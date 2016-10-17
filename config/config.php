@@ -1,1 +1,1 @@
-{"dbname":"jobnotesnew","dbhost":"localhost","dbport":"3306","username":"jobnotuser","passsword":"j0bn0te5$1","prefix":"tbl_"}
+{"dbname":"jobnotes_git","dbhost":"localhost","dbport":"3306","username":"root","passsword":"","prefix":"tbl_"}

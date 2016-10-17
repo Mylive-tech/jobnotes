@@ -220,7 +220,16 @@ class JOBLOCATION extends JOBLOCATION_HTML_CONTENT
   
     	  }
   	 }
-        
+	 //
+	if($_FILES['db_map_widget']['name']<>'')
+	{
+	   $mapimage = $_FILES['db_map_widget']['name'];
+	   move_uploaded_file($_FILES['db_map_widget']['tmp_name'], 'upload/'.$mapimage);
+	   $objThumb->create_thumbnail($strDirectory.$mapimage, $strDirectory.'mobile/'.$mapimage, 450, 450); 
+       $objThumb->create_thumbnail($strDirectory.$mapimage, $strDirectory.'tablet/'.$mapimage, 800, 800); 
+	}
+	 //
+   $_POST['db_map_widget'] = $mapimage;     
    $_POST['db_gallery'] = implode(",", $fileArray);
    $_POST['db_user_gallery'] = implode(",", $fileStaffArray);
    
@@ -249,6 +258,10 @@ class JOBLOCATION extends JOBLOCATION_HTML_CONTENT
 		{
 			$this->objDatabase->dbQuery("insert into ".TBL_ASSIGN_PROPERTY." (location_id, property_id, user_id) values('".$locationid."', '".$this->intId."', '".$uid['id']."')");
 		}
+		if($_POST['md_importent_notes'] != '')
+		{
+			$this->objDatabase->dbQuery("INSERT ".TBL_PROPERTY_NOTES."(property_id, staff_id_or_admin, notes, date_added) values('".$this->intId."', '".$_SESSION['adminid']."', '".$_POST['md_importent_notes']."', '".date('Y-m-d H:i:s')."') ");
+		}
 		//
            if($this->intId)
       	 	 {   		    
@@ -260,7 +273,6 @@ class JOBLOCATION extends JOBLOCATION_HTML_CONTENT
       	     	   $this->objRecord=(object)$_POST;  // converion of Posted array to object message
       		   	   parent :: admin_Form($this->objRecord);
       	  	 }
-			  $this->objDatabase->dbQuery("INSERT ".TBL_PROPERTY_NOTES."(property_id, staff_id_or_admin, notes, date_added) values('".$this->intId."', '".$_SESSION['adminid']."', '".$_POST['md_importent_notes']."', '".date('Y-m-d H:i:s')."') ");
 	 else:
            $this->objDatabase->updateForm($tbl); //Update Exisiting content	
 			//
