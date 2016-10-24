@@ -1308,8 +1308,26 @@ $(document).ready(function() {
                             <tr> 
                                 <td align="center"><?php echo $i;?></td>             
                                 <td align="center"><?php echo $objRow->job_listing;?></td>              
-                                <td align="center"><?php echo date('Y-m-d h:i A', strtotime($objRow->starting_date));?></td>              
-                                 <td align="center"><?php echo date('Y-m-d h:i A', strtotime($objRow->closing_date));?></td>              
+                                 <td align="center"><?php 
+								if($objRow->starting_date > 0)
+								{
+									echo date('Y-m-d h:i A', strtotime($objRow->starting_date));
+								}
+								else
+								{
+									echo 'N/A';
+								}
+								?></td>              
+                                 <td align="center"><?php 
+								 if($objRow->closing_date > 0)
+								 {
+								 	echo date('Y-m-d h:i A', strtotime($objRow->closing_date));
+								 }
+								 else
+								 {
+									 echo 'N/A';
+								 }
+								?></td>              
                                 <td align="center">
                                 <?php 
 								$diff1 = strtotime($objRow->closing_date) - strtotime($objRow->starting_date);
@@ -1350,16 +1368,17 @@ protected function admin_property_report($objRs)
 <script type="text/javascript">
 	$(document).ready(function() {
 		$('.export_props').click(function(){
+				var ahval = $(this).attr('href');
 				var pids = $('.propcheck:checked').map(function() {
     			return this.value;
 				}).get().join(',');
 				//alert(pids + "ddd");
 				if(pids != ''){
-					$('.export_props').attr('href', '<?php echo ISP :: AdminUrl('reports/direct/');?>?cjid='+pids); 
+					$(this).attr('href', ahval+'&cjid='+pids); 
 				}
 				else
 				{
-					$('.export_props').attr('href', '<?php echo ISP :: AdminUrl('reports/direct/');?>'); 
+					$(this).attr('href', ahval); 
 				}
 				return true;
 			});
@@ -1503,7 +1522,7 @@ protected function admin_property_report($objRs)
                 <input type="submit" class="btn btn-danger btn-ms" name="btn_delete" value="Delete" onclick="document.frmListing.status.value='-1';" />-->                
               
              	<!--<input type="submit" class="btn btn-info" name="btn_export" value="Export" onclick="exportmultipleproperties()">-->
-                <a href="<?php echo ISP :: AdminUrl('reports/direct/');?>" class="btn btn-info export_props">Export</a>	
+                <a href="<?php echo ISP :: AdminUrl('reports/direct/');?>?exp=all" class="btn btn-info export_props">Export All</a>  <a href="<?php echo ISP :: AdminUrl('reports/direct/');?>?exp=prop" class="btn btn-info export_props">Export</a>	
              	<!--<a href="javascript: void(0);" onclick="exportTableToCSV.apply(this, [$('#dataTables-example'), 'export-joblocations.csv']);" class="btn btn-info">Export</a>-->									               
                
             </div>                                                 
@@ -1583,7 +1602,7 @@ protected function admin_property_report($objRs)
                     <i class="fa fa-pencil-square-o"></i></a>
                     </td>-->
                     <td align="center" class="hideexport"> <a class="btn btn-danger btn-ms" href="#" onclick="viewlog('<?php echo ISP :: AdminUrl('reports/job-history/id/'.$objRow->id);?>')">View</a></td>
-                    <td align="center" class="hideexport"><a href="<?php echo ISP :: AdminUrl('reports/direct/?jid='.$objRow->id);?>" class="btn btn-info">Export</a></td>                               
+                    <td align="center" class="hideexport"><a href="<?php echo ISP :: AdminUrl('reports/direct/?exp=all&jid='.$objRow->id);?>" class="btn btn-info">Export All</a> <a href="<?php echo ISP :: AdminUrl('reports/direct/?jid='.$objRow->id);?>" class="btn btn-info">Export</a></td>                               
                    <!-- <td align="center" class="hideexport divchecker"><input type="checkbox" class="uniform" name="delete[]" value="<?php echo $objRow->id;?>"  /></td> -->                            
                   </tr>                            
 <?php
@@ -2572,6 +2591,20 @@ protected function showFormSubmission($objRow, $formControls, $form_token, $post
 </script>
 <script type="text/javascript">
 $(document).ready(function() {
+		$('.del_exprepzip').click(function(){ 
+				var sids = $('.exprepzipcheck:checked').map(function() {
+    			return this.value;
+				}).get().join(',');
+				if(sids != ''){
+					$('.del_exprepzip').attr('href', '<?php echo ISP :: AdminUrl('reports/remove-bulk-exportreport/');?>?erzipid='+sids); 
+					$("#report_content").html('<div class="rpt_loader"><img src="<?php echo SITE_URL.'/assets/img/ajax-loader.gif' ?>" /></div>');
+					$.ajax({url: '<?php echo ISP :: AdminUrl('reports/remove-bulk-exportreport/');?>?erzipid='+sids, success: function(result){ 
+          	 		$.ajax({url: '<?php echo ISP :: AdminUrl('reports/export-reports/');?>', success: function(result){$("#report_content").html(result);}});
+       			}
+				});
+			}
+				return false;
+			});
 	//$('.datetimepicker').datetimepicker();
 	/* $('.datetimepicker').datetimepicker({
         format : 'Y-m-d h:i A'
@@ -2774,12 +2807,15 @@ $(document).ready(function() {
                             <?php
                             }
                             ?>
+                            <a href="<?php echo ISP :: AdminUrl('reports/remove-bulk-exportreport/');?>" class="btn btn-danger btn-ms del_exprepzip" style="float: right; margin-right: 140px; margin-bottom: 10px;">Delete</a>
                         </div>
 					
                         <div class="form_holder">
                          <table class="table table-striped table-bordered table-hover table-checkable table-responsive datatable">
                           <thead class="cf">
-                            <tr>  
+                            <tr> 
+                            	<th class="hiddencolumn"></th> 
+                           		<th align="center" data-hide="phone" class="hideexport divchecker"><input type="checkbox" class="uniform" name="del[]" onclick="selectDeselect('delete[]');"/></th>
                                 <th data-class="expand">File Name</th>
                                 <th data-hide="phone">Creation Date</th>
                                 <th data-hide="phone">Download File</th>
@@ -2795,6 +2831,8 @@ $(document).ready(function() {
                                 if(strstr($filename, "export-reports-")) {
                          ?>   
                             <tr>
+                            	<td class="hiddencolumn"></td>
+                            	<td class="hideexport divchecker"><input type="checkbox" class="uniform exprepzipcheck" name="delete[]" value="<?php echo $filename;?>" /></td>
                                 <td><?php echo $filename;?></td>
                                 <td><?php echo date("Y-m-d h:i A", strtotime(str_replace('_', ' ', substr($filename, 15,-4))));?></td>
                                 <td><a href="<?php echo SITE_URL.$file;?>" target="_blank">Download</a></td>

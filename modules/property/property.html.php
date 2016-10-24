@@ -86,6 +86,7 @@ protected function admin_joblocation_Form($objRs)
 			
 		});
 		$('#outer_overlay').click(function(){
+			$('#imp_note').prop('checked', '');
 			$('#outer_overlay').hide();
 			$('#add_note_form').hide();
 			
@@ -98,10 +99,14 @@ protected function admin_joblocation_Form($objRs)
 			return false;
 		});
 	});
-	function edit_note(nid, note)
+	function edit_note(nid, note, imp)
 	{
 		$('#notefrm').append('<input type="hidden" name="note_edit" id="note_edit" value="'+nid+'" />');
 		$('#txt_note').html(note);
+		if(imp == 1)
+		{
+			$('#imp_note').prop('checked', 'checked');
+		}
 		$('#outer_overlay').show();
 		$('#add_note_form').show();
 		return false;
@@ -124,7 +129,8 @@ if(isset($_POST['add_note']))
 	<form method="post" action="" id="notefrm">
 		<input type="hidden" name="prop_id" id="prop_id" value="<?= $objRs->id; ?>" />
 		<input type="hidden" name="staff_id" id="staff_id" value="<?= $_SESSION['adminid'];?>" />
-		<textarea name="txt_note" id="txt_note"></textarea>
+		<textarea name="txt_note" id="txt_note"></textarea><br/>
+		<input type="checkbox" name="imp_note" id="imp_note" value="1" /> Make this note important <br/>
 		<input type="submit" name="add_note" value="Save" class="btn btn-default" <?php if($objRs->id == '') {echo 'id="add_note"';}?> />
 	</form>
 </div>
@@ -300,7 +306,7 @@ if(isset($_POST['add_note']))
 								echo $rowD[0]->f_name.' '.$rowD[0]->l_name;?></td>
 								<td><?= $notes->notes;?></td>
 								<td><?= $notes->date_added;?></td>
-								<td><a href="javascript: void(0);" onclick="edit_note('<?php echo $notes->id;?>','<?php echo $notes->notes;?>')">Edit</a> / <a href="<?php echo ISP::AdminUrl('property/removenote/?pid='.$objRs->id.'&nid='.$notes->id);?>" onclick="return confirm('Are you sure?')">Delete</a></td>
+								<td><a href="javascript: void(0);" onclick="edit_note('<?php echo $notes->id;?>','<?php echo $notes->notes;?>', '<?php echo $notes->important;?>')">Edit</a> / <a href="<?php echo ISP::AdminUrl('property/removenote/?pid='.$objRs->id.'&nid='.$notes->id);?>" onclick="return confirm('Are you sure?')">Delete</a></td>
 							</tr>
 							
 						<?php }

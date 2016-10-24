@@ -626,12 +626,12 @@ class JOBLOCATION extends JOBLOCATION_HTML_CONTENT
    
    public function add_notes()
    {
-	   $this->objDatabase->dbQuery("INSERT INTO ".TBL_PROPERTY_NOTES."(property_id, staff_id_or_admin, notes, date_added) values('".$_POST['prop_id']."', '".$_POST['staff_id']."', '".$_POST['txt_note']."', '".date('Y-m-d H:i:s')."') ");
+	   $this->objDatabase->dbQuery("INSERT INTO ".TBL_PROPERTY_NOTES."(property_id, staff_id_or_admin, notes, date_added, important) values('".$_POST['prop_id']."', '".$_POST['staff_id']."', '".$_POST['txt_note']."', '".date('Y-m-d H:i:s')."', '".$_POST['imp_note']."') ");
    }
    
    public function edit_notes()
    {
-	   $this->objDatabase->dbQuery("UPDATE ".TBL_PROPERTY_NOTES." set notes='".$_POST['txt_note']."' where id='".$_POST['note_edit']."'");
+	   $this->objDatabase->dbQuery("UPDATE ".TBL_PROPERTY_NOTES." set notes='".$_POST['txt_note']."', important='".$_POST['imp_note']."' where id='".$_POST['note_edit']."'");
    }
    public function removenote($pid, $nid)
    {

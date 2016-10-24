@@ -778,14 +778,10 @@ class REPORT extends REPORT_HTML_CONTENT
 			
 			$staffuploadsdata = $this->staffuploads($pid);
 			$row = $row + 3	;
-			$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $row, 'StaffName');
-			$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $row, 'Date');
-			$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $row, 'Images');
+			$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $row, 'StaffName');
+			$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $row, 'Date');
+			$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(4, $row, 'Images');
 			
-			$objPHPExcel->getActiveSheet()
-			->getStyle('B'.$row)
-			->getAlignment()
-			->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 			$objPHPExcel->getActiveSheet()
 			->getStyle('C'.$row)
 			->getAlignment()
@@ -794,9 +790,15 @@ class REPORT extends REPORT_HTML_CONTENT
 			->getStyle('D'.$row)
 			->getAlignment()
 			->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-			$objPHPExcel->getActiveSheet()->getStyle('B'.$row)->getFont()->setBold(true)->setSize(12);
+			$objPHPExcel->getActiveSheet()
+			->getStyle('E'.$row)
+			->getAlignment()
+			->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 			$objPHPExcel->getActiveSheet()->getStyle('C'.$row)->getFont()->setBold(true)->setSize(12);
 			$objPHPExcel->getActiveSheet()->getStyle('D'.$row)->getFont()->setBold(true)->setSize(12);
+			$objPHPExcel->getActiveSheet()->getStyle('E'.$row)->getFont()->setBold(true)->setSize(12);
+			
+			//$objPHPExcel->getActiveSheet()->getColumnDimension('D')->setWidth(40);
 			
 			$row++;
 			$supload = array();
@@ -806,15 +808,15 @@ class REPORT extends REPORT_HTML_CONTENT
 			}
 			foreach($supload as $objRow1)
 			{
-				$col = 1;
+				$col = 2;
 				foreach($objRow1 as $key=>$value) {
 					if($key == 'images')
 					{
-						$objPHPExcel->getActiveSheet()->getRowDimension($row)->setRowHeight(95);
+						$objPHPExcel->getActiveSheet()->getRowDimension($row)->setRowHeight(150);
 						$col = $row;
 						if (strpos($value, ',') !== false)
 						{
-							$imgcell = 'D';
+							$imgcell = 'E';
 							$img = explode(',', $value);
 							foreach($img as $pimg)
 							{
@@ -828,15 +830,15 @@ class REPORT extends REPORT_HTML_CONTENT
 								$objDrawing->setOffsetX(25);                     //setOffsetX works properly
 								$objDrawing->setOffsetY(10);                     //setOffsetY works properly
 								$objDrawing->setCoordinates($imgcell.$col);             //set image to cell 
-								$objDrawing->setWidth(100);  
-								$objDrawing->setHeight(90);                     //signature height  
+								$objDrawing->setWidth(200);  
+								$objDrawing->setHeight(190);                     //signature height  
 								$objDrawing->setWorksheet($objPHPExcel->getActiveSheet());
 								++$imgcell;
 							}
 						}
 						else
 						{
-							$imgcell = 'D';
+							$imgcell = 'E';
 							$objPHPExcel->getActiveSheet()->getColumnDimension($imgcell)->setWidth(30);
 							$image = $value;
 							$objDrawing = new PHPExcel_Worksheet_Drawing();
@@ -848,8 +850,8 @@ class REPORT extends REPORT_HTML_CONTENT
 							$objDrawing->setOffsetX(25);                     //setOffsetX works properly
 							$objDrawing->setOffsetY(10);                     //setOffsetY works properly
 							$objDrawing->setCoordinates($imgcell.$col);             //set image to cell 
-							$objDrawing->setWidth(100);  
-							$objDrawing->setHeight(90);                     //signature height  
+							$objDrawing->setWidth(200);  
+							$objDrawing->setHeight(190);                     //signature height  
 							$objDrawing->setWorksheet($objPHPExcel->getActiveSheet());
 						}
 						
@@ -868,6 +870,8 @@ class REPORT extends REPORT_HTML_CONTENT
 				$row++;
 			}
 			//
+			if( isset($_GET['exp']) && $_GET['exp'] == 'all')
+			{
 			$row = $row+2;
 			$propertyreports = $this->export_property_reports($pid);
 			while($objRow = $propertyreports->fetch_object())
@@ -968,6 +972,7 @@ class REPORT extends REPORT_HTML_CONTENT
 				$row++;
 				$oldreportname = $report_name;
 				
+			}
 			}
 			//
 		}
@@ -1044,14 +1049,10 @@ class REPORT extends REPORT_HTML_CONTENT
 			
 			$staffuploadsdata = $this->staffuploads($pid);
 			$row = $row + 3	;
-			$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $row, 'StaffName');
-			$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $row, 'Date');
-			$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $row, 'Images');
+			$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $row, 'StaffName');
+			$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $row, 'Date');
+			$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(4, $row, 'Images');
 			
-			$objPHPExcel->getActiveSheet()
-			->getStyle('B'.$row)
-			->getAlignment()
-			->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 			$objPHPExcel->getActiveSheet()
 			->getStyle('C'.$row)
 			->getAlignment()
@@ -1060,9 +1061,13 @@ class REPORT extends REPORT_HTML_CONTENT
 			->getStyle('D'.$row)
 			->getAlignment()
 			->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-			$objPHPExcel->getActiveSheet()->getStyle('B'.$row)->getFont()->setBold(true)->setSize(12);
+			$objPHPExcel->getActiveSheet()
+			->getStyle('E'.$row)
+			->getAlignment()
+			->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 			$objPHPExcel->getActiveSheet()->getStyle('C'.$row)->getFont()->setBold(true)->setSize(12);
 			$objPHPExcel->getActiveSheet()->getStyle('D'.$row)->getFont()->setBold(true)->setSize(12);
+			$objPHPExcel->getActiveSheet()->getStyle('E'.$row)->getFont()->setBold(true)->setSize(12);
 			
 			$row++;
 			$supload = array();
@@ -1072,15 +1077,15 @@ class REPORT extends REPORT_HTML_CONTENT
 			}
 			foreach($supload as $objRow1)
 			{
-				$col = 1;
+				$col = 2;
 				foreach($objRow1 as $key=>$value) {
 					if($key == 'images')
 					{
-						$objPHPExcel->getActiveSheet()->getRowDimension($row)->setRowHeight(95);
+						$objPHPExcel->getActiveSheet()->getRowDimension($row)->setRowHeight(150);
 						$col = $row;
 						if (strpos($value, ',') !== false)
 						{
-							$imgcell = 'D';
+							$imgcell = 'E';
 							$img = explode(',', $value);
 							foreach($img as $pimg)
 							{
@@ -1094,15 +1099,15 @@ class REPORT extends REPORT_HTML_CONTENT
 								$objDrawing->setOffsetX(25);                     //setOffsetX works properly
 								$objDrawing->setOffsetY(10);                     //setOffsetY works properly
 								$objDrawing->setCoordinates($imgcell.$col);             //set image to cell 
-								$objDrawing->setWidth(100);  
-								$objDrawing->setHeight(90);                     //signature height  
+								$objDrawing->setWidth(200);  
+								$objDrawing->setHeight(190);                     //signature height  
 								$objDrawing->setWorksheet($objPHPExcel->getActiveSheet());
 								++$imgcell;
 							}
 						}
 						else
 						{
-							$imgcell = 'D';
+							$imgcell = 'E';
 							$objPHPExcel->getActiveSheet()->getColumnDimension($imgcell)->setWidth(30);
 							$image = $value;
 							$objDrawing = new PHPExcel_Worksheet_Drawing();
@@ -1114,8 +1119,8 @@ class REPORT extends REPORT_HTML_CONTENT
 							$objDrawing->setOffsetX(25);                     //setOffsetX works properly
 							$objDrawing->setOffsetY(10);                     //setOffsetY works properly
 							$objDrawing->setCoordinates($imgcell.$col);             //set image to cell 
-							$objDrawing->setWidth(100);  
-							$objDrawing->setHeight(90);                     //signature height  
+							$objDrawing->setWidth(200);  
+							$objDrawing->setHeight(190);                     //signature height  
 							$objDrawing->setWorksheet($objPHPExcel->getActiveSheet());
 						}
 						
@@ -1134,6 +1139,8 @@ class REPORT extends REPORT_HTML_CONTENT
 				$row++;
 			}
 			//
+			if( isset($_GET['exp']) && $_GET['exp'] == 'all')
+			{
 			$row = $row+2;
 			$propertyreports = $this->export_property_reports($pid);
 			while($objRow = $propertyreports->fetch_object())
@@ -1235,6 +1242,7 @@ class REPORT extends REPORT_HTML_CONTENT
 				$oldreportname = $report_name;
 				
 			}
+			}
 			//
 		}
 	}
@@ -1300,14 +1308,10 @@ class REPORT extends REPORT_HTML_CONTENT
 	
 	$staffuploadsdata = $this->staffuploads($_GET['jid']);
 	$row = $row + 3	;
-	$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $row, 'StaffName');
-	$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $row, 'Date');
-	$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $row, 'Images');
+	$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $row, 'StaffName');
+	$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $row, 'Date');
+	$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(4, $row, 'Images');
 	
-	$objPHPExcel->getActiveSheet()
-    ->getStyle('B'.$row)
-    ->getAlignment()
-    ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 	$objPHPExcel->getActiveSheet()
     ->getStyle('C'.$row)
     ->getAlignment()
@@ -1316,9 +1320,13 @@ class REPORT extends REPORT_HTML_CONTENT
     ->getStyle('D'.$row)
     ->getAlignment()
     ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-	$objPHPExcel->getActiveSheet()->getStyle('B'.$row)->getFont()->setBold(true)->setSize(12);
+	$objPHPExcel->getActiveSheet()
+    ->getStyle('E'.$row)
+    ->getAlignment()
+    ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 	$objPHPExcel->getActiveSheet()->getStyle('C'.$row)->getFont()->setBold(true)->setSize(12);
 	$objPHPExcel->getActiveSheet()->getStyle('D'.$row)->getFont()->setBold(true)->setSize(12);
+	$objPHPExcel->getActiveSheet()->getStyle('E'.$row)->getFont()->setBold(true)->setSize(12);
 	
 	$row++;
 	$supload = array();
@@ -1328,19 +1336,19 @@ class REPORT extends REPORT_HTML_CONTENT
 	}
 	foreach($supload as $objRow1)
 	{
-		$col = 1;
+		$col = 2;
 		foreach($objRow1 as $key=>$value) {
 			if($key == 'images')
 			{
-				$objPHPExcel->getActiveSheet()->getRowDimension($row)->setRowHeight(95);
+				$objPHPExcel->getActiveSheet()->getRowDimension($row)->setRowHeight(150);
 				$col = $row;
 				if (strpos($value, ',') !== false)
 				{
-					$imgcell = 'D';
+					$imgcell = 'E';
 					$img = explode(',', $value);
 					foreach($img as $pimg)
 					{
-						$objPHPExcel->getActiveSheet()->getColumnDimension($imgcell)->setWidth(30);
+						$objPHPExcel->getActiveSheet()->getColumnDimension($imgcell)->setWidth(40);
 						$objDrawing = new PHPExcel_Worksheet_Drawing();
 						$objDrawing->setName('Customer Signature');
 						$objDrawing->setDescription('Customer Signature');
@@ -1350,16 +1358,16 @@ class REPORT extends REPORT_HTML_CONTENT
 						$objDrawing->setOffsetX(25);                     //setOffsetX works properly
 						$objDrawing->setOffsetY(10);                     //setOffsetY works properly
 						$objDrawing->setCoordinates($imgcell.$col);             //set image to cell 
-						$objDrawing->setWidth(100);  
-						$objDrawing->setHeight(90);                     //signature height  
+						$objDrawing->setWidth(200);  
+						$objDrawing->setHeight(190);                     //signature height  
 						$objDrawing->setWorksheet($objPHPExcel->getActiveSheet());
 						++$imgcell;
 					}
 				}
 				else
 				{
-					$imgcell = 'D';
-					$objPHPExcel->getActiveSheet()->getColumnDimension($imgcell)->setWidth(30);
+					$imgcell = 'E';
+					$objPHPExcel->getActiveSheet()->getColumnDimension($imgcell)->setWidth(40);
 					$image = $value;
 					$objDrawing = new PHPExcel_Worksheet_Drawing();
 					$objDrawing->setName('Customer Signature');
@@ -1370,8 +1378,8 @@ class REPORT extends REPORT_HTML_CONTENT
 					$objDrawing->setOffsetX(25);                     //setOffsetX works properly
 					$objDrawing->setOffsetY(10);                     //setOffsetY works properly
 					$objDrawing->setCoordinates($imgcell.$col);             //set image to cell 
-					$objDrawing->setWidth(100);  
-					$objDrawing->setHeight(90);                     //signature height  
+					$objDrawing->setWidth(200);  
+					$objDrawing->setHeight(190);                     //signature height  
 					$objDrawing->setWorksheet($objPHPExcel->getActiveSheet());
 				}
 				
@@ -1390,6 +1398,8 @@ class REPORT extends REPORT_HTML_CONTENT
 		$row++;
 	}
 	//
+	if( isset($_GET['exp']) && $_GET['exp'] == 'all')
+	{
 	$row = $row+2;
 	$propertyreports = $this->export_property_reports($_GET['jid']);
 	while($objRow = $propertyreports->fetch_object())
@@ -1490,6 +1500,7 @@ class REPORT extends REPORT_HTML_CONTENT
 		$row++;
 		$oldreportname = $report_name;
 		
+	}
 	}
 	//
    }
@@ -2988,7 +2999,7 @@ class REPORT extends REPORT_HTML_CONTENT
 			$this->objDatabase->dbQuery("Update ".TBL_JOBLOCATION." set user_gallery = '', importent_notes = '', progress='0', start_date='0000-00-00 00:00:00', pause_date='0000-00-00 00:00:00', completion_date='0000-00-00 00:00:00'");
 			$this->objDatabase->dbQuery("Truncate ".TBL_STAFF_UPLOADED_PROPERTY_IMAGES);
 			$this->objDatabase->dbQuery("Truncate ".TBL_REPORTS_SUBMISSION);
-			$this->objDatabase->dbQuery("Truncate ".TBL_PROPERTY_NOTES);
+			$this->objDatabase->dbQuery("Delete from ".TBL_PROPERTY_NOTES." where important = 0");
 			$this->objDatabase->dbQuery("Truncate ".TBL_JOBSTATUS);
 			//
 			
@@ -3023,6 +3034,17 @@ class REPORT extends REPORT_HTML_CONTENT
 			$filename = $this->objFunction->iFind(TBL_SESSION_RESET, 'filename', array('id'=>$id));
 			unlink($_SERVER['DOCUMENT_ROOT'].'/sessionzip/'.$filename);
 			$this->objDatabase->dbQuery("DELETE FROM ".TBL_SESSION_RESET." where filename = '".$filename."'");
+		}
+	}
+	
+	public function removeBulkExportReport($eids)
+	{
+		$ids = explode(',', $eids);
+		foreach($ids as $filename)
+		{
+			//$filename = $this->objFunction->iFind(TBL_SESSION_RESET, 'filename', array('id'=>$id));
+			unlink($_SERVER['DOCUMENT_ROOT'].'/upload/zip/'.$filename);
+			//$this->objDatabase->dbQuery("DELETE FROM ".TBL_SESSION_RESET." where filename = '".$filename."'");
 		}
 	}
 	
@@ -3322,6 +3344,11 @@ switch($strTask)
    case 'remove-bulk-sessionzip':
       $objContent->removeBulkSessionzip($_GET['sszipid']);
   break;
+  
+   case 'remove-bulk-exportreport':
+      $objContent->removeBulkExportReport($_GET['erzipid']);
+  break;
+  
   case 'jobhistory-property-reports':
       $objContent->jobhistory_property_reports($_GET['rid'], $_GET['pid']);
   break;
