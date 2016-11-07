@@ -105,6 +105,7 @@ class ivr_staff_clock_log
                 <div class="widget-header">
                   <i class="icon-reorder"></i>&nbsp;&nbsp;<h4>IVR - Clocked in / out</span></h4>
                     <div class="toolbar no-padding">
+										<i class="fa fa-cog ivrlogrefresh" aria-hidden="true" onclick="IvrlogchartRefresh(1, \'1_even\'); return false;"></i>
     									<div class="btn-group">
     										<span class="btn btn-xs widget-collapse"><i class="icon-angle-down"></i></span>
     									</div>

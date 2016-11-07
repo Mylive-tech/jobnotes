@@ -2,8 +2,13 @@
 require_once( 'settings.php' );
 ob_end_clean();
 $action = $_REQUEST['action'];
+
 function list_all_properties_reports($login_id=0, $auto_login='') {
     global $objDatabase, $objFunctions;
+	$strSql ="SELECT config_value FROM ".TBL_CONFIGURATION." WHERE config_key = 'app_auto_logout_hours'";
+	$apploghours = $objDatabase->fetchRows($strSql); 
+	//print_r($apploghours); echo $apploghours->config_value; die;
+	
     //$strsql = "SELECT s.name as location_name,s.show_locations_home, p.*, DATE_FORMAT(p.start_date,'%d %b %Y') as start_date,DATE_FORMAT(p.completion_date,'%d %b %Y') as completion_date from ".TBL_JOBLOCATION." p inner join ".TBL_SERVICE." s on s.id = p.location_id where p.status=1 and p.site_id='".$_SESSION['site_id']."' order by p.priority_status desc";    
 	//$strsql = "SELECT s.name as location_name,s.show_locations_home, p.*, pn.notes, DATE_FORMAT(p.start_date,'%d %b %Y') as start_date,DATE_FORMAT(p.completion_date,'%d %b %Y') as completion_date from ".TBL_JOBLOCATION." p inner join ".TBL_SERVICE." s on s.id = p.location_id left join ".TBL_PROPERTY_NOTES." pn on p.id = pn.property_id where p.status=1 and p.site_id='1' order by s.name asc"; 
 	if($login_id > 1)
@@ -58,10 +63,10 @@ function list_all_properties_reports($login_id=0, $auto_login='') {
     $properties_reports = json_decode(getAllReports());
 	$properties_reports_info = getAllReportsInfo();
     if ($login_id >0) {
-        return json_encode(array("status"=>true , "message"=>"","login_info"=>array('id'=>$login_id, 'auto_login'=>$auto_login), "properites"=>$array_data, "reports"=>$properties_reports, "report_info"=>$properties_reports_info));
+        return json_encode(array("status"=>true , "message"=>"","login_info"=>array('id'=>$login_id, 'auto_login'=>$auto_login), "properites"=>$array_data, "reports"=>$properties_reports, "report_info"=>$properties_reports_info, 'app_autologout_hours'=>$apploghours->config_value));
     }
     else {
-        return json_encode(array("properites"=>$array_data, "reports"=>$properties_reports, "report_info"=>$properties_reports_info));
+        return json_encode(array("properites"=>$array_data, "reports"=>$properties_reports, "report_info"=>$properties_reports_info, 'app_autologout_hours'=>$apploghours->config_value));
     }        
 }
 

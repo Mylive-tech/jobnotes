@@ -9,12 +9,13 @@ class DSHBOARD_HTML_CONTENT
         $this->objDatabase 	= new Database();
     }
   
-    protected function show_Dashboard() { 
+    protected function show_Dashboard() {
+		$autorefreshtime = $this->getTimeForWidgetAutoRefresh(); 
 ?>
     <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
     <script src="<?php echo SITE_JSURL;?>jquery.bxslider.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.2/jquery.ui.touch-punch.min.js"></script>
-    <link rel="stylesheet" href="<?php echo SITE_CSSURL;?>jquery.bxslider.css" type="text/css" />  
+    <link rel="stylesheet" href="<?php echo SITE_CSSURL;?>jquery.bxslider.css" type="text/css" />
     <script type="text/javascript">
         $(document).ready(function(){       
             $("#widgetsorting .sortable" ).sortable({connectWith: '#widgetsorting .sortable'});
@@ -29,8 +30,17 @@ class DSHBOARD_HTML_CONTENT
             $(".welcome-panel-close").on("click", function() {
                 $(".welcome_message").hide();
                 $(".dashboardheading").css( "margin-bottom", "30px" );
-            }); 
+            });
         });
+		function IvrlogchartRefresh(index, clas)
+		{ 
+			$("."+clas).html('<div class="rpt_loader" style="margin-bottom: 15%;"><img src="<?php echo SITE_URL.'/assets/img/ajax-loader.gif' ?>" /></div>');
+				$.ajax({url: '<?php echo ISP :: AdminUrl('dashboard/admin_ivrlogchart_refresh/?index=');?>'+index, success: function(result){$("."+clas).html(result);
+				if(index == 1)
+					drawVisualization();
+					}
+				});
+		}
         function showlocactionInfo(currentlink, locationid) {
             $(".insidewidget_locationdetails").removeClass("show").addClass("hide");
             $("#p_"+locationid).removeClass("hide").addClass("show");
@@ -51,10 +61,28 @@ class DSHBOARD_HTML_CONTENT
 				});
 				return false;
 		}
+		//
+		$(function() {
+			var SANAjax = function(){
+			//Add here anticache modificator:
+			//var rnd=Math.random();
+			//$('#narrowSidebar').fadeOut("slow").load('ads/innerpage_120x600.php?nc='+rnd).fadeIn("slow");
+			//alert("test 02nov2016");
+			$("#refresh_loader").show();
+          	 		$.ajax({url: '<?php echo ISP :: AdminUrl('dashboard/admin_dashboard_refresh/');?>', success: function(result){$("#content .container").html(result);
+					drawVisualization();
+					$("#refresh_loader").hide();
+					}
+				});
+       		
+			}
+			setInterval(SANAjax, <?php echo $autorefreshtime->config_value;?>*1000 ); 
+		});
+		//
     </script>                      
 <div id="content">			   
   <div class="container">           
-    <h4 class="text-left heding_6 dashboardheading">Dashboard</h4>				     
+    <h4 class="text-left heding_6 dashboardheading">Dashboard <img src="<?php echo SITE_URL.'/assets/img/refresh-loader.gif' ?>" id="refresh_loader" style="display:none;width:25px;float:right;" /></h4>	
     <div class="col-md-12 nopadding">               
       <div class="welcome_message widget box drag">                  
         <!--<div class="widget-header">-->
@@ -110,7 +138,7 @@ class DSHBOARD_HTML_CONTENT
         </div>               
       </div> 
     </div>
-     <?php
+     <?php //print_r($this->objFunction->widgetContentArray);
             $int_loop_counter=0;
             for($i=0; $i<count($this->objFunction->widgetContentArray); $i++) {
                 if($this->objFunction->widgetContentArray[$i]<>'') {
@@ -129,7 +157,7 @@ class DSHBOARD_HTML_CONTENT
             <?php $i=1;
                 foreach($even_content as $even_widget_value) {
                     if($i == 1)
-                        echo '<li class="ui-state-default nopadding widget box col-md-12 col-sm-12 text-left">'.$even_widget_value.'</li>';                    
+                        echo '<li class="'.$i.'_even ui-state-default nopadding widget box col-md-12 col-sm-12 text-left">'.$even_widget_value.'</li>';                    
                     $i++;	
                 }
             ?>
@@ -168,28 +196,32 @@ class DSHBOARD_HTML_CONTENT
   mode: 'vertical',
   slideMargin: 5
 }); */
-$(".inside_widget_greenheading").click(function()
+//$(".inside_widget_greenheading").click(function()
+$(document).on("click",".inside_widget_greenheading", function()
 {
    $("#completedbox").toggle();
    $("#untouchedbox").hide();
    $("#inprogressbox").hide();
    $("#pausedbox").hide();
 });
-$(".inside_widget_progressheading").click(function()
+//$(".inside_widget_progressheading").click(function()
+$(document).on("click",".inside_widget_progressheading", function()
 {
    $("#completedbox").hide();
    $("#untouchedbox").hide();
    $("#inprogressbox").toggle();
    $("#pausedbox").hide();
 });
-$(".inside_widget_redheading").click(function()
+//$(".inside_widget_redheading").click(function()
+$(document).on("click",".inside_widget_redheading", function()
 {
    $("#completedbox").hide();
    $("#untouchedbox").toggle();
    $("#inprogressbox").hide();
    $("#pausedbox").hide();
 });
-$(".inside_widget_pauseheading").click(function()
+//$(".inside_widget_pauseheading").click(function()
+$(document).on("click",".inside_widget_pauseheading", function()
 {
    $("#completedbox").hide();
    $("#untouchedbox").hide();

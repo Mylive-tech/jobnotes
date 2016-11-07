@@ -179,35 +179,44 @@
     ?>  
     <script type="text/javascript">
       $(document).ready(function(){       
-        $("#untouchedbox div:first-child").mouseenter(function() {
-          $("#widgetsorting .sortable" ).sortable('disable');
+        //$("#untouchedbox div:first-child").mouseenter(function() {			
+		$(document).on('mouseenter', '#untouchedbox div:first-child', function() {
+          	$("#widgetsorting .sortable" ).sortable('disable');
         });  
-        $("#untouchedbox div:first-child").mouseleave(function() {
+        //$("#untouchedbox div:first-child").mouseleave(function() {
+		$(document).on('mouseleave', '#untouchedbox div:first-child', function() {
           $("#widgetsorting .sortable" ).sortable('enable');
         }); 
-        $("#inprogressbox div:first-child").mouseenter(function() {
+        //$("#inprogressbox div:first-child").mouseenter(function() {
+		$(document).on('mouseenter', '#inprogressbox div:first-child', function() {
           $("#widgetsorting .sortable" ).sortable('disable');
         });  
-        $("#inprogressbox div:first-child").mouseleave(function() {
+        //$("#inprogressbox div:first-child").mouseleave(function() {
+		$(document).on('mouseleave', '#inprogressbox div:first-child', function() {
           $("#widgetsorting .sortable" ).sortable('enable');
         }); 
-        $("#completedbox div:first-child").mouseenter(function() {
+        //$("#completedbox div:first-child").mouseenter(function() {
+		$(document).on('mouseenter', '#completedbox div:first-child', function() {
           $("#widgetsorting .sortable" ).sortable('disable');
         });  
-        $("#completedbox div:first-child").mouseleave(function() {
+        //$("#completedbox div:first-child").mouseleave(function() {
+		$(document).on('mouseleave', '#completedbox div:first-child', function() {
           $("#widgetsorting .sortable" ).sortable('enable');
         }); 
-		$("#pausedbox div:first-child").mouseenter(function() {
+		//$("#pausedbox div:first-child").mouseenter(function() {
+		$(document).on('mouseenter', '#pausedbox div:first-child', function() {
           $("#widgetsorting .sortable" ).sortable('disable');
         });  
-        $("#pausedbox div:first-child").mouseleave(function() {
+        //$("#pausedbox div:first-child").mouseleave(function() {
+		$(document).on('mouseleave', '#pausedbox div:first-child', function() {
           $("#widgetsorting .sortable" ).sortable('enable');
         });
       });
     </script>                   
         <div class="widget-header dragwidget_location_status_details">                         
             <i class="icon-reorder"></i>&nbsp;&nbsp;<h4>Location Status & Details</span></h4>                         
-            <div class="toolbar no-padding">        	                   
+            <div class="toolbar no-padding">
+            	<i class="fa fa-cog ivrlogrefresh" aria-hidden="true" onclick="IvrlogchartRefresh(0, '1_odd'); return false;"></i>        	                   
               <div class="btn-group">        		                     
                 <span class="btn btn-xs widget-collapse">                      
                   <i class="icon-angle-down"></i>                    
