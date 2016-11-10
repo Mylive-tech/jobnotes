@@ -2689,7 +2689,7 @@ class REPORT extends REPORT_HTML_CONTENT
 					foreach($objRow1 as $key=>$value) {
 						if($key == 'images')
 						{
-							$objPHPExcel->getActiveSheet()->getRowDimension($row)->setRowHeight(95);
+							$objPHPExcel->getActiveSheet()->getRowDimension($row)->setRowHeight(150);
 							$col = $row;
 							if (strpos($value, ',') !== false)
 							{
@@ -2707,8 +2707,8 @@ class REPORT extends REPORT_HTML_CONTENT
 									$objDrawing->setOffsetX(25);                     //setOffsetX works properly
 									$objDrawing->setOffsetY(10);                     //setOffsetY works properly
 									$objDrawing->setCoordinates($imgcell.$col);             //set image to cell 
-									$objDrawing->setWidth(100);  
-									$objDrawing->setHeight(90);                     //signature height  
+									$objDrawing->setWidth(200);  
+									$objDrawing->setHeight(190);                     //signature height  
 									$objDrawing->setWorksheet($objPHPExcel->getActiveSheet());
 									++$imgcell;
 								}
@@ -2727,8 +2727,8 @@ class REPORT extends REPORT_HTML_CONTENT
 								$objDrawing->setOffsetX(25);                     //setOffsetX works properly
 								$objDrawing->setOffsetY(10);                     //setOffsetY works properly
 								$objDrawing->setCoordinates($imgcell.$col);             //set image to cell 
-								$objDrawing->setWidth(100);  
-								$objDrawing->setHeight(90);                     //signature height  
+								$objDrawing->setWidth(200);  
+								$objDrawing->setHeight(190);                     //signature height  
 								$objDrawing->setWorksheet($objPHPExcel->getActiveSheet());
 							}
 							
@@ -2931,7 +2931,7 @@ class REPORT extends REPORT_HTML_CONTENT
 		while($objRow = $objRs->fetch_object())
 		{
 			$rowD = $this->objFunction->iFindAll(TBL_STAFF, array('id'=>$objRow->staff_id_or_admin));
-			$strLines.= $rowD[0]->f_name. ' ' .$rowD[0]->l_name . ', ' .$objRow->notes. ', '.$objRow->date_added . PHP_EOL;
+			$strLines.= $rowD[0]->f_name . ' ' .$rowD[0]->l_name . ', ' .$objRow->notes . ', '.$objRow->date_added . PHP_EOL;
 		}
 		fputs($fd, $strLines);
 		fclose($fd);
@@ -2993,14 +2993,14 @@ class REPORT extends REPORT_HTML_CONTENT
 			$this->objDatabase->insertQuery("insert into ".TBL_SESSION_RESET." (filename, creation_date) values('".$zip_name."', '".date('Y-m-d H:i:s')."')");
 			unlink($zip_name);
 			//
-			foreach($pimg as $img){
+			/*foreach($pimg as $img){
 				unlink($_SERVER['DOCUMENT_ROOT'].'/upload/'.$img);
 			}
 			$this->objDatabase->dbQuery("Update ".TBL_JOBLOCATION." set user_gallery = '', importent_notes = '', progress='0', start_date='0000-00-00 00:00:00', pause_date='0000-00-00 00:00:00', completion_date='0000-00-00 00:00:00'");
 			$this->objDatabase->dbQuery("Truncate ".TBL_STAFF_UPLOADED_PROPERTY_IMAGES);
 			$this->objDatabase->dbQuery("Truncate ".TBL_REPORTS_SUBMISSION);
 			$this->objDatabase->dbQuery("Delete from ".TBL_PROPERTY_NOTES." where important = 0");
-			$this->objDatabase->dbQuery("Truncate ".TBL_JOBSTATUS);
+			$this->objDatabase->dbQuery("Truncate ".TBL_JOBSTATUS);*/
 			//
 			
 			$this->objFunction->showMessage('Zip file created successfully.', ISP :: AdminUrl('reports/reportsmanager/'));
