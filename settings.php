@@ -76,7 +76,12 @@ if(isset($_COOKIE['siteAuth']))
 }
 
 
-$objFunctions->loadPlugins($objFunctions);
+$current_url = $_SERVER['REQUEST_URI'];
+$pos = strpos($current_url, '/dashboard/');
+if($pos !== false)
+{
+    $objFunctions->loadPlugins($objFunctions);
+}
 
 require_once( 'includes/sef.php' );
 
