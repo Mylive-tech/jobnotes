@@ -128,7 +128,7 @@ class dashboard extends DSHBOARD_HTML_CONTENT
 				$i=1;
 					foreach($even_content as $even_widget_value) {
 						if($i == 1)
-							$cont .= '<li class="ui-state-default nopadding widget box col-md-12 col-sm-12 text-left">'.$even_widget_value.'</li>';                    
+							$cont .= '<li class="'.$i.'_even ui-state-default nopadding widget box col-md-12 col-sm-12 text-left">'.$even_widget_value.'</li>';                    
 						$i++;	
 					}
 		   $cont .= '<div class="overlay ui-sortable-handle"></div><div class="loader ui-sortable-handle" style="display:none;"><img src="'.SITE_URL.'assets/img/ajax-loading-input.gif'.'" /></div>
