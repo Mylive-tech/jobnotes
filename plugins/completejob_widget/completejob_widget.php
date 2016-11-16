@@ -23,7 +23,7 @@ class completejob_widget
                 <div class="widget-header dragwidget_'.$titleClass.'">
                   <i class="icon-reorder"></i>&nbsp;&nbsp;<h4>Completed Reports</span></h4>
                     <div class="toolbar no-padding">
-					<i class="fa fa-cog ivrlogrefresh" aria-hidden="true" onclick="IvrlogchartRefresh(3, \'2_even\'); return false;"></i>
+					<i class="fa fa-refresh ivrlogrefresh" aria-hidden="true" onclick="IvrlogchartRefresh(3, \'2_even\'); return false;" title="Click here to refresh"></i>
     									<div class="btn-group">
     										<span class="btn btn-xs widget-collapse"><i class="icon-angle-down"></i></span>
     									</div>

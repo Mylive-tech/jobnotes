@@ -104,35 +104,35 @@ class DSHBOARD_HTML_CONTENT
           <ul class="col-md-12">                               
             <li>            
             <i class="icon-map-marker"></i>            
-            <a href="<?php echo ISP :: AdminUrl('property/manage-properties/');?>">Manage Properties</a>            
+            <a href="<?php echo ISP :: AdminUrl('property/manage-properties/');?>" title="Click here to modify/update properties">Manage Properties</a>            
             </li>                               
             <li>            
             <i class="icon-map-marker"></i>            
-            <a href="<?php echo ISP :: AdminUrl('property/add-property/');?>">Add New Property</a>            
+            <a href="<?php echo ISP :: AdminUrl('property/add-property/');?>" title="Click here to add new property">Add New Property</a>            
             </li>                               
             <li>            
             <i class="icon-map-marker"></i>            
-            <a href="<?php echo ISP :: AdminUrl('service/manage-locations/');?>">Manage Locations</a>            
+            <a href="<?php echo ISP :: AdminUrl('service/manage-locations/');?>" title="Click here to modify/update locations">Manage Locations</a>            
             </li>                               
             <li>            
             <i class="icon-map-marker"></i>            
-            <a href="<?php echo ISP :: AdminUrl('service/add-location/');?>">Add New Location</a>            
+            <a href="<?php echo ISP :: AdminUrl('service/add-location/');?>" title="Click here to add new location">Add New Location</a>            
             </li>                               
             <li>            
             <i class="icon-user"></i>            
-            <a href="<?php echo ISP :: AdminUrl('staff/users-listing/');?>">Manage Users</a>            
+            <a href="<?php echo ISP :: AdminUrl('staff/users-listing/');?>" title="Click here to view/edit users">Manage Users</a>            
             </li>                               
             <li>            
             <i class="icon-file-text"></i>            
-            <a href="<?php echo ISP :: AdminUrl('reports/add-new-form');?>">Add New Reporting Form</a>            
+            <a href="<?php echo ISP :: AdminUrl('reports/add-new-form');?>" title="Click here to add new Report">Add New Reporting Form</a>            
             </li>                               
             <li>            
             <i class="icon-cogs"></i>            
-            <a href="<?php echo ISP :: AdminUrl('setting/general-settings/');?>">System Configuration</a>            
+            <a href="<?php echo ISP :: AdminUrl('setting/general-settings/');?>" title="Click here to change the configuration settings">System Configuration</a>            
             </li>                               
             <li>            
             <i class="icon-file-text"></i>            
-            <a href="<?php echo ISP :: AdminUrl('reports/listing/');?>">See All Reports</a>            
+            <a href="<?php echo ISP :: AdminUrl('reports/listing/');?>" title="Click here to view all reports">See All Reports</a>            
             </li>                            
           </ul>                            
         </div>               

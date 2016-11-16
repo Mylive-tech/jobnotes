@@ -45,7 +45,7 @@ if($_SESSION['adminid']<>'')
         <span class="profile_divider"> | 
         </span>  			
         <span class="username">
-          <a href="<?php echo SITE_ADMINURL;?>">Go to Admin</a>
+          <a href="<?php echo SITE_ADMINURL;?>" title="Go to the backend to edit and update various settings and properties">Go To Admin Dashboard</a>
         </span>        
 <?php
                 } ?>        

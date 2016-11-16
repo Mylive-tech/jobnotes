@@ -216,7 +216,7 @@
         <div class="widget-header dragwidget_location_status_details">                         
             <i class="icon-reorder"></i>&nbsp;&nbsp;<h4>Location Status & Details</span></h4>                         
             <div class="toolbar no-padding">
-            	<i class="fa fa-cog ivrlogrefresh" aria-hidden="true" onclick="IvrlogchartRefresh(0, '1_odd'); return false;"></i>        	                   
+            	<i class="fa fa-refresh ivrlogrefresh" aria-hidden="true" onclick="IvrlogchartRefresh(0, '1_odd'); return false;" title="Click here to refresh"></i>        	                   
               <div class="btn-group">        		                     
                 <span class="btn btn-xs widget-collapse">                      
                   <i class="icon-angle-down"></i>                    

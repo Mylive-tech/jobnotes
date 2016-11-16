@@ -25,7 +25,7 @@ class staff_widget
                 <div class="widget-header dragwidget_'.$titleClass.'">
                   <i class="icon-reorder"></i>&nbsp;&nbsp;<h4>Staff</span></h4>
                     <div class="toolbar no-padding">
-						<i class="fa fa-cog ivrlogrefresh" aria-hidden="true" onclick="IvrlogchartRefresh(2, \'2_odd\'); return false;"></i>
+						<i class="fa fa-refresh ivrlogrefresh" aria-hidden="true" onclick="IvrlogchartRefresh(2, \'2_odd\'); return false;" title="Click here to refresh"></i>
 						<div class="btn-group">
 							<span class="btn btn-xs widget-collapse"><i class="icon-angle-down"></i></span>
 						</div>

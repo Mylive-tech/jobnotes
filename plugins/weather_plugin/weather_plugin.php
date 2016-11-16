@@ -41,7 +41,7 @@ class weather_plugin
                 <div class="widget-header dragwidget_'.$titleClass.'">
                   <i class="icon-reorder"></i>&nbsp;&nbsp;<h4>Weather Forecast ('.$objWeatherCityInfo->config_value.')</span></h4><form action="" method="post"><input type="text" id="zip" name="zip" maxlength="5" size="10" placeholder="Zipcode" required><input type="submit" value="View" name="getzipinfo" onclick="getdetailsfromzip(\''.SITE_URL.'plugins/weather_plugin/weather_plugin_customzip.php\'); return false;"></form>	
                     <div class="toolbar no-padding">
-										<i class="fa fa-cog ivrlogrefresh" aria-hidden="true" onclick="IvrlogchartRefresh(4, \'3_odd\'); return false;"></i>
+										<i class="fa fa-refresh ivrlogrefresh" aria-hidden="true" onclick="IvrlogchartRefresh(4, \'3_odd\'); return false;" title="Click here to refresh"></i>
     									<div class="btn-group">
     										<span class="btn btn-xs widget-collapse"><i class="icon-angle-down"></i></span>
     									</div>

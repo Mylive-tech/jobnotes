@@ -632,6 +632,7 @@ $(document).ready(function() {
   </div>			   
   <!-- /.container --> 		 
 </div>
+
 <?php 
    }  // End of Function 
    
