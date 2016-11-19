@@ -579,7 +579,7 @@ $ivrdata .='<script type="text/javascript">
 							if($log['time_stamp'] >= strtotime($_GET['date_from']) && $log['time_stamp'] <= strtotime($_GET['date_to'])):
 							$rowCount++;
                           $ivrdata .= '<tr> 
-                            <td align="center">'.$rowCoun.'</td>             
+                            <td align="center">'.$rowCount.'</td>             
                             <td align="center">'.$log['date'].'</td>
                             <td align="center">'.date('h:i A', $log['time_stamp']).'</td>
                             <td align="center">'.ucfirst($log['clock_action_description']).'</td>
@@ -588,7 +588,7 @@ $ivrdata .='<script type="text/javascript">
 						else:
 							$rowCount++;
                           $ivrdata .= '<tr> 
-                            <td align="center">'.$rowCoun.'</td>             
+                            <td align="center">'.$rowCount.'</td>             
                             <td align="center">'.$log['date'].'</td>
                             <td align="center">'.date('h:i A', $log['time_stamp']).'</td>
                             <td align="center">'.ucfirst($log['clock_action_description']).'</td>

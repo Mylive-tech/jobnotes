@@ -88,6 +88,11 @@ class staff extends STAFF_HTML_CONTENT
         
 		public function save_import_staff($tbl)
 		{
+			$usernames = $this->objDatabase->dbQuery("SELECT username FROM tbl_staff where username REGEXP '^[0-9]+$' order by id asc");
+			$usrarr = array();
+			while($res = $usernames->fetch_object()){
+				$usrarr[] = $res->username;
+			}
 ?>       
 
 <div id="content" class="add-new-job-l">			
@@ -132,6 +137,10 @@ class staff extends STAFF_HTML_CONTENT
 						$i = 0;
 						while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
 							if ($i > 0) {
+								if(in_array($data[0], $usrarr)){
+								}
+								else
+								{
 								$num = count($data);
 								echo "<tr><td>$i</td>";
 								$row++;
@@ -140,6 +149,7 @@ class staff extends STAFF_HTML_CONTENT
 								}
 
 								echo "</tr>";
+								}
 							}
 
 							$i++;
@@ -154,10 +164,22 @@ class staff extends STAFF_HTML_CONTENT
 				$i = 0;
 				while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) { 
 					if ($i > 0) {
+						if(in_array($data[0], $usrarr)){
+						}
+						else
+						{
 						$objStaffRole = $this->objDatabase->fetchRows("SELECT * FROM " . TBL_STAFFTYPE . " where LOWER(label) = '" . strtolower($data[6]) . "'");
+						$assigned_props = $this->objDatabase->dbQuery("SELECT id, location_id from ".TBL_JOBLOCATION." where assigned_to in('".$data[6]."', 'assign_to_all')");
 						$data[5] = md5($data[5]);
 						$import = "INSERT into " . $tbl . "(site_id, username, f_name, l_name, email, phone, password, user_type) values('" . $_SESSION['site_id'] . "', '$data[0]', '" . addslashes($data[1]) . "','" . addslashes($data[2]) . "','$data[3]','$data[4]','$data[5]', '" . $objStaffRole->id . "')";
 						$this->objDatabase->dbQuery($import);
+						$intId = $this->objDatabase->fetchRows("SELECT MAX(id) as uid FROM ".TBL_STAFF);
+							while($ap = $assigned_props->fetch_object())
+							{
+								
+								$this->objDatabase->dbQuery("INSERT into ".TBL_ASSIGN_PROPERTY. "(location_id, property_id, user_id) values('".$ap->location_id."', '".$ap->id."', '".$intId->uid."') ");
+							}
+						}
 					}
 
 					$i++;
@@ -226,6 +248,14 @@ class staff extends STAFF_HTML_CONTENT
 		{
 			if ($this->intId == ''): //Check for content posted is "New" or "Existing"
 				$this->intId = $this->objDatabase->insertForm($tbl); //Insert new content in table
+				//
+				$stafftype = $this->objDatabase->fetchRows("SELECT label FROM ".TBL_STAFFTYPE." where id='".$_POST['md_user_type']."'");
+				$assigned_props = $this->objDatabase->dbQuery("SELECT id, location_id from ".TBL_JOBLOCATION." where assigned_to in('".$stafftype->label."', 'assign_to_all')");
+				while($ap = $assigned_props->fetch_object())
+				{	
+					$this->objDatabase->dbQuery("INSERT into ".TBL_ASSIGN_PROPERTY. "(location_id, property_id, user_id) values('".$ap->location_id."', '".$ap->id."', '".$this->intId."') ");
+				}
+				//
 				if ($this->intId) {
 					//$this->objFunction->showMessage('Record has been added successfully.', $_SERVER['REQUEST_URI']); //Function to show the message
 					return '<h3>User has been added Successfully.</h3>';

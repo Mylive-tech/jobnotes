@@ -324,11 +324,13 @@ class JOBLOCATION extends JOBLOCATION_HTML_CONTENT
 			{
 				$strSql = 'Update '.$tbl.' set priority_status=1 where id in ('.$this->intId.')';
 				 $this->objDatabase->dbQuery($strSql);
+				 $strWord='Modified';
 			}
 		elseif($intStatus == 'dp')
 			{
 				$strSql = 'Update '.$tbl.' set priority_status=0 where id in ('.$this->intId.')';
 				 $this->objDatabase->dbQuery($strSql);
+				 $strWord='Modified';
 			}
           elseif ($intStatus <> 'export') {
   	     $strSql = 'Update '.$tbl.' set status=\''.$intStatus.'\' where id in ('.$this->intId.')';
