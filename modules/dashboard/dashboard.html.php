@@ -292,9 +292,10 @@ if ($objRow->show_locations_home == 1) {
     <div class="row">				       
       <div class="col-md-12 nopadding">					         
         <div class="widget_staff">        
-<?php          
+<?php     
        //$PriorityLocationRs = $this->objFunction->iFindAll(TBL_JOBLOCATION, array('status'=>1, 'priority_status'=>1)); 
-           $PriorityLocationRs = $this->objDatabase->dbFetch("Select * FROM ".TBL_JOBLOCATION." where status=1 and priority_status=1 and site_id='".$_SESSION['site_id']."' and assigned_to='".$_SESSION['adminid']."'");
+           //$PriorityLocationRs = $this->objDatabase->dbFetch("Select * FROM ".TBL_JOBLOCATION." where status=1 and priority_status=1 and site_id='".$_SESSION['site_id']."' and assigned_to='".$_SESSION['adminid']."'");
+		   $PriorityLocationRs = $this->objDatabase->dbFetch("Select jl.* FROM ".TBL_JOBLOCATION." jl inner join ".TBL_ASSIGN_PROPERTY." ap on jl.id=ap.property_id where jl.status=1 and jl.priority_status=1 and site_id='".$_SESSION['site_id']."' and ap.user_id='".$_SESSION['adminid']."'");
            foreach($PriorityLocationRs as $objRecordSet)
            {
               ?>						           

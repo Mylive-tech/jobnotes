@@ -2224,7 +2224,7 @@ $sessionresetdata .= '<script type="text/javascript">
                                 
                                  <a href="javascript:void(0)" onclick="removesessionzip(\''.ISP :: AdminUrl().'/index.php?dir=reports&task=removesessionzip&file='.$objRow->filename.'\'); return false;">Remove</a>
                                 </td>
-                                 <td class="hideexport divchecker"><input type="checkbox" class="uniform sessionzipcheck" name="delete[]" value="<?php echo $objRow->id;?>" /></td>                        
+                                 <td class="hideexport divchecker"><input type="checkbox" class="uniform sessionzipcheck" name="delete[]" value="'.$objRow->id.'" /></td>                        
                                 </tr>';                           
                                 }
                                 else:

@@ -377,7 +377,7 @@ class JOBLOCATION extends JOBLOCATION_HTML_CONTENT
    public function loadLocationProperties()
    {
 	   if($_SESSION['adminid'] > 1)
-	   		$row = $this->objDatabase->dbQuery('Select * FROM '.TBL_JOBLOCATION.' j inner join '.TBL_ASSIGN_PROPERTY.' ap ON(j.id=ap.property_id) where status=1 order by priority_status desc');
+	   		$row = $this->objDatabase->dbQuery('Select j.* FROM '.TBL_JOBLOCATION.' j inner join '.TBL_ASSIGN_PROPERTY.' ap ON(j.id=ap.property_id) where status=1 and user_id='.$_SESSION['adminid'].' and ap.location_id ='.$this->intId.' order by priority_status desc');
 		else
      		$row = $this->objDatabase->dbQuery('Select * FROM '.TBL_JOBLOCATION.' where location_id ='.$this->intId.' and status=1 order by priority_status desc');
 	 
