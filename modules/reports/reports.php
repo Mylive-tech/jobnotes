@@ -2757,20 +2757,38 @@ class REPORT extends REPORT_HTML_CONTENT
 		ob_clean();
 		$objWriter->save(str_replace(__FILE__,"export_property_report.xlsx",__FILE__));	
 		/*export images*/
-		$strsql = "select group_concat(user_gallery) as staffuploads from ".TBL_JOBLOCATION." where user_gallery != ''";
-		$objRow = $this->objDatabase->fetchRows($strsql);
-		//$strsql = "SELECT Images FROM ".TBL_STAFF_UPLOADED_PROPERTY_IMAGES;
-		//$objRs = $this->objDatabase->dbQuery($strsql);
-		$filesarr = array();
-		$pimg = explode(',', $objRow->staffuploads);
-		//while($objRow = $objRs->fetch_object())
-		{
-			//$pimg = explode(',', $objRow->Images);
-			foreach($pimg as $img){
-				if($img != '')
-					$filesarr[] = $img;
-			}
-		}
+//		$strsql = "select group_concat(user_gallery) as staffuploads from ".TBL_JOBLOCATION." where user_gallery != ''";
+//		$objRow = $this->objDatabase->fetchRows($strsql);
+//		//$strsql = "SELECT Images FROM ".TBL_STAFF_UPLOADED_PROPERTY_IMAGES;
+//		//$objRs = $this->objDatabase->dbQuery($strsql);
+//		$filesarr = array();
+//		$pimg = explode(',', $objRow->staffuploads);
+//		//while($objRow = $objRs->fetch_object())
+//		{
+//			//$pimg = explode(',', $objRow->Images);
+//			foreach($pimg as $img){
+//				if($img != '')
+//					$filesarr[] = $img;
+//			}
+//		}
+                $filesarr = array();
+                $strSql = "SELECT Images FROM `tbl_staff_uploaded_property_images` where Images!=''";
+                $objRs = $this->objDatabase->dbQuery($strSql); 
+                while($objRow = $objRs->fetch_object())  // Fetch the result in the object array
+                {
+                        //$map_images[] = $objRow->Images;
+                        if (strpos($objRow->Images, ',') !== false) {
+                                $images = explode(',', $objRow->Images);
+                                foreach($images as $image){
+                                        $filesarr[] = $image;
+                                }
+                        }
+                        else{
+                                $filesarr[] = $objRow->Images;
+                        }
+                }
+                
+                
 		/*export custom report*/
 		$objPHPExcel = new PHPExcel(); 
 		$objPHPExcel->getProperties()
@@ -2993,14 +3011,36 @@ class REPORT extends REPORT_HTML_CONTENT
 			$this->objDatabase->insertQuery("insert into ".TBL_SESSION_RESET." (filename, creation_date) values('".$zip_name."', '".date('Y-m-d H:i:s')."')");
 			unlink($zip_name);
 			//
-			/*foreach($pimg as $img){
+//			foreach($pimg as $img){
+//				unlink($_SERVER['DOCUMENT_ROOT'].'/upload/'.$img);
+//			}
+                        
+                        $imagearr = array();
+                        $strSql = "SELECT Images FROM `tbl_staff_uploaded_property_images` where Images!=''";
+                        $objRs = $this->objDatabase->dbQuery($strSql); 
+                        while($objRow = $objRs->fetch_object())  // Fetch the result in the object array
+                        {
+                                //$map_images[] = $objRow->Images;
+                                if (strpos($objRow->Images, ',') !== false) {
+                                        $images = explode(',', $objRow->Images);
+                                        foreach($images as $image){
+                                                $imagearr[] = $image;
+                                        }
+                                }
+                                else{
+                                        $imagearr[] = $objRow->Images;
+                                }
+                        }
+                        
+                        foreach($imagearr as $img){
 				unlink($_SERVER['DOCUMENT_ROOT'].'/upload/'.$img);
 			}
+                        
 			$this->objDatabase->dbQuery("Update ".TBL_JOBLOCATION." set user_gallery = '', importent_notes = '', progress='0', start_date='0000-00-00 00:00:00', pause_date='0000-00-00 00:00:00', completion_date='0000-00-00 00:00:00'");
 			$this->objDatabase->dbQuery("Truncate ".TBL_STAFF_UPLOADED_PROPERTY_IMAGES);
 			$this->objDatabase->dbQuery("Truncate ".TBL_REPORTS_SUBMISSION);
 			$this->objDatabase->dbQuery("Delete from ".TBL_PROPERTY_NOTES." where important = 0");
-			$this->objDatabase->dbQuery("Truncate ".TBL_JOBSTATUS);*/
+			$this->objDatabase->dbQuery("Truncate ".TBL_JOBSTATUS);
 			//
 			
 			$this->objFunction->showMessage('Zip file created successfully.', ISP :: AdminUrl('reports/reportsmanager/'));

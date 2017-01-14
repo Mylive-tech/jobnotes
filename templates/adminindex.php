@@ -13,7 +13,7 @@
     <link href="<?php echo SITE_URL;?>assets/css/main.css" rel="stylesheet" type="text/css" />	
     <link href="<?php echo SITE_URL;?>assets/css/plugins.css" rel="stylesheet" type="text/css" />	
     <link href="<?php echo SITE_URL;?>assets/css/responsive.css" rel="stylesheet" type="text/css" />	
-    <link href="<?php echo SITE_URL;?>assets/css/icons.css" rel="stylesheet" type="text/css" />	
+    <!--<link href="<?php echo SITE_URL;?>assets/css/icons.css" rel="stylesheet" type="text/css" />-->	
     <!-- Login -->	
     <link href="<?php echo SITE_URL;?>assets/css/login.css" rel="stylesheet" type="text/css" />   	
     <link href="<?php echo SITE_URL;?>assets/css/admin.css" rel="stylesheet" type="text/css" />	
@@ -79,12 +79,12 @@ var SITE_URL = '<?php echo SITE_URL;?>';
 <script type="text/javascript" src="<?php echo SITE_JSURL;?>plugins/slimscroll/jquery.slimscroll.min.js"></script> 	
 <script type="text/javascript" src="<?php echo SITE_JSURL;?>plugins/slimscroll/jquery.slimscroll.horizontal.min.js"></script>   	
 <script type="text/javascript" src="<?php echo SITE_JSURL;?>plugins/fullcalendar/fullcalendar.min.js"></script>
-	<!-- Noty --> 	
+	<!-- Noty  	
 <script type="text/javascript" src="<?php echo SITE_JSURL;?>plugins/noty/jquery.noty.js"></script> 	
 <script type="text/javascript" src="<?php echo SITE_JSURL;?>plugins/noty/layouts/top.js"></script> 	
-<script type="text/javascript" src="<?php echo SITE_JSURL;?>plugins/noty/themes/default.js"></script>      
-<script type="text/javascript" src="<?php echo SITE_JSURL;?>plugins/daterangepicker/moment.min.js"></script> 	
-<script type="text/javascript" src="<?php echo SITE_JSURL;?>plugins/daterangepicker/daterangepicker.js"></script> 	
+<script type="text/javascript" src="<?php echo SITE_JSURL;?>plugins/noty/themes/default.js"></script>-->      
+<!--<script type="text/javascript" src="<?php echo SITE_JSURL;?>plugins/daterangepicker/moment.min.js"></script> 	
+<script type="text/javascript" src="<?php echo SITE_JSURL;?>plugins/daterangepicker/daterangepicker.js"></script>--> 	
 <script type="text/javascript" src="<?php echo SITE_JSURL;?>plugins/blockui/jquery.blockUI.min.js"></script> 
 	<!-- Forms --> 	
 <script type="text/javascript" src="<?php echo SITE_JSURL;?>plugins/uniform/jquery.uniform.min.js"></script> 	

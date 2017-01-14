@@ -170,14 +170,17 @@ class staff extends STAFF_HTML_CONTENT
 						{
 						$objStaffRole = $this->objDatabase->fetchRows("SELECT * FROM " . TBL_STAFFTYPE . " where LOWER(label) = '" . strtolower($data[6]) . "'");
 						$assigned_props = $this->objDatabase->dbQuery("SELECT id, location_id from ".TBL_JOBLOCATION." where assigned_to in('".$data[6]."', 'assign_to_all')");
-						$data[5] = md5($data[5]);
-						$import = "INSERT into " . $tbl . "(site_id, username, f_name, l_name, email, phone, password, user_type) values('" . $_SESSION['site_id'] . "', '$data[0]', '" . addslashes($data[1]) . "','" . addslashes($data[2]) . "','$data[3]','$data[4]','$data[5]', '" . $objStaffRole->id . "')";
-						$this->objDatabase->dbQuery($import);
-						$intId = $this->objDatabase->fetchRows("SELECT MAX(id) as uid FROM ".TBL_STAFF);
-							while($ap = $assigned_props->fetch_object())
-							{
-								
-								$this->objDatabase->dbQuery("INSERT into ".TBL_ASSIGN_PROPERTY. "(location_id, property_id, user_id) values('".$ap->location_id."', '".$ap->id."', '".$intId->uid."') ");
+						$res = $this->objDatabase->fetchRows("select * from ".TBL_STAFF." where username='".$data[0]."'");
+						if($data[0] != $res->username){
+							$data[5] = md5($data[5]);
+							$import = "INSERT into " . $tbl . "(site_id, username, f_name, l_name, email, phone, password, user_type) values('" . $_SESSION['site_id'] . "', '$data[0]', '" . addslashes($data[1]) . "','" . addslashes($data[2]) . "','$data[3]','$data[4]','$data[5]', '" . $objStaffRole->id . "')";
+							$this->objDatabase->dbQuery($import);
+							$intId = $this->objDatabase->fetchRows("SELECT MAX(id) as uid FROM ".TBL_STAFF);
+								while($ap = $assigned_props->fetch_object())
+								{
+									
+									$this->objDatabase->dbQuery("INSERT into ".TBL_ASSIGN_PROPERTY. "(location_id, property_id, user_id) values('".$ap->location_id."', '".$ap->id."', '".$intId->uid."') ");
+								}
 							}
 						}
 					}
@@ -246,8 +249,17 @@ class staff extends STAFF_HTML_CONTENT
 		 */
 		public function saveContent($tbl)
 		{
+			$uname = $_POST['md_username'];
+			$res = $this->objDatabase->fetchRows("select * from ".TBL_STAFF." where username='".$uname."'");
+			
+			
 			if ($this->intId == ''): //Check for content posted is "New" or "Existing"
+			if($res->username != $uname){
 				$this->intId = $this->objDatabase->insertForm($tbl); //Insert new content in table
+			}
+			else{
+				return '<h3>username is already exist.</h3>';
+			}
 				//
 				$stafftype = $this->objDatabase->fetchRows("SELECT label FROM ".TBL_STAFFTYPE." where id='".$_POST['md_user_type']."'");
 				$assigned_props = $this->objDatabase->dbQuery("SELECT id, location_id from ".TBL_JOBLOCATION." where assigned_to in('".$stafftype->label."', 'assign_to_all')");

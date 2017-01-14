@@ -114,6 +114,18 @@ class HTML_MEDIA {
                                 }
                                 ?>
                                 </select>
+                                <p style="float:right;">
+                                <a style="margin: 0px 0px; border: 1px solid #ccc; padding: 0px 5px 0px 7px;" id="m_prev" href="<?php echo SITE_ADMINURL.'media/list/page/1';?>">PREV</a>
+                                <?php
+                                for ($j=1; $j<=$totalPages; $j++) {
+                                ?>
+                                 <a style="margin: 0px 0px; border: 1px solid #ccc; padding: 0px 5px 0px 7px;" id="<?php echo 'mediapage_'.$j;?>" href="<?php echo SITE_ADMINURL.'media/list/page/'.$j;?>"><?php echo $j;?></a> 
+                                <?php
+                                }
+                                ?>
+                                <a style="margin: 0px 0px; border: 1px solid #ccc; padding: 0px 5px 0px 7px;" id="m_next" href="<?php echo SITE_ADMINURL.'media/list/page/'.($j-1);?>">NEXT</a>
+                                </p>
+                                <div style="clear:both;"></div>
                             </div>
                         </form>
                         </div>
@@ -123,6 +135,27 @@ class HTML_MEDIA {
         </div>
     </div>
 <script defer>
+$(document).ready(function(e) {
+	var pageno = $('#page').val();
+	var optionlast = $('#page option').last().val();
+	if(pageno != 1)
+	{
+		$('#m_prev').attr('href', '<?php echo SITE_ADMINURL.'media/list/page/';?>'+(pageno-1));
+	}
+	else
+	{
+		$('#m_prev').css('pointer-events','none');
+	}
+	if(pageno != optionlast)
+	{
+		$('#m_next').attr('href', '<?php echo SITE_ADMINURL.'media/list/page/';?>'+(parseInt(pageno)+parseInt(1)));
+	}
+	else
+	{
+		$('#m_next').css('pointer-events','none');
+	}
+	$('#mediapage_'+pageno).addClass('active');
+});
 function lazyloadMedia() {
      $("div.mediamanager img").each(function() {
         $(this).attr("src", $(this).attr("data-src"));
