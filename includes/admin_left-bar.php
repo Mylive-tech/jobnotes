@@ -144,6 +144,14 @@ if($currentPageUrl== ISP::AdminUrl('media/list/'))
  $media='active';
 
 }
+if($currentPageUrl== ISP::AdminUrl('media/exportpropertyimages/'))
+{
+
+ $confCurrent ='current';
+
+ $epi='active';
+
+}
 
  
 
@@ -751,6 +759,12 @@ if($objFunctions->checkPermission('Add & Edit Staff User', 'staff') || $objFunct
                     <a href="<?php echo ISP :: AdminUrl('media/list/');?>" class="<?php echo $media;?>">
                     <i class="icon-angle-right"></i>
                     Media Manager
+                    </a>
+                </li>
+                <li class="<?php echo $confCurrent;?>">
+                    <a href="<?php echo ISP :: AdminUrl('media/exportpropertyimages/');?>" class="<?php echo $epi;?>">
+                    <i class="icon-angle-right"></i>
+                    Export Property Images
                     </a>
                 </li>
 

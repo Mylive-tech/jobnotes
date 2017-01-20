@@ -3145,3 +3145,68 @@ body.modal-open {
 .datepicker > .datepicker_header > a:hover {
     background-color: none !important;
 }
+
+/*accordion export property image*/
+p.accordion {
+background-color: #eee;
+color: #444;
+cursor: pointer;
+padding: 18px;
+width: 100%;
+border: none;
+text-align: left;
+outline: none;
+font-size: 15px;
+transition: 0.4s;
+position:relative;
+}
+
+p.accordion.active, p.accordion:hover {
+background-color: #ddd;
+}
+
+   .accordion::after{content:none!important;}
+   .accordion_l{position: absolute;
+    left: 43px;
+    right: 0px;
+    background: transparent !important;
+    top: 0px;
+    bottom: 0px;
+    line-height: 53px;
+	}
+	span.accordion_l::after {
+    content: '\002B';
+    color: #777;
+    font-weight: bold;
+    float: right;
+    margin-right: 15px;
+	position: absolute;
+	right: 0px;
+	top: 2px;
+	}	
+    span.accordion_l.active::after {content: "\2212";}
+@media (max-width:767px){
+span.accordion_l::after {content:none!important;}
+.accordion_l{position: relative;left: 5px;line-height: inherit;}
+}
+
+/*p.accordion:after {
+content: '\002B';
+color: #777;
+font-weight: bold;
+float: right;
+margin-left: 5px;
+}
+
+p.accordion.active:after {
+content: "\2212";
+}*/
+
+div.panel {
+padding: 0 18px;
+background-color: white;
+max-height: 0;
+overflow: hidden;
+transition: max-height 0.2s ease-out;
+margin-bottom:0;
+}

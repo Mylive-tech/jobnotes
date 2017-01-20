@@ -128,6 +128,9 @@ class HTML_MEDIA {
                                 <div style="clear:both;"></div>
                             </div>
                         </form>
+                        <br/>
+                        <input type="button" name="exp_prop_img" id="exp_prop_img" value="Export Property Images" onclick="window.location='<?php echo ISP :: AdminUrl('media/exportpropertyimages/');?>'" />
+                        <br/>
                         </div>
                     </div>
                 </div>
@@ -191,6 +194,101 @@ setTimeout(function(){
 </script>
     <?php
     }
+	//
+protected function exportPropertyImages($objRs) {
+	 ?>
+	<div id="content">
+		<div class="container"> 
+			<div class="row">
+				<div class="col-md-12">
+					<h4 class="text-left heding_6">Export Property Images</h4>
+                     <form method="post">
+                            <input type="hidden" name="task" value="download-property-image">
+                            <p style="float:right;"><input type="submit" value="Export ZIP" name="saveselected_z">
+                            <input type="submit" value="Export PDF" name="saveselected_p"></p>
+                            <div style="clear:both;"></div>
+					<?php $i=1;
+						while ($objRow = $objRs->fetch_object()) {
+							unset($imgarr);
+							$imgarr = array();
+							if ($objRow->user_gallery<>''){
+							?>
+								<p class="accordion"><input type="checkbox" name="select_all" class="select_all" value="<?php echo $objRow->id; ?>"/>
+								<span class="accordion_l"><?php echo $objRow->job_listing; ?></span></p>
+								<div class="panel" id="<?php echo $objRow->id; ?>">
+								<?php
+								if (strpos($objRow->user_gallery, ',') !== false) {
+									$images = explode(',', $objRow->user_gallery);
+									foreach($images as $img){ 
+										if($img != ''){
+											$imgarr[] = $img;
+										}
+									}
+								}
+								else{
+									$imgarr[] = $objRow->user_gallery;
+								}
+								$totalImages = count($imgarr);
+								foreach($imgarr as $ia){
+								$file = "upload/".$ia;
+								?>
+									<div style="margin: 0px 10px 10px 0px; position: relative; width: 160px; height: 112px; float:left; text-align:center; border:1px solid #ccc; overflow:hidden;">
+								<input style="display:none;" onclick="$(this).is(':checked')?$('#img_check_<?php echo $i;?>').show(1000):$('#img_check_<?php echo $i;?>').hide(1000);" type="checkbox" id="check_<?php echo $i;?>" value="<?php echo basename($file);?>" name="<?php echo $objRow->job_listing; ?>[]">
+								<label for="check_<?php echo $i;?>" id="img_check_<?php echo $i;?>" style="display: none; position: absolute; left:0px; width:160px; height:110px;">
+								<img src="<?php echo SITE_URL;?>upload/tmp/trans_checked.png" style="width:160px; height:110px;">
+								</label>
+								<label for="check_<?php echo $i;?>" style="cursor: pointer;">
+								<img alt="Click to Select" title="Click to Select" src="<?php echo SITE_URL.$file;?>" data-src="<?php echo SITE_URL.$file;?>" style="width:160px !important; height: 110px !important;" border="0" width="130" height="110">
+								</label>
+							</div>
+								<?php
+								$i++;
+							}
+								?>
+								</div>
+							<?php 
+							}
+						}
+					?>
+                    </form>
+				</div>
+			</div>
+		</div>
+	</div>
+    
+	<script type="text/javascript">
+		//
+		$(document).ready(function(e) {
+			$('.select_all').click(function(){
+				var checkall = $(this).prop('checked');
+				var checkval = $(this).val();
+				if(checkall == true)
+				{
+					$('#'+checkval+' input[type=checkbox]').prop('checked', true);
+				}
+				else
+				{
+					$('#'+checkval+' input[type=checkbox]').prop('checked', false);
+				}
+			});
+		});
+		//
+		var acc = document.getElementsByClassName("accordion_l");
+		var i;
+		for (i = 0; i < acc.length; i++) {
+			acc[i].onclick = function() {
+				this.classList.toggle("active");
+				var panel = this.closest('.accordion').nextElementSibling;
+				if (panel.style.maxHeight){
+					panel.style.maxHeight = null;
+				} else {
+					panel.style.maxHeight = panel.scrollHeight + 'px';
+				} 
+			}
+		}
+	</script>
+	 <?php
+	 }
 }
 
 ?>

@@ -139,6 +139,168 @@ class media extends HTML_MEDIA
         readfile($export); 
         exit; */
     }
+	//
+	public function recursiveRemoveDirectory($dir) {
+		$files = glob($dir.'/*'); // get all file names
+		foreach($files as $file){ // iterate files
+		  if(is_file($file))
+			unlink($file); // delete file
+		}
+	 }
+	public function delete_directory($dirname) 
+	{ 
+		echo " <hr> calling with <b>".$dirname ."</b><br>";
+		
+		//if (is_dir($dirname))
+		//{		
+		   $dir_handle = opendir($dirname);
+		//}
+		   
+		//if (!$dir_handle)
+		//  return false;
+		  
+		while($file = readdir($dir_handle)) 
+		{
+		   if ($file != "." && $file != "..") 
+		   { 
+				if (!is_dir($dirname.'/'.$file)) 
+					{ 
+						unlink($dirname.'/'.$file);
+					}
+				else
+					{
+						$this->delete_directory($dirname.'/'.$file);
+					}
+		   }
+		   
+		}
+		//closedir($dir_handle);
+		if (strpos($dirname, 'propertyimageexport/') == true) 
+		{
+			rmdir($dirname);
+		}
+		else {
+			//echo " found main dir<br>";
+		}
+		return true;
+	}
+	public function downloadPropertyImage() {
+		$dir = $_SERVER['DOCUMENT_ROOT'].'/upload/propertyimageexport';
+		$this->delete_directory($dir);
+        if (isset($_POST['saveselected_z'])) {
+			$dr = 'propimageexport_'.date('ymdhis');
+			mkdir('upload/propertyimageexport/'.$dr, 0777);
+            foreach($_POST as $key=>$value) {
+				if(is_array($value))
+				{
+					mkdir('upload/propertyimageexport/'.$dr.'/'.$key, 0777);
+					foreach($value as $imgName) {
+						copy('upload/'.$imgName, 'upload/propertyimageexport/'.$dr.'/'.$key.'/'.$imgName);
+            		}
+					
+				}
+                
+            }
+	        $source = 'upload/propertyimageexport/'.$dr.'/';
+            $destination = 'upload/propertyimageexport/exportpropertyimages-'.date('Y_m_d_H_i_s').'.zip';
+            $this->downloadPropertyFile($source, $destination);
+        }
+		//
+		elseif (isset($_POST['saveselected_p'])) {
+			$dr = 'propimageexport_'.date('ymdhis');
+			mkdir('upload/propertyimageexport/'.$dr);
+			ob_start();
+			require_once('tcpdf/tcpdf.php');
+			foreach($_POST as $key=>$value) {
+				$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+				$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+				$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+				$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+				$pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+				$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+				$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+				$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+				$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+				if(is_array($value))
+				{ 
+						$heading = 'Property Name : '.str_replace('_', ' ', $key);
+						$pdf->SetHeaderData('', '', $heading, '', '');
+						$pdf->AddPage();
+						$pdf->setJPEGQuality(75);
+						$x = 15;
+						$y = 35;
+						$w = 30;
+						$h = 30;
+							$x = 15;
+							for ($j = 0; $j < count($value); ++$j) 
+							{
+								$filesplit = explode('.', $value[$j]);
+								$fileext = strtoupper($filesplit[1]);
+								$pdf->Rect($x, $y, $w, $h, 'F', array(), array(128,255,128));
+								$pdf->Image($_SERVER['DOCUMENT_ROOT'].'upload/'.$value[$j], $x, $y, $w, $h, $fileext, SITE_URL.'upload/'.$value[$j], '', true, 300, '', false, false, 0, false, false);
+								$x += 32; // new column
+							}
+							$y += 32; // new row
+						$pdf->Output($_SERVER['DOCUMENT_ROOT'].'upload/propertyimageexport/'.$dr.'/'.$key.'.pdf', 'F');
+				}
+			}
+			$source = 'upload/propertyimageexport/'.$dr.'/';
+            $destination = 'upload/propertyimageexport/exportpropertyimages-'.date('Y_m_d_H_i_s').'.zip';
+			$this->downloadPropertyFile($source, $destination);
+			die;
+		}
+	}
+	public function downloadPropertyFile($source, $destination) {
+		if (!extension_loaded('zip') || !file_exists($source)) {
+			return false;
+		}
+		
+		$zip = new ZipArchive();
+		if (!$zip->open($destination, ZIPARCHIVE::CREATE)) {
+			return false;
+		}
+		
+		$source = str_replace('\\', '/', realpath($source));
+		
+		if (is_dir($source) === true)
+		{
+			$files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($source), RecursiveIteratorIterator::SELF_FIRST);
+		
+			foreach ($files as $file)
+			{
+				$file = str_replace('\\', '/', $file);
+		
+				// Ignore "." and ".." folders
+				if( in_array(substr($file, strrpos($file, '/')+1), array('.', '..')) )
+					continue;
+		
+				$file = realpath($file);
+		
+				if (is_dir($file) === true)
+				{
+					$zip->addEmptyDir(str_replace($source . '/', '', $file . '/'));
+				}
+				else if (is_file($file) === true)
+				{
+					$zip->addFromString(str_replace($source . '/', '', $file), file_get_contents($file));
+				}
+			}
+		}
+		
+		else if (is_file($source) === true)
+		{
+			$zip->addFromString(basename($source), file_get_contents($source));
+		} 
+		@header("Location: ".SITE_URL.$destination);
+		unlink($destination);
+		return $zip->close();
+        exit;
+	}
+	public function exportPropertyImages() {
+		$strSql = "SELECT * FROM ".TBL_JOBLOCATION."";
+		$objRs = $this->objDatabase->dbQuery($strSql); 
+		parent :: exportPropertyImages($objRs);   
+    }
 }
 
 $objMedia = new media($objFunctions);
@@ -156,9 +318,21 @@ switch($strTask)
     case 'download-image':
         $objMedia->downloadImage();
     break;
+	
+	case 'download-property-image':
+        $objMedia->downloadPropertyImage();
+    break;
     
     case 'export':
         $objMedia->exportImages();
+    break;
+	
+	case 'exportpropertyimages':
+        $objMedia->exportPropertyImages();
+    break;
+	
+	case 'makepdf':
+        $objMedia->pdfmaker();
     break;
 }    
 ?>
