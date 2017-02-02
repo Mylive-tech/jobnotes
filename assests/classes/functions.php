@@ -1750,5 +1750,11 @@ public function getFormSubmissionValues($submission_id)
 		$objSet =  $this->objDBCon->fetchRows($strsql);
 		return $objSet;
 	}
+	//Get location name by id
+	public function getLocationName($lid){ //return 'dddd';
+		$strsql = "SELECT * FROM ".TBL_SERVICE." where id = ".$lid;
+		$objSet =  $this->objDBCon->fetchRows($strsql);
+		return $objSet->name;
+	}
 }
 ?>

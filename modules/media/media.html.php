@@ -5,29 +5,8 @@ class HTML_MEDIA {
         $this->objFunction = $objfunc;
     }
     
-    protected function medialist($main_images, $user_images) {
-        $user_images = ltrim($user_images, ","); 
-        $main_images = ltrim($main_images, ","); 
-        $main_images = str_replace(",,", ",", $main_images);
-        $user_images = str_replace(",,", ",", $user_images);
-        $totalPropertyImages = $main_images.",".$user_images;
-        
-        if ($_GET['filter'] == 'staff') {
-           $totalPropertyImages = ltrim($user_images, ","); 
-        }
-        
-        if ($_GET['filter'] == 'main') {
-           $totalPropertyImages = $main_images; 
-        }
-        
-        $filearray = explode(",", $totalPropertyImages);
+    protected function medialist($filearray) {
         $totalImages = count($filearray);
-        $optimizedImages = 0;
-        foreach ($filearray as $file) {
-            if (file_exists('upload/mobile/'.$file))
-            $optimizedImages++;
-        }
-        
     ?>
     <div id="content">
         <div class="container"> 
@@ -40,7 +19,7 @@ class HTML_MEDIA {
                             <input type="hidden" name="dir" value="media">
                             <input type="hidden" name="task" value="download-image">
                             <span><b>Total Images:</b> <?php echo $totalImages;?>  </span>
-                            <span><b>Optimized Images:</b> <?php echo $optimizedImages; /*$glob = glob("upload/mobile/{*.jpg,*.gif,*.png,*.PNG,*.JPG,*.JPEG,*.GIF}", GLOB_BRACE);echo count($glob);*/ ?></span>
+                            <span><b>Optimized Images:</b> <?php $glob = glob("upload/mobile/{*.jpg,*.gif,*.png,*.PNG,*.JPG,*.JPEG,*.GIF}", GLOB_BRACE);echo count($glob);?></span>
                             <span id="progress">
                             <?php
                             if ($totalImages >count($glob)) {
@@ -53,14 +32,6 @@ class HTML_MEDIA {
                             <span><a href="<?php echo SITE_ADMINURL;?>index.php?dir=media&task=export" target="_blank"><button>Export Optimized Images</button></a></span>
                             <span><input type="submit" value="Export Selected" name="saveselected">
                             <span><input type="submit" onclick="return confirm('Only the selected images will be removed. The properties will not be affected with this deletion but if these images are attached then property will show blank images.');" value="Remove Selected" name="rmselected">
-                            <p>
-                            <label>Filter By: </label>
-                            <select name="filter" onchange="window.location='<?php echo SITE_ADMINURL;?>index.php?dir=media&task=list&filter='+this.value;">
-                            <option value="all">All Images</option>
-                            <option value="staff" <?php if ($_GET['filter']=='staff') echo 'selected';?>>Staff Images</option>
-                            <option value="main" <?php if ($_GET['filter']=='main') echo 'selected';?>>Main Images</option>
-                            </select>
-                            </p>
                             <div class="form_holder mediamanager" style="padding-top:20px;">
                             <?php
                                 if (!isset($_GET['page'])) {
@@ -77,9 +48,9 @@ class HTML_MEDIA {
                                 }
                                 $totalPages = ceil($totalImages/30);
                                 for($i = $start; $i< $limit; $i++) {
-                                    $file = "upload/".$filearray[$i];
+                                    $file = $filearray[$i];
                                 ?>
-                                <div style="margin: 0px 10px 10px 0px; position: relative; width: 160px; height: 240px; float:left; text-align:center; border:1px solid #ccc; overflow:hidden;">
+                                <div style="margin: 0px 10px 10px 0px; position: relative; width: 160px; height: 220px; float:left; text-align:center; border:1px solid #ccc; overflow:hidden;">
                                     <input style="display:none;" onclick="$(this).is(':checked')?$('#img_check_<?php echo $i;?>').show(1000):$('#img_check_<?php echo $i;?>').hide(1000);" type="checkbox" id="check_<?php echo $i;?>" value="<?php echo basename($file);?>" name="imgdownload[]">
                                     <label for="check_<?php echo $i;?>" id="img_check_<?php echo $i;?>" style="display: none; position: absolute; left:0px; width:160px; height:110px;">
                                     <img src="<?php echo SITE_URL;?>upload/tmp/trans_checked.png" style="width:160px; height:110px;">
@@ -96,8 +67,7 @@ class HTML_MEDIA {
                                     ?>
                                     Actual Size: <?php echo $this->objFunction->sizeFormatter($org_size);?><br>
                                     Optimized Size: <?php echo $this->objFunction->sizeFormatter($compress_size);?><br>
-                                    Reduced Size: <?php echo round(((($org_size-$compress_size)*100)/$org_size),2).' %';?><br>
-                                    Timestamp: <?php echo date ("m/d/Y", filemtime($file));?>
+                                    Reduced Size: <?php echo round(((($org_size-$compress_size)*100)/$org_size),2).' %';?>
                                 </div>
                                 <?php
                                 }
@@ -114,23 +84,8 @@ class HTML_MEDIA {
                                 }
                                 ?>
                                 </select>
-                                <p style="float:right;">
-                                <a style="margin: 0px 0px; border: 1px solid #ccc; padding: 0px 5px 0px 7px;" id="m_prev" href="<?php echo SITE_ADMINURL.'media/list/page/1';?>">PREV</a>
-                                <?php
-                                for ($j=1; $j<=$totalPages; $j++) {
-                                ?>
-                                 <a style="margin: 0px 0px; border: 1px solid #ccc; padding: 0px 5px 0px 7px;" id="<?php echo 'mediapage_'.$j;?>" href="<?php echo SITE_ADMINURL.'media/list/page/'.$j;?>"><?php echo $j;?></a> 
-                                <?php
-                                }
-                                ?>
-                                <a style="margin: 0px 0px; border: 1px solid #ccc; padding: 0px 5px 0px 7px;" id="m_next" href="<?php echo SITE_ADMINURL.'media/list/page/'.($j-1);?>">NEXT</a>
-                                </p>
-                                <div style="clear:both;"></div>
                             </div>
                         </form>
-                        <br/>
-                        <input type="button" name="exp_prop_img" id="exp_prop_img" value="Export Property Images" onclick="window.location='<?php echo ISP :: AdminUrl('media/exportpropertyimages/');?>'" />
-                        <br/>
                         </div>
                     </div>
                 </div>
@@ -138,27 +93,6 @@ class HTML_MEDIA {
         </div>
     </div>
 <script defer>
-$(document).ready(function(e) {
-	var pageno = $('#page').val();
-	var optionlast = $('#page option').last().val();
-	if(pageno != 1)
-	{
-		$('#m_prev').attr('href', '<?php echo SITE_ADMINURL.'media/list/page/';?>'+(pageno-1));
-	}
-	else
-	{
-		$('#m_prev').css('pointer-events','none');
-	}
-	if(pageno != optionlast)
-	{
-		$('#m_next').attr('href', '<?php echo SITE_ADMINURL.'media/list/page/';?>'+(parseInt(pageno)+parseInt(1)));
-	}
-	else
-	{
-		$('#m_next').css('pointer-events','none');
-	}
-	$('#mediapage_'+pageno).addClass('active');
-});
 function lazyloadMedia() {
      $("div.mediamanager img").each(function() {
         $(this).attr("src", $(this).attr("data-src"));
@@ -202,20 +136,29 @@ protected function exportPropertyImages($objRs) {
 			<div class="row">
 				<div class="col-md-12">
 					<h4 class="text-left heding_6">Export Property Images</h4>
-                     <form method="post">
-                            <input type="hidden" name="task" value="download-property-image">
-                            <p style="float:right;"><input type="submit" value="Export ZIP" name="saveselected_z">
+                     <form method="post" id="export_image_form">
+                         <button type="button" id="select_check_all" style="">Select All/Check All</button>
+                         <button type="button" id="expand_collapse_all" style="">Expand All/Collapse All</button>
+                         <p style="float:right;"><input type="submit" value="Export ZIP" name="saveselected_z">
                             <input type="submit" value="Export PDF" name="saveselected_p"></p>
-                            <div style="clear:both;"></div>
-					<?php $i=1;
+                         
+                            <input type="hidden" name="task" value="download-property-image">
+					<?php $i=1; $locarr = array();
 						while ($objRow = $objRs->fetch_object()) {
 							unset($imgarr);
 							$imgarr = array();
 							if ($objRow->user_gallery<>''){
+								if( !in_array($objRow->location_id, $locarr) ) 
+								{
+									$location = $this->objFunction->getLocationName($objRow->location_id);
+									echo '<h4><strong>'.$location.'</strong></h4>';
+									$locarr[] = $objRow->location_id;
+								}
 							?>
-								<p class="accordion"><input type="checkbox" name="select_all" class="select_all" value="<?php echo $objRow->id; ?>"/>
-								<span class="accordion_l"><?php echo $objRow->job_listing; ?></span></p>
-								<div class="panel" id="<?php echo $objRow->id; ?>">
+<p class="accordion">
+  <input type="checkbox" name="select_all" class="select_all" value="<?php echo $objRow->id; ?>"/>
+<span class="toggle-title"><?php echo $objRow->job_listing; ?></span></p>
+								<div class="toggle-content" id="<?php echo $objRow->id; ?>">
 								<?php
 								if (strpos($objRow->user_gallery, ',') !== false) {
 									$images = explode(',', $objRow->user_gallery);
@@ -232,13 +175,13 @@ protected function exportPropertyImages($objRs) {
 								foreach($imgarr as $ia){
 								$file = "upload/".$ia;
 								?>
-									<div style="margin: 0px 10px 10px 0px; position: relative; width: 160px; height: 112px; float:left; text-align:center; border:1px solid #ccc; overflow:hidden;">
-								<input style="display:none;" onclick="$(this).is(':checked')?$('#img_check_<?php echo $i;?>').show(1000):$('#img_check_<?php echo $i;?>').hide(1000);" type="checkbox" id="check_<?php echo $i;?>" value="<?php echo basename($file);?>" name="<?php echo $objRow->job_listing; ?>[]">
+									<div style="margin: 0px 10px 10px 0px; position: relative;float:left; text-align:center;overflow:hidden;">
+								<input class="select_individual" style="display:none;" onclick="$(this).is(':checked')?$('#img_check_<?php echo $i;?>').show(1000):$('#img_check_<?php echo $i;?>').hide(1000);" type="checkbox" id="check_<?php echo $i;?>" value="<?php echo basename($file);?>" name="<?php echo $objRow->job_listing; ?>[]">
 								<label for="check_<?php echo $i;?>" id="img_check_<?php echo $i;?>" style="display: none; position: absolute; left:0px; width:160px; height:110px;">
 								<img src="<?php echo SITE_URL;?>upload/tmp/trans_checked.png" style="width:160px; height:110px;">
 								</label>
 								<label for="check_<?php echo $i;?>" style="cursor: pointer;">
-								<img alt="Click to Select" title="Click to Select" src="<?php echo SITE_URL.$file;?>" data-src="<?php echo SITE_URL.$file;?>" style="width:160px !important; height: 110px !important;" border="0" width="130" height="110">
+								<img class="prop_exp_img" alt="Click to Select" title="Click to Select" src="<?php echo SITE_URL.$file;?>" data-src="<?php echo SITE_URL.$file;?>" border="0" style="width:160px;height:110px;">
 								</label>
 							</div>
 								<?php
@@ -250,6 +193,9 @@ protected function exportPropertyImages($objRs) {
 							}
 						}
 					?>
+                     <p style="float:right;"><input type="submit" value="Export ZIP" name="saveselected_z">
+                            <input type="submit" value="Export PDF" name="saveselected_p"></p>
+                     <div style="clear:both;"></div>
                     </form>
 				</div>
 			</div>
@@ -259,6 +205,59 @@ protected function exportPropertyImages($objRs) {
 	<script type="text/javascript">
 		//
 		$(document).ready(function(e) {
+			//
+			$('#export_image_form').submit(function(){
+				var sel_indiv;
+				var sel_all;
+				$('input:checkbox.select_individual').each(function (){
+					var sThisVal = $(this).prop('checked');
+					if( sThisVal == true )
+						sel_indiv = sThisVal; 
+					
+				});
+				$('input:checkbox.select_all').each(function (){
+					var sThisVal = $(this).prop('checked');
+					if( sThisVal == true )
+						sel_all = sThisVal; 
+					
+				});
+				if( sel_indiv == true || sel_all == true)
+				{
+					return true;
+				}
+				else
+				{
+					alert('Please select images to export.');
+					return false;
+				}
+			});
+			//
+			$(".toggle-content").hide();
+			$(".toggle-title").click(function() {
+				//$(this).toggleClass('active').next(".toggle-content").slideToggle("normal");
+				$(this).parent('p.accordion').toggleClass('active').next(".toggle-content").slideToggle("normal");
+				
+			});
+			//
+			$('#expand_collapse_all').click(function(){
+				$(".toggle-content").slideToggle("normal");
+				$(".accordion").toggleClass('active');
+			});
+			//
+			//
+			$('#select_check_all').click(function(){
+				var check_all = $('.select_all').prop('checked');
+				if(check_all == true)
+				{
+					$("input[type=checkbox]").prop("checked", false);	
+				}
+				else
+				{
+					$("input[type=checkbox]").prop("checked", true);
+				}
+			});
+			//
+			
 			$('.select_all').click(function(){
 				var checkall = $(this).prop('checked');
 				var checkval = $(this).val();
@@ -272,20 +271,6 @@ protected function exportPropertyImages($objRs) {
 				}
 			});
 		});
-		//
-		var acc = document.getElementsByClassName("accordion_l");
-		var i;
-		for (i = 0; i < acc.length; i++) {
-			acc[i].onclick = function() {
-				this.classList.toggle("active");
-				var panel = this.closest('.accordion').nextElementSibling;
-				if (panel.style.maxHeight){
-					panel.style.maxHeight = null;
-				} else {
-					panel.style.maxHeight = panel.scrollHeight + 'px';
-				} 
-			}
-		}
 	</script>
 	 <?php
 	 }

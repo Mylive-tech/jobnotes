@@ -18,43 +18,12 @@ class media extends HTML_MEDIA
     public function getImages() {
         
         $glob = glob("upload/{*.jpg,*.gif,*.png,*.PNG,*.JPG,*.JPEG,*.GIF}", GLOB_BRACE);
-        
-        $strSql = "SELECT * FROM ".TBL_JOBLOCATION."";
-		$objRs = $this->objDatabase->dbQuery($strSql); 
-		while ($objRow = $objRs->fetch_object()) {
-			if ($objRow->gallery<>'')
-				$gallery[] = $objRow->gallery;
-			if ($objRow->user_gallery<>'')
-			$user_gallery[] = $objRow->user_gallery;
-		}
-		
-		$main_images = implode(",", $gallery);
-		$user_images = implode(",", $user_gallery);
-        parent :: medialist($main_images, $user_images);
+        parent :: medialist($glob);
         
     }
     
     public function optimizeImage() {
-        
-        $strSql = "SELECT * FROM ".TBL_JOBLOCATION."";
-		$objRs = $this->objDatabase->dbQuery($strSql); 
-		while ($objRow = $objRs->fetch_object()) {
-			if ($objRow->gallery<>'')
-				$gallery[] = $objRow->gallery;
-			if ($objRow->user_gallery<>'')
-			$user_gallery[] = $objRow->user_gallery;
-		}
-		
-		$main_images = implode(",", $gallery);
-		$user_images = implode(",", $user_gallery);
-		
-		$main_images = str_replace(",,", ",", $main_images);
-        $user_images = str_replace(",,", ",", $user_images);
-        $totalPropertyImages = $main_images.",".$user_images;
-        $glob = explode(",", $totalPropertyImages);
-		
-		
-        //$glob = glob("upload/{*.jpg,*.gif,*.png,*.PNG,*.JPG,*.JPEG,*.GIF}", GLOB_BRACE);
+        $glob = glob("upload/{*.jpg,*.gif,*.png,*.PNG,*.JPG,*.JPEG,*.GIF}", GLOB_BRACE);
         $index = $_POST['index']-1;
         $next = $index+10;
         if ($next >count($glob)) {
@@ -100,17 +69,11 @@ class media extends HTML_MEDIA
         }
         elseif(isset($_POST['rmselected'])) {
             foreach($_POST['imgdownload'] as $imgName) {
-				
 				$this->objDatabase->dbQuery("UPDATE ".TBL_JOBLOCATION." SET gallery = TRIM(BOTH ',' FROM REPLACE(CONCAT(',', gallery, ','), ',".$imgName.",', ',')) WHERE FIND_IN_SET('".$imgName."', gallery)");
-				
 				$this->objDatabase->dbQuery("UPDATE ".TBL_STAFF_UPLOADED_PROPERTY_IMAGES." SET Images = TRIM(BOTH ',' FROM REPLACE(CONCAT(',', Images, ','), ',".$imgName.",', ',')) WHERE FIND_IN_SET('".$imgName."', Images)");
-
                 unlink('upload/tablet/'.$imgName);
                 unlink('upload/mobile/'.$imgName);
                 unlink('upload/'.$imgName);
-				//$this->objDatabase->dbQuery("UPDATE ".TBL_JOBLOCATION." SET gallery = '' where gallery = 0");
-				
-					
             }
             $this->objFunction->showMessage('Selected Images removed successfully.', ISP :: AdminUrl('media/list'));  //Function to show the message            
         }
@@ -187,12 +150,13 @@ class media extends HTML_MEDIA
 	public function downloadPropertyImage() {
 		$dir = $_SERVER['DOCUMENT_ROOT'].'/upload/propertyimageexport';
 		$this->delete_directory($dir);
-        if (isset($_POST['saveselected_z'])) {
+        if (isset($_POST['saveselected_z'])) { 
 			$dr = 'propimageexport_'.date('ymdhis');
 			mkdir('upload/propertyimageexport/'.$dr, 0777);
             foreach($_POST as $key=>$value) {
 				if(is_array($value))
 				{
+					$key = str_replace('/', '',$key);
 					mkdir('upload/propertyimageexport/'.$dr.'/'.$key, 0777);
 					foreach($value as $imgName) {
 						copy('upload/'.$imgName, 'upload/propertyimageexport/'.$dr.'/'.$key.'/'.$imgName);
@@ -222,25 +186,31 @@ class media extends HTML_MEDIA
 				$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
 				$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 				if(is_array($value))
-				{ 
+				{
+						$key = str_replace('/', '',$key); 
 						$heading = 'Property Name : '.str_replace('_', ' ', $key);
 						$pdf->SetHeaderData('', '', $heading, '', '');
 						$pdf->AddPage();
 						$pdf->setJPEGQuality(75);
-						$x = 15;
+						/* $x = 15;
 						$y = 35;
 						$w = 30;
-						$h = 30;
+						$h = 30; */
+						$x = 15;
+						$y = 35;
+						$w = 50;
+						$h = 50;
 							$x = 15;
 							for ($j = 0; $j < count($value); ++$j) 
 							{
+								if( ($j != 0) && $j%3 == 0) { $x = 15; $y += 55; }
 								$filesplit = explode('.', $value[$j]);
 								$fileext = strtoupper($filesplit[1]);
-								$pdf->Rect($x, $y, $w, $h, 'F', array(), array(128,255,128));
-								$pdf->Image($_SERVER['DOCUMENT_ROOT'].'upload/'.$value[$j], $x, $y, $w, $h, $fileext, SITE_URL.'upload/'.$value[$j], '', true, 300, '', false, false, 0, false, false);
-								$x += 32; // new column
+								$pdf->Rect($x, $y, $w, $h, 'F', array(), array(128,255,255));
+								$pdf->Image($_SERVER['DOCUMENT_ROOT'].'upload/'.$value[$j], $x, $y, $w, $h, $fileext, SITE_URL.'upload/'.$value[$j], '', false, 300, '', false, false, 0, false, false);
+								$x += 60; // new column
 							}
-							$y += 32; // new row
+							$y += 55; // new row
 						$pdf->Output($_SERVER['DOCUMENT_ROOT'].'upload/propertyimageexport/'.$dr.'/'.$key.'.pdf', 'F');
 				}
 			}
@@ -297,7 +267,7 @@ class media extends HTML_MEDIA
         exit;
 	}
 	public function exportPropertyImages() {
-		$strSql = "SELECT * FROM ".TBL_JOBLOCATION."";
+		$strSql = "SELECT * FROM ".TBL_JOBLOCATION." order by location_id asc";
 		$objRs = $this->objDatabase->dbQuery($strSql); 
 		parent :: exportPropertyImages($objRs);   
     }
