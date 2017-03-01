@@ -49,14 +49,9 @@ class ivr_staff_log
               <div id="visualization" style="width: 100%; height: 230px; overflow:hidden;"></div>
           </div>
       </div>
-<script type="text/javascript" src="http://www.google.com/jsapi"></script>
-        
-        <script type="text/javascript">
-            google.load(\'visualization\', \'1\', {packages: [\'corechart\']});
-        </script>
  
         <script type="text/javascript">
-            function drawVisualization() {
+            {
                 var data = google.visualization.arrayToDataTable([
                     [\'Clock In\', \'Number\'],';
                         $widgetContent.='[\'Regular '.count($this->staff_regular).'\', '.count($this->staff_regular).'],';
@@ -64,8 +59,7 @@ class ivr_staff_log
   $widgetContent.=']);
                 new google.visualization.PieChart(document.getElementById(\'visualization\')).
                 draw(data, {title:"Regular Vs Contractors Staff", is3D: true});
-            }  
-            google.setOnLoadCallback(drawVisualization);
+            }
         </script>             
              ';                
     $this->objFunction->widgetContentArray[] = $widgetContent;            

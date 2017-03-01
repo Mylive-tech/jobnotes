@@ -605,6 +605,7 @@ class REPORT extends REPORT_HTML_CONTENT
 				//
 				foreach($pimg as $img){
 					unlink($_SERVER['DOCUMENT_ROOT'].'/upload/'.$img);
+					unlink($_SERVER['DOCUMENT_ROOT'].'/upload/mobile/'.$img);
 				}
 				$this->objDatabase->dbQuery("Update ".TBL_JOBLOCATION." set user_gallery = '', importent_notes = '', progress='0', start_date='0000-00-00 00:00:00', pause_date='0000-00-00 00:00:00', completion_date='0000-00-00 00:00:00' where id='".$id."'");
 				$this->objDatabase->dbQuery("delete from ".TBL_STAFF_UPLOADED_PROPERTY_IMAGES." where prop_id='".$id."'");
@@ -3034,6 +3035,7 @@ class REPORT extends REPORT_HTML_CONTENT
                         
                         foreach($imagearr as $img){
 				unlink($_SERVER['DOCUMENT_ROOT'].'/upload/'.$img);
+				unlink($_SERVER['DOCUMENT_ROOT'].'/upload/mobile/'.$img);
 			}
                         
 			$this->objDatabase->dbQuery("Update ".TBL_JOBLOCATION." set user_gallery = '', importent_notes = '', progress='0', start_date='0000-00-00 00:00:00', pause_date='0000-00-00 00:00:00', completion_date='0000-00-00 00:00:00'");

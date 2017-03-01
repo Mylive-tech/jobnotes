@@ -53,6 +53,7 @@ class dashboard extends DSHBOARD_HTML_CONTENT
   
   public function admin_dashboard_refresh()
   {
+    $this->objFunction->loadPlugins($this->objFunction);
 	$cont = '';
 	$cont .= '<h4 class="text-left heding_6 dashboardheading">Dashboard <img src="'.SITE_URL.'/assets/img/refresh-loader.gif" id="refresh_loader" style="display:none;width:25px;float:right;" /></h4>	
 			
@@ -168,8 +169,65 @@ class dashboard extends DSHBOARD_HTML_CONTENT
   
   public function admin_ivrlogchart_refresh()
   {
+	  $this->objFunction->loadPlugins($this->objFunction);
 	  echo $this->objFunction->widgetContentArray[$_GET['index']];
 	  die;
+  }
+  //
+  public function load_plugins(){ 
+  		//echo $this->objFunction->widgetContentArray[1]; die;
+  		//echo 'dddddd'; die;
+	  $this->objFunction->loadPlugins($this->objFunction); //print_r($this->objFunction);
+            $int_loop_counter=0;
+            for($i=0; $i<count($this->objFunction->widgetContentArray); $i++) {
+                if($this->objFunction->widgetContentArray[$i]<>'') {
+                    $int_loop_counter++;
+                    if($int_loop_counter%2 <> 0){
+                        $odd_content[] = $this->objFunction->widgetContentArray[$i];
+                    }
+                    else {
+                        $even_content[] = $this->objFunction->widgetContentArray[$i];
+                    }
+                }
+            }
+            ?>
+    <div class="col-md-12 nopadding clock-in-out-widget" id="widgetsorting">
+    <ul class="sortable nopadding col-md-12 piechart_details">
+            <?php $i=1;
+                foreach($even_content as $even_widget_value) {
+                    if($i == 1)
+                        echo '<li class="'.$i.'_even ui-state-default nopadding widget box col-md-12 col-sm-12 text-left">'.$even_widget_value.'</li>';                    
+                    $i++;	
+                }
+            ?>
+       <div class="overlay ui-sortable-handle"></div><div class="loader ui-sortable-handle"><img src="<?php echo SITE_URL.'assets/img/ajax-loading-input.gif'; ?>" /></div>
+      </ul>
+      </div>     
+      <div class="col-md-12 nopadding" id="widgetsorting">
+                <div class="col-md-6 col-sm-12 nopadding">
+                    <ul class="sortable nopadding col-md-12">
+                    <?php $i=1;
+                        foreach($odd_content as $odd_widget_value) {
+                            echo '<li class="'.$i.'_odd ui-state-default nopadding col-md-12 col-sm-12 widget box">'.$odd_widget_value.'</li>';
+							$i++;                    
+                        }
+                    ?>    
+                    </ul>
+                </div>
+                <div class="col-md-6 col-sm-12 text-right rightsidewidget" style="padding-right:0px;">
+                    <ul class="sortable nopadding col-md-12">
+                    <?php $i=1;
+                        foreach($even_content as $even_widget_value) {
+							if($i != 1)
+                            	echo '<li class="'.$i.'_even ui-state-default nopadding widget box col-md-12 col-sm-12 text-left">'.$even_widget_value.'</li>';                    
+							$i++;	
+                        }
+                    ?>
+                    </ul>
+                </div>
+        </div>
+        <?php 
+		die;
   }
 
 } // End of Class
@@ -201,6 +259,10 @@ switch($strTask)
    
    case 'admin_ivrlogchart_refresh':
         $objDashboard->admin_ivrlogchart_refresh();
+   break;
+   
+   case 'load_plugins':
+        $objDashboard->load_plugins();
    break;
    
 }

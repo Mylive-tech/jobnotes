@@ -80,7 +80,8 @@ $current_url = $_SERVER['REQUEST_URI'];
 $pos = strpos($current_url, '/dashboard/');
 if($pos !== false)
 {
-    $objFunctions->loadPlugins($objFunctions);
+	//print_r($objFunctions);
+    //$objFunctions->loadPlugins($objFunctions);
 }
 
 require_once( 'includes/sef.php' );

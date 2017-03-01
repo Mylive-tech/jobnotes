@@ -17,7 +17,7 @@ class DSHBOARD_HTML_CONTENT
     <script src="//cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.2/jquery.ui.touch-punch.min.js"></script>
     <link rel="stylesheet" href="<?php echo SITE_CSSURL;?>jquery.bxslider.css" type="text/css" />
     <script type="text/javascript">
-        $(document).ready(function(){       
+        $(document).ready(function(){
             $("#widgetsorting .sortable" ).sortable({connectWith: '#widgetsorting .sortable'});
             $("#widgetsorting .sortable" ).disableSelection();
 
@@ -62,7 +62,7 @@ class DSHBOARD_HTML_CONTENT
 				return false;
 		}
 		//
-		$(function() {
+		/*$(function() {
 			var SANAjax = function(){
 			//Add here anticache modificator:
 			//var rnd=Math.random();
@@ -70,16 +70,23 @@ class DSHBOARD_HTML_CONTENT
 			//alert("test 02nov2016");
 			$("#refresh_loader").show();
           	 		$.ajax({url: '<?php echo ISP :: AdminUrl('dashboard/admin_dashboard_refresh/');?>', success: function(result){$("#content .container").html(result);
-					drawVisualization();
+					//drawVisualization();
 					$("#refresh_loader").hide();
 					}
 				});
        		
 			}
 			setInterval(SANAjax, <?php echo $autorefreshtime->config_value;?>*1000 ); 
-		});
+		});*/
 		//
-    </script>                      
+    </script>  
+    
+		<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+        
+        <script type="text/javascript">		
+            google.load('visualization', '1', {packages: ['corechart']});
+        </script>
+		                    
 <div id="content">			   
   <div class="container">           
     <h4 class="text-left heding_6 dashboardheading">Dashboard <img src="<?php echo SITE_URL.'/assets/img/refresh-loader.gif' ?>" id="refresh_loader" style="display:none;width:25px;float:right;" /></h4>	
@@ -138,7 +145,7 @@ class DSHBOARD_HTML_CONTENT
         </div>               
       </div> 
     </div>
-     <?php //print_r($this->objFunction->widgetContentArray);
+     <?php /*$this->objFunction->loadPlugins($this->objFunction); //print_r($this->objFunction);
             $int_loop_counter=0;
             for($i=0; $i<count($this->objFunction->widgetContentArray); $i++) {
                 if($this->objFunction->widgetContentArray[$i]<>'') {
@@ -150,9 +157,9 @@ class DSHBOARD_HTML_CONTENT
                         $even_content[] = $this->objFunction->widgetContentArray[$i];
                     }
                 }
-            }
+            }*/
             ?>
-    <div class="col-md-12 nopadding clock-in-out-widget" id="widgetsorting">
+    <!--<div class="col-md-12 nopadding clock-in-out-widget" id="widgetsorting">
     <ul class="sortable nopadding col-md-12 piechart_details">
             <?php $i=1;
                 foreach($even_content as $even_widget_value) {
@@ -161,7 +168,7 @@ class DSHBOARD_HTML_CONTENT
                     $i++;	
                 }
             ?>
-       <div class="overlay"></div><div class="loader"><img src="<?php echo SITE_URL.'assets/img/ajax-loading-input.gif'; ?>" /></div>
+       <div class="overlay ui-sortable-handle"></div><div class="loader ui-sortable-handle"><img src="<?php echo SITE_URL.'assets/img/ajax-loading-input.gif'; ?>" /></div>
       </ul>
       </div>     
       <div class="col-md-12 nopadding" id="widgetsorting">
@@ -186,12 +193,35 @@ class DSHBOARD_HTML_CONTENT
                     ?>
                     </ul>
                 </div>
-        </div>                                          
+        </div> --> 
+
+        <div id="plugindata"></div>                                    
     </div>			  
 </div>			 
 <!-- /.container --> 
 </div>
+
 <script type="text/javascript">
+$(document).ready(function() {
+	$("#plugindata").html('<div class="rpt_loader"><img src="<?php echo SITE_URL.'/assets/img/widget_loader.gif' ?>" /></div>');
+   $.ajax({
+	    url: '<?php echo ISP :: AdminUrl('dashboard/load_plugins/');?>', 
+   		success: function(response){ 
+   			$("#plugindata").html(response);
+		}
+   });
+   //
+   	var SANAjax = function(){
+	$("#refresh_loader").show();
+			$.ajax({url: '<?php echo ISP :: AdminUrl('dashboard/admin_dashboard_refresh/');?>', success: function(result){$("#content .container").html(result);
+			//drawVisualization();
+			$("#refresh_loader").hide();
+			}
+		});
+	
+	}
+	setInterval(SANAjax, <?php echo $autorefreshtime->config_value;?>*1000 );
+});
 /*$('.bxslider').bxSlider11({
   mode: 'vertical',
   slideMargin: 5

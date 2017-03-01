@@ -118,14 +118,9 @@ class ivr_staff_clock_log
 			  <div class="col-lg-4 col-xs-12 col-sm-6 clk_graph" id="visualization_clock_sidewalk" style="height: 230px; overflow:hidden;"></div><div id="piechartusers"></div>
           </div>
       </div>
-<script type="text/javascript" src="http://www.google.com/jsapi"></script>
-        
-        <script type="text/javascript">
-            google.load(\'visualization\', \'1\', {packages: [\'corechart\']});
-        </script>
  
         <script type="text/javascript">
-            function drawVisualization() {
+            {
 				var data_sc = google.visualization.arrayToDataTable([
                     [\'Clock In\', \'Number\'],';
                         $widgetContent.='[\'Clocked in '.count($this->subcontractor_login).'\', '.count($this->subcontractor_login).'],';
@@ -245,8 +240,7 @@ class ivr_staff_clock_log
 						});
 					}
 				});
-            }  
-            google.setOnLoadCallback(drawVisualization);
+            }
         </script>             
              ';                
     $this->objFunction->widgetContentArray[] = $widgetContent;
